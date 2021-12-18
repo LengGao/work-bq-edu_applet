@@ -1,0 +1,75 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"usingComponents": {
+					"van-button": "/wxcomponents/vant/button/index",
+					"van-grid": "/wxcomponents/vant/grid/index",
+					"van-grid-item": "/wxcomponents/vant/grid-item/index",
+					"van-tab": "/wxcomponents/vant/tab/index",
+					"van-tabs": "/wxcomponents/vant/tabs/index",
+					"van-action-sheet": "/wxcomponents/vant/action-sheet/index",
+					"van-icon": "/wxcomponents/vant/icon/index"
+				}
+			}
+		},
+		{
+			"path": "pages/login/getPhone",
+			"style": {
+				"navigationBarTitleText": "授权手机号",
+				"usingComponents": {}
+			}
+		},
+		{
+			"path": "pages/user/index",
+			"style": {
+				"navigationBarTitleText": "个人中心",
+				"usingComponents": {
+					"van-button": "/wxcomponents/vant/button/index"
+				}
+			}
+		},
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"usingComponents": {
+					"van-button": "/wxcomponents/vant/button/index",
+					"van-radio": "/wxcomponents/vant/radio/index",
+					"van-radio-group": "/wxcomponents/vant/radio-group/index"
+				}
+			}
+		}
+	],
+	"tabBar": {
+		"color": "#CCCCCC",
+		"selectedColor": "#196FF1",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"iconPath": "static/tabbar/shuati.png",
+				"selectedIconPath": "static/tabbar/shuati-active.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/user/index",
+				"iconPath": "static/tabbar/auth.png",
+				"selectedIconPath": "static/tabbar/auth-active.png",
+				"text": "个人中心"
+			}
+		]
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "#ffffff",
+		"navigationBarTitleText": " ",
+		"navigationBarBackgroundColor": "#199FFF",
+		"backgroundColor": "#F8F8F8",
+		"usingComponents": {
+			"van-skeleton": "/wxcomponents/vant/skeleton/index"
+		}
+	}
+}

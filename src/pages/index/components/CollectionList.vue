@@ -1,0 +1,114 @@
+<template>
+  <view class="collection-list">
+    <van-skeleton title avatar row="2" :loading="loading">
+      <block v-if="data.length">
+        <view
+          class="collection-list-item"
+          v-for="item in data"
+          :key="item.id"
+          @click="$emit('item-click', item)"
+        >
+          <view class="collection-list-item-content">
+            <view class="info">
+              <view class="info-user">
+                <view class="user-name"
+                  >{{ item.nickname }}--{{ item.project_name }}</view
+                >
+                <view class="time">{{ item.day }}</view>
+              </view>
+              <view class="info-tips">
+                <text>计划金额￥{{ item.money || 0 }}</text>
+                <text>实收金额￥{{ item.pay_money || 0 }}</text></view
+              >
+            </view>
+          </view>
+        </view>
+        <view
+          class="load-more"
+          v-if="total > data.length"
+          @click="$emit('more')"
+          >查看更多</view
+        >
+        <view class="no-more" v-else>没有更多了</view>
+      </block>
+      <NoData v-else />
+    </van-skeleton>
+  </view>
+</template>
+
+<script>
+import NoData from "@/components/noData/index.vue";
+export default {
+  name: "CollectionList",
+  components: {
+    NoData,
+  },
+  props: {
+    data: {
+      type: Array,
+      default: () => [],
+    },
+    total: {
+      type: Number,
+      default: 0,
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+  },
+};
+</script>
+
+<style lang="less" scoped>
+@import "@/styles/var";
+
+.collection-list {
+  position: relative;
+  height: calc(100vh - 164px - 44px - 60rpx - 80rpx);
+  padding: 0 20rpx;
+  .load-more {
+    padding: 10rpx;
+    text-align: center;
+    color: #199fff;
+    margin-top: -20rpx;
+    &:active {
+      opacity: 0.7;
+    }
+  }
+  .no-more {
+    text-align: center;
+    color: @f-c-999;
+    font-size: 24rpx;
+    margin-top: -20rpx;
+  }
+  &-item {
+    padding-bottom: 60rpx;
+    &:active {
+      opacity: 0.7;
+    }
+    &-content {
+      .info {
+        margin-left: 16rpx;
+        flex: 1;
+        &-user {
+          .flex-c-b();
+          margin-bottom: 8rpx;
+          .time {
+            margin-left: auto;
+            font-size: 24rpx;
+            color: #fe7d00;
+          }
+        }
+        &-tips {
+          font-size: 26rpx;
+          color: #888;
+          text:first-child {
+            margin-right: 40rpx;
+          }
+        }
+      }
+    }
+  }
+}
+</style>

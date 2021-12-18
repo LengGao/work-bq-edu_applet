@@ -1,0 +1,32 @@
+@primary:#199fff;
+@border-color:#dddddd;
+@border:1rpx solid @border-color;
+@font-color:#333333;
+@f-c-999:#999999;
+@success:#59D234;
+@error :#FF4B4B;
+@none:#ddd;
+.flex{
+    display: flex;
+}
+.flex-c{
+    display: flex;
+    align-items: center;
+}
+.flex-c-c{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.flex-c-b{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.radius(@val:50%){
+    border-radius: @val;
+}
+.safe-area-inset-bottom{
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+}
