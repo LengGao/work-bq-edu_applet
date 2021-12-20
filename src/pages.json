@@ -16,6 +16,13 @@
 			}
 		},
 		{
+			"path": "pages/index/systemNoticeDetail",
+			"style": {
+				"navigationBarTitleText": "通知详情",
+				"usingComponents": {}
+			}
+		},
+		{
 			"path": "pages/login/getPhone",
 			"style": {
 				"navigationBarTitleText": "授权手机号",
@@ -69,7 +76,9 @@
 		"navigationBarBackgroundColor": "#199FFF",
 		"backgroundColor": "#F8F8F8",
 		"usingComponents": {
-			"van-skeleton": "/wxcomponents/vant/skeleton/index"
+			"van-skeleton": "/wxcomponents/vant/skeleton/index",
+			"van-popup": "/wxcomponents/vant/popup/index",
+			"van-tag": "/wxcomponents/vant/tag/index"
 		}
 	}
 }

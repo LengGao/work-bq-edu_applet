@@ -1,4 +1,4 @@
-const userInfo = uni.getStorageSync('userInfo') || { token: 'eyJzdGFmZl9pZCI6MTY1LCJoZWFkX3Bob3RvIjoiIiwic3RhZmZfbmFtZSI6Ilx1NzllNlx1OWU0Zlx1N2EwYiIsImlzX3N1cGVyIjoxLCJkZXBhcnRtZW50X2lkIjoyMCwiaXNfZGlyZWN0b3IiOjAsInRpbWVfb3V0IjoxNjM5ODkyODUxfQ==' }
+const userInfo = uni.getStorageSync('userInfo') || { token: 'eyJzdGFmZl9pZCI6MTYwLCJoZWFkX3Bob3RvIjoiIiwic3RhZmZfbmFtZSI6Ilx1NTIxOFx1OGJkN1x1ODBkYyIsImlzX3N1cGVyIjoxLCJkZXBhcnRtZW50X2lkIjoyMCwiaXNfZGlyZWN0b3IiOjEsInRpbWVfb3V0IjoxNjQwMDUxMDk5fQ==' }
 const questionBankInfo = uni.getStorageSync('questionBankInfo') || {}
 const user = {
     state: {

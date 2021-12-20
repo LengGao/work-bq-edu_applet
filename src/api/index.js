@@ -24,3 +24,20 @@ export function getSystemMsgList(data) {
         data
     })
 }
+// 获取系统公告详情
+export function getAnnouncementInfo(data) {
+    return request({
+        url: '/Workbench/getAnnouncementInfo',
+        method: 'get',
+        data,
+        loading: true
+    })
+}
+// 获取待跟进客户
+export function staffFollow(data) {
+    return request({
+        url: '/index/staffFollow',
+        method: 'post',
+        data
+    })
+}

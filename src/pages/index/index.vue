@@ -23,10 +23,13 @@
           :data="workNoticeData"
           @more="handleNoticeMore"
           :total="workNoticeTotal"
+          @refresherrefresh="onNoticeRefresh"
+          :refresh-loading="workNoticeRefreshLoading"
+          :load-more-loading="workNoticeLoadMoreLoading"
         />
       </van-tab>
       <van-tab title="回款提醒">
-        <view class="btn-popup" @click="sheetShow = true">
+        <view class="btn-popup" @click="onSheetOpen(1)">
           {{ collectionTypeName }}
           <van-icon
             :custom-class="sheetShow ? 'arrow-up' : 'arrow'"
@@ -38,15 +41,39 @@
           :data="collectionData"
           @more="handleCollectionMore"
           :total="collectionTotal"
+          @refresherrefresh="onCollectionRefresh"
+          :refresh-loading="collectionRefreshLoading"
+          :load-more-loading="collectionLoadMoreLoading"
         />
       </van-tab>
-      <van-tab title="跟进客户">内容 3</van-tab>
+      <van-tab title="跟进客户">
+        <view class="btn-popup" @click="onSheetOpen(2)">
+          {{ staffFollowTypeName }}
+          <van-icon
+            :custom-class="sheetShow ? 'arrow-up' : 'arrow'"
+            name="arrow-down"
+          />
+        </view>
+        <CustomerList
+          :loading="staffFollowLoading"
+          :data="staffFollowData"
+          @more="loadMoreStaffFollow"
+          :total="staffFollowTotal"
+          @refresherrefresh="onStaffFollowRefresh"
+          :refresh-loading="staffFollowRefreshLoading"
+          :load-more-loading="staffFollowLoadMoreLoading"
+        />
+      </van-tab>
       <van-tab title="系统通知">
         <SystemNoticeList
           :loading="msgLoading"
           :data="msgData"
           @more="handleMsgMore"
           :total="msgTotal"
+          @item-click="handleNoticeClick"
+          @refresherrefresh="onMsgRefresh"
+          :refresh-loading="msgRefreshLoading"
+          :load-more-loading="msgLoadMoreLoading"
         />
       </van-tab>
     </van-tabs>
@@ -65,15 +92,18 @@ import {
   getStaffNotice,
   getReceivablePlan,
   getSystemMsgList,
+  staffFollow,
 } from "@/api/index";
 import NoticeList from "./components/NoticeList.vue";
 import SystemNoticeList from "./components/SystemNoticeList.vue";
 import CollectionList from "./components/CollectionList.vue";
+import CustomerList from "./components/CustomerList.vue";
 export default {
   components: {
     NoticeList,
     SystemNoticeList,
     CollectionList,
+    CustomerList,
   },
   data() {
     return {
@@ -114,21 +144,18 @@ export default {
       workNoticePage: 1,
       workNoticeTotal: 0,
       workNoticeLoading: true,
+      workNoticeRefreshLoading: false,
+      workNoticeLoadMoreLoading: false,
       //回款计划提醒
       collectionTotal: 0,
       collectionPage: 1,
       collectionType: 0,
       collectionLoading: true,
+      collectionRefreshLoading: true,
+      collectionLoadMoreLoading: true,
       collectionData: [],
       collectionTypeName: "已逾期",
-      // 系统通知
-      msgData: [],
-      msgTotal: 0,
-      msgPage: 1,
-      msgLoading: false,
-      // 选择器
-      sheetShow: false,
-      sheetActions: [
+      collectionTypeData: [
         {
           name: "已逾期",
           type: 0,
@@ -146,6 +173,40 @@ export default {
           type: 3,
         },
       ],
+      // 系统通知
+      msgData: [],
+      msgTotal: 0,
+      msgPage: 1,
+      msgLoading: false,
+      msgLoadMoreLoading: false,
+      msgRefreshLoading: false,
+      // 选择器
+      sheetActionsType: 1,
+      sheetShow: false,
+      sheetActions: [],
+      //待跟进客户
+      staffFollowData: [],
+      staffFollowTotal: 0,
+      staffFollowPage: 1,
+      staffFollowType: 1,
+      staffFollowLoading: true,
+      staffFollowLoadMoreLoading: false,
+      staffFollowRefreshLoading: false,
+      staffFollowTypeName: "最近7天",
+      staffFollowTypeData: [
+        {
+          name: "最近7天",
+          type: 1,
+        },
+        {
+          name: "最近15天",
+          type: 2,
+        },
+        {
+          name: "最近30天",
+          type: 3,
+        },
+      ],
     };
   },
   onLoad() {
@@ -153,13 +214,73 @@ export default {
   },
   methods: {
     onSheetSelect({ detail }) {
-      this.collectionTypeName = detail.name;
-      this.getReceivablePlan(detail.type);
+      if (this.sheetActionsType === 1) {
+        this.collectionTypeName = detail.name;
+        this.getReceivablePlan(detail.type);
+      } else {
+        this.staffFollowTypeName = detail.name;
+        this.staffFollow(detail.type);
+      }
+    },
+    onSheetOpen(type) {
+      this.sheetActionsType = type;
+      this.sheetActions =
+        type === 1 ? this.collectionTypeData : this.staffFollowTypeData;
+      this.sheetShow = true;
     },
     onSheetClose() {
       this.sheetShow = false;
     },
+    //待跟进客户
+    onStaffFollowRefresh() {
+      this.staffFollowRefreshLoading = true;
+      this.staffFollowPage = 1;
+      this.staffFollow();
+    },
+    loadMoreStaffFollow() {
+      this.staffFollowLoadMoreLoading = true;
+      this.staffFollowPage++;
+      this.staffFollow();
+    },
+    async staffFollow(type) {
+      if (type) {
+        this.staffFollowType = type;
+        this.staffFollowPage = 1;
+      }
+      const data = {
+        state: this.staffFollowType,
+        page: this.staffFollowPage,
+      };
+      const res = await staffFollow(data).catch(() => {});
+      this.staffFollowLoading = false;
+      setTimeout(() => {
+        this.staffFollowLoadMoreLoading = false;
+        this.staffFollowRefreshLoading = false;
+      }, 300);
+      if (res.code === 0) {
+        if (this.staffFollowPage > 1) {
+          this.staffFollowData.push(...res.data.list);
+        } else {
+          this.staffFollowData = res.data.list;
+        }
+        this.staffFollowTotal = res.data.total;
+      }
+    },
+
+    //  系统消息
+    onMsgRefresh() {
+      this.msgRefreshLoading = true;
+      this.msgFollowPage = 1;
+      this.getSystemMsgList();
+    },
+    handleNoticeClick(index) {
+      this.msgData[index].read = 2;
+      uni.navigateTo({
+        url: `/pages/index/systemNoticeDetail?id=${this.msgData[index].id}`,
+      });
+    },
     handleMsgMore() {
+      this.msgLoadMoreLoading = true;
       this.msgPage++;
       this.getSystemMsgList();
     },
@@ -169,6 +290,10 @@ export default {
       };
       const res = await getSystemMsgList(data).catch(() => {});
       this.msgLoading = false;
+      setTimeout(() => {
+        this.msgLoadMoreLoading = false;
+        this.msgRefreshLoading = false;
+      }, 300);
       if (res.code === 0) {
         if (this.msgPage > 1) {
           this.msgData.push(...res.data.list);
@@ -178,8 +303,15 @@ export default {
         this.msgTotal = res.data.total;
       }
     },
+    // 回款提醒
+    onCollectionRefresh() {
+      this.collectionRefreshLoading = true;
+      this.collectionPage = 1;
+      this.getReceivablePlan();
+    },
     handleCollectionMore() {
       this.collectionPage++;
+      this.collectionLoadMoreLoading = true;
       this.getReceivablePlan();
     },
     async getReceivablePlan(type) {
@@ -193,6 +325,10 @@ export default {
       };
       const res = await getReceivablePlan(data).catch(() => {});
       this.collectionLoading = false;
+      setTimeout(() => {
+        this.collectionLoadMoreLoading = false;
+        this.collectionRefreshLoading = false;
+      }, 300);
       if (res.code === 0) {
         if (this.collectionPage > 1) {
           this.collectionData.push(...res.data.list);
@@ -202,8 +338,15 @@ export default {
         this.collectionTotal = res.data.total;
       }
     },
+    // 工作通知
+    onNoticeRefresh() {
+      this.workNoticeRefreshLoading = true;
+      this.workNoticePage = 1;
+      this.getStaffNotice();
+    },
     handleNoticeMore() {
       this.workNoticePage++;
+      this.workNoticeLoadMoreLoading = true;
       this.getStaffNotice();
     },
     async getStaffNotice() {
@@ -212,6 +355,10 @@ export default {
       };
       const res = await getStaffNotice(data);
       this.workNoticeLoading = false;
+      setTimeout(() => {
+        this.workNoticeLoadMoreLoading = false;
+        this.workNoticeRefreshLoading = false;
+      }, 300);
       if (this.workNoticePage === 1) {
         this.workNoticeData = res.data.data;
       } else {
@@ -219,11 +366,15 @@ export default {
       }
       this.workNoticeTotal = res.data.total;
     },
+    // tabs 切换
     handleTabsChange({ detail }) {
       const index = detail.index;
       switch (index) {
         case 1:
           !this.collectionData.length && this.getReceivablePlan();
+          break;
+        case 2:
+          !this.staffFollowData.length && this.staffFollow();
           break;
         case 3:
           !this.msgData.length && this.getSystemMsgList();

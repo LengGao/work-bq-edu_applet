@@ -1,6 +1,6 @@
 <template>
   <scroll-view
-    class="notice-list"
+    class="customer-list"
     scroll-y
     refresher-enabled
     @refresherrefresh="$emit('refresherrefresh')"
@@ -12,19 +12,22 @@
     <van-skeleton title avatar row="2" :loading="loading">
       <block v-if="data.length">
         <view
-          class="notice-list-item"
+          class="customer-list-item"
           v-for="(item, index) in data"
           :key="item.id"
           @click="$emit('item-click', index)"
         >
-          <view class="notice-list-item-content">
-            <view
-              class="notice-content"
-              :class="{ 'notice-content--unread': item.read === 1 }"
-              >{{ item.title }}</view
-            >
-            <view class="notice-time">{{ item.create_time }}</view>
+          <view class="customer-list-item-content">
+            <view class="info">
+              <text>{{ item.name }}</text>
+              <van-tag plain type="success" v-if="row.pay_state"
+                >已成交</van-tag
+              >
+              <van-tag plain type="warning" v-else>未成交</van-tag>
+            </view>
+            <view class="time">上次跟进时间：{{ item.last_follow_time }}</view>
           </view>
+          <view class="customer-list-item-title">{{ item.follow_title }}</view>
         </view>
         <view class="load-more" v-if="loadMoreLoading">加载中...</view>
         <view class="load-more" v-if="total === data.length">没有更多了</view>
@@ -37,7 +40,7 @@
 <script>
 import NoData from "@/components/noData/index.vue";
 export default {
-  name: "SystemNoticeList",
+  name: "CustomerList",
   components: {
     NoData,
   },
@@ -81,43 +84,37 @@ export default {
   line-height: 50rpx;
   .radius();
 }
-.notice-list {
+.customer-list {
   box-sizing: border-box;
   position: relative;
-  height: calc(100vh - 164px - 44px - 60rpx);
+  height: calc(100vh - 164px - 60rpx - 44px - 80rpx);
   .load-more {
     text-align: center;
     color: @f-c-999;
     font-size: 24rpx;
     padding-bottom: 20rpx;
   }
+
   &-item {
     padding: 32rpx 20rpx;
+    .flex-c-b();
     &:active {
       opacity: 0.7;
     }
     &-content {
-      .flex-c-b();
-      .notice-time {
-        color: @f-c-999;
-        font-size: 24rpx;
-      }
-      .notice-content {
-        font-size: 26rpx;
-      }
-      .notice-content--unread {
-        position: relative;
-        &::after {
-          position: absolute;
-          left: -14rpx;
-          top: 14rpx;
-          content: "";
-          width: 10rpx;
-          height: 10rpx;
-          .radius();
-          background-color: #fd6500;
+      .info {
+        text {
+          margin-right: 12rpx;
         }
       }
+      .time {
+        padding-top: 12rpx;
+        font-size: 24rpx;
+        color: @f-c-999;
+      }
+    }
+    &-title {
+      align-self: flex-start;
     }
   }
 }
