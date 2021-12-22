@@ -353,7 +353,7 @@ export default {
       const data = {
         page: this.workNoticePage,
       };
-      const res = await getStaffNotice(data);
+      const res = await getStaffNotice(data).catch(() => {});
       this.workNoticeLoading = false;
       setTimeout(() => {
         this.workNoticeLoadMoreLoading = false;
@@ -370,6 +370,9 @@ export default {
     handleTabsChange({ detail }) {
       const index = detail.index;
       switch (index) {
+        case 0:
+          !this.workNoticeData.length && this.getStaffNotice();
+          break;
         case 1:
           !this.collectionData.length && this.getReceivablePlan();
           break;
