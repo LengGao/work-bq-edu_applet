@@ -16,6 +16,26 @@
     >
       <GaugeChart :data="performanceData" />
     </Panel>
+    <Panel
+      title="销售趋势"
+      :sheet-actions="trendActionSheet"
+      v-model="trendYear"
+      @sheet-change="getTrendData"
+    >
+      <TrendBar @change="getTrendData" v-model="trendType" :data="trendData" />
+    </Panel>
+    <Panel
+      title="销售龙虎榜"
+      actionType="time"
+      v-model="salesRankMonth"
+      @sheet-change="getSalesRankData"
+    >
+      <RankBar
+        @change="handleRankTypeChange"
+        v-model="rankType"
+        :data="salesRankCheckedData"
+      />
+    </Panel>
   </view>
 </template>
 
@@ -23,12 +43,21 @@
 import Panel from "./components/Panel.vue";
 import SalesData from "./components/SalesData.vue";
 import GaugeChart from "./components/GaugeChart.vue";
-import { getBriefing, performanceIndicators } from "@/api/dataBoard";
+import TrendBar from "./components/TrendBar.vue";
+import RankBar from "./components/RankBar.vue";
+import {
+  getBriefing,
+  performanceIndicators,
+  getTrendData,
+  getSalesRankData,
+} from "@/api/dataBoard";
 export default {
   components: {
     Panel,
     SalesData,
     GaugeChart,
+    TrendBar,
+    RankBar,
   },
   data() {
     return {
@@ -99,11 +128,25 @@ export default {
           value: 5,
         },
       ],
+      // 销售趋势
+      trendActionSheet: [],
+      trendData: [],
+      trendType: 1,
+      trendYear: "",
+      // 销售龙虎榜
+      salesRankData: {},
+      salesRankCheckedData: [],
+      rankType: 1,
+      salesRankLoading: false,
+      salesRankMonth: new Date().getTime(),
     };
   },
   onLoad() {
+    this.initTrendYearOptions();
     this.getBriefing();
     this.performanceIndicators();
+    this.getTrendData();
+    this.getSalesRankData();
   },
   methods: {
     // 销售简报
@@ -126,6 +169,59 @@ export default {
       const res = await performanceIndicators(data);
       if (res.code === 0) {
         this.performanceData = res.data;
+      }
+    },
+    // 销售趋势
+    initTrendYearOptions() {
+      let currentYear = new Date().getFullYear();
+      const minYear = 2015;
+      this.trendYear = currentYear;
+      while (currentYear > minYear) {
+        this.trendActionSheet.push({
+          name: currentYear,
+          value: currentYear,
+        });
+        currentYear--;
+      }
+    },
+    async getTrendData() {
+      const data = {
+        year: this.trendYear,
+        type: this.trendType,
+        arr_uid: this.userIds,
+      };
+      const res = await getTrendData(data).catch(() => {});
+      if (res.code === 0) {
+        this.trendData = res.data;
+      }
+    },
+    // 销售龙虎榜
+    handleRankTypeChange() {
+      const keyNameMap = {
+        1: "payRank",
+        2: "orderRank",
+        3: "refundRank",
+      };
+      this.salesRankCheckedData = this.salesRankData[keyNameMap[this.rankType]];
+    },
+    async getSalesRankData() {
+      const date = new Date(this.salesRankMonth);
+      const data = {
+        month: `${date.getFullYear()}-${date.getMonth() + 1}`,
+        arr_uid: this.userIds,
+      };
+      this.salesRankLoading = true;
+      const res = await getSalesRankData(data).catch(() => {});
+      this.salesRankLoading = false;
+      if (res.code === 0) {
+        const keyNameMap = {
+          1: "payRank",
+          2: "orderRank",
+          3: "refundRank",
+        };
+        this.salesRankData = res.data;
+        this.salesRankCheckedData =
+          this.salesRankData[keyNameMap[this.rankType]];
       }
     },
   },

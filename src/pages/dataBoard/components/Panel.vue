@@ -15,6 +15,21 @@
       <slot></slot>
     </view>
     <van-action-sheet
+      v-if="actionType === 'time'"
+      :show="sheetShow"
+      :actions="sheetActions"
+      @close="onSheetClose"
+    >
+      <van-datetime-picker
+        type="year-month"
+        :value="value"
+        :min-date="minDate"
+        @cancel="onSheetClose"
+        @confirm="onTimeConfirm"
+      />
+    </van-action-sheet>
+    <van-action-sheet
+      v-else
       :show="sheetShow"
       :actions="sheetActions"
       @close="onSheetClose"
@@ -39,14 +54,23 @@ export default {
       type: String,
       default: "",
     },
+    actionType: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
       sheetShow: false,
+      minDate: new Date("2015").getTime(),
     };
   },
   computed: {
     getButtonName() {
+      if (this.actionType === "time") {
+        const date = new Date(this.value || "");
+        return `${date.getFullYear()}-${date.getMonth() + 1}`;
+      }
       if (!this.sheetActions.length) {
         return "";
       }
@@ -60,6 +84,11 @@ export default {
     },
   },
   methods: {
+    onTimeConfirm({ detail }) {
+      this.$emit("input", detail);
+      this.$emit("sheet-change", detail);
+      this.onSheetClose();
+    },
     openSheet() {
       this.sheetShow = true;
     },
@@ -99,6 +128,7 @@ export default {
     padding: 20rpx;
     border-bottom-left-radius: 20rpx;
     border-bottom-right-radius: 20rpx;
+    position: relative;
   }
 }
 </style>

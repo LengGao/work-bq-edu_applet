@@ -2,7 +2,6 @@
   <view class="gauge-chart">
     <uni-ec-canvas
       class="gauge-chart-canvas"
-      ref="uni-ec-canvas"
       canvas-id="gauge-chart-canvas"
       :ec="ec"
     ></uni-ec-canvas>

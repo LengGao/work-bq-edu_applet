@@ -94,7 +94,9 @@
 			"van-popup": "/wxcomponents/vant/popup/index",
 			"van-tag": "/wxcomponents/vant/tag/index",
 			"van-icon": "/wxcomponents/vant/icon/index",
-			"van-action-sheet": "/wxcomponents/vant/action-sheet/index"
+			"van-action-sheet": "/wxcomponents/vant/action-sheet/index",
+			"van-button": "/wxcomponents/vant/button/index",
+			"van-datetime-picker": "/wxcomponents/vant/datetime-picker/index"
 		}
 	}
 }

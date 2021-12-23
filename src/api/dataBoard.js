@@ -18,3 +18,21 @@ export function performanceIndicators(data) {
         data
     })
 }
+// 获取销售趋势数据
+export function getTrendData(data) {
+    return request({
+        url: '/index/trend',
+        method: 'post',
+        loading: true,
+        data
+    })
+}
+// 获取销售龙虎榜
+export function getSalesRankData(data) {
+    return request({
+        url: '/index/salesRank',
+        method: 'post',
+        loading: true,
+        data
+    })
+}
