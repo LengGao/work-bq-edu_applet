@@ -1,35 +1,10 @@
 <template>
-  <view class="rank-chart">
-    <view class="rank-chart-actions">
-      <van-button
-        @click="handleTypeClick(1)"
-        :type="value === 1 ? 'warning' : 'default'"
-        size="small"
-        round
-        custom-style="padding:4rpx 0;width:200rpx;"
-        >回款金额</van-button
-      >
-      <van-button
-        @click="handleTypeClick(2)"
-        :type="value === 2 ? 'warning' : 'default'"
-        size="small"
-        round
-        custom-style="padding:4rpx 0;width:200rpx;"
-        >订单金额</van-button
-      >
-      <van-button
-        @click="handleTypeClick(3)"
-        :type="value === 3 ? 'warning' : 'default'"
-        size="small"
-        round
-        custom-style="padding:4rpx 0;width:200rpx;"
-        >退款金额</van-button
-      >
-    </view>
+  <view class="input-rank-chart">
     <uni-ec-canvas
-      class="rank-chart-canvas"
-      canvas-id="rank-chart-canvas"
+      class="input-rank-chart-canvas"
+      canvas-id="input-rank-chart-canvas"
       :ec="ec"
+      ref="chart"
     ></uni-ec-canvas>
   </view>
 </template>
@@ -37,7 +12,7 @@
 <script>
 import uniEcCanvas from "@/components/uni-ec-canvas/uni-ec-canvas.vue";
 export default {
-  name: "RankBar",
+  name: "InputRankBar",
   props: {
     data: {
       type: Array,
@@ -53,19 +28,21 @@ export default {
   },
   data() {
     return {
+      show: false,
+      canvasH: "1600rpx",
       ec: {
         option: {
           tooltip: {
             trigger: "axis",
+            position: ["50%", "20%"],
             axisPointer: {
               type: "shadow",
             },
-            position: ["50%", "20%"],
           },
           grid: {
             left: "0%",
-            right: "10%",
-            bottom: "3%",
+            right: "8%",
+            top: "5%",
             containLabel: true,
           },
           xAxis: {
@@ -89,9 +66,9 @@ export default {
           },
           series: [
             {
-              name: "回款",
+              name: "客户数量",
               type: "bar",
-              color: "#FF6C59",
+              color: "#24A3FF",
               data: [],
               label: {
                 show: true,
@@ -99,6 +76,7 @@ export default {
                 position: "right",
                 valueAnimation: true,
                 fontFamily: "monospace",
+                formatter: "{@product}个",
               },
             },
           ],
@@ -115,25 +93,14 @@ export default {
     },
   },
   methods: {
-    handleTypeClick(type) {
-      this.$emit("input", type);
-      type !== this.value && this.$emit("change", type);
-    },
     updateChartData() {
       let seriesData = [];
       let yAxisData = [];
-      // 销售龙虎榜
       seriesData = this.data.map(({ num }) => +num).reverse();
       yAxisData = this.data
         .map(({ name }, index) => index + 1 + ". " + name)
         .reverse();
-      const typeNameMap = {
-        1: "回款",
-        2: "订单",
-        3: "退款",
-      };
       this.ec.option.series[0].data = seriesData;
-      this.ec.option.series[0].name = typeNameMap[this.value];
       this.ec.option.yAxis.data = yAxisData;
     },
   },
@@ -142,7 +109,7 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
-.rank-chart {
+.input-rank-chart {
   &-actions {
     .flex-c-a();
   }

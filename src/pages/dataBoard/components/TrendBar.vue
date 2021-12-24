@@ -53,6 +53,7 @@ export default {
           color: ["#FFE5c8", "#FFB76A", "#ff6c59"],
           tooltip: {
             trigger: "axis",
+            position: ["40%", "20%"],
             axisPointer: {
               type: "none",
             },

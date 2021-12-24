@@ -36,3 +36,12 @@ export function getSalesRankData(data) {
         data
     })
 }
+// 获取客户录入排行榜
+export function getCustomerRankData(data) {
+    return request({
+        url: '/index/customerRank',
+        method: 'post',
+        loading: true,
+        data
+    })
+}

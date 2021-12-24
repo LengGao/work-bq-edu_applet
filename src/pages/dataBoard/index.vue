@@ -36,6 +36,14 @@
         :data="salesRankCheckedData"
       />
     </Panel>
+    <Panel
+      title="录入客户排行榜"
+      actionType="time"
+      v-model="customerRankMonth"
+      @sheet-change="getCustomerRankData"
+    >
+      <InputRankBar :data="customerRankData" />
+    </Panel>
   </view>
 </template>
 
@@ -45,11 +53,13 @@ import SalesData from "./components/SalesData.vue";
 import GaugeChart from "./components/GaugeChart.vue";
 import TrendBar from "./components/TrendBar.vue";
 import RankBar from "./components/RankBar.vue";
+import InputRankBar from "./components/InputRankBar.vue";
 import {
   getBriefing,
   performanceIndicators,
   getTrendData,
   getSalesRankData,
+  getCustomerRankData,
 } from "@/api/dataBoard";
 export default {
   components: {
@@ -58,6 +68,7 @@ export default {
     GaugeChart,
     TrendBar,
     RankBar,
+    InputRankBar,
   },
   data() {
     return {
@@ -137,16 +148,19 @@ export default {
       salesRankData: {},
       salesRankCheckedData: [],
       rankType: 1,
-      salesRankLoading: false,
       salesRankMonth: new Date().getTime(),
+      // 录入客户排行榜
+      customerRankData: [],
+      customerRankMonth: new Date().getTime(),
     };
   },
-  onLoad() {
+  onShow() {
     this.initTrendYearOptions();
     this.getBriefing();
     this.performanceIndicators();
     this.getTrendData();
     this.getSalesRankData();
+    this.getCustomerRankData();
   },
   methods: {
     // 销售简报
@@ -210,9 +224,7 @@ export default {
         month: `${date.getFullYear()}-${date.getMonth() + 1}`,
         arr_uid: this.userIds,
       };
-      this.salesRankLoading = true;
       const res = await getSalesRankData(data).catch(() => {});
-      this.salesRankLoading = false;
       if (res.code === 0) {
         const keyNameMap = {
           1: "payRank",
@@ -224,6 +236,18 @@ export default {
           this.salesRankData[keyNameMap[this.rankType]];
       }
     },
+    // 录入客户排行榜
+    async getCustomerRankData() {
+      const date = new Date(this.customerRankMonth);
+      const data = {
+        month: `${date.getFullYear()}-${date.getMonth() + 1}`,
+        arr_uid: this.userIds,
+      };
+      const res = await getCustomerRankData(data).catch(() => {});
+      if (res.code === 0) {
+        this.customerRankData = res.data;
+      }
+    },
   },
 };
 </script>
@@ -231,7 +255,6 @@ export default {
 <style lang="less" scoped>
 @import "@/styles/var";
 .data-board {
-  height: 100%;
   background-color: #f2f6fc;
   padding: 20rpx;
   /deep/.panel {
