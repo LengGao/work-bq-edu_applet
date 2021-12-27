@@ -1,7 +1,7 @@
-import requset from '@/utils/request'
+import request from '@/utils/request'
 // 获取小程序信息
 export const getVersion = (data) => {
-    return requset({
+    return request({
         url: 'sign/getVersion',
         method: 'post',
         data,

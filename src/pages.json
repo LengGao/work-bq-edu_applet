@@ -1,6 +1,13 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/customerList/index",
+			"style": {
+				"navigationBarTitleText": "客户管理",
+				"usingComponents": {}
+			}
+		},
+		{
 			"path": "pages/dataBoard/index",
 			"style": {
 				"navigationBarTitleText": "数据看板",
@@ -96,7 +103,10 @@
 			"van-icon": "/wxcomponents/vant/icon/index",
 			"van-action-sheet": "/wxcomponents/vant/action-sheet/index",
 			"van-button": "/wxcomponents/vant/button/index",
-			"van-datetime-picker": "/wxcomponents/vant/datetime-picker/index"
+			"van-datetime-picker": "/wxcomponents/vant/datetime-picker/index",
+			"van-search": "/wxcomponents/vant/search/index",
+			"van-loading": "/wxcomponents/vant/loading/index",
+			"van-divider": "/wxcomponents/vant/divider/index"
 		}
 	}
 }
