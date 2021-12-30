@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import App from './App'
+import '@/utils/filters'
 import '@/mixins'
 //引入vuex
 import store from './store'

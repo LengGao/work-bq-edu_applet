@@ -12,7 +12,10 @@
       @cancel="onCancel"
     />
     <view class="search-bar-content" v-else>
-      <view class="search-bar-sheet" @click="openSheet"
+      <view
+        class="search-bar-sheet"
+        v-if="sheetActions.length"
+        @click="openSheet"
         >{{ getButtonName }}
         <van-icon
           color="#333"
@@ -21,6 +24,7 @@
           }`"
           name="play"
       /></view>
+      <view></view>
       <view class="search-bar-actions">
         <van-icon
           name="search"
@@ -29,7 +33,12 @@
           size="44rpx"
           @click="inputShow = true"
         />
-        <van-icon name="filter-o" color="#333" size="44rpx" />
+        <van-icon
+          name="filter-o"
+          @click="handleFilter"
+          color="#333"
+          size="44rpx"
+        />
       </view>
     </view>
     <van-action-sheet
@@ -38,10 +47,12 @@
       @close="onSheetClose"
       @select="onSheetSelect"
     />
+    <SearchPopup v-model="filterShow" />
   </view>
 </template>
 
 <script>
+import SearchPopup from "@/components/searchPopup/index.vue";
 export default {
   name: "searchBar",
   props: {
@@ -54,11 +65,15 @@ export default {
       default: () => [],
     },
   },
+  components: {
+    SearchPopup,
+  },
   data() {
     return {
       sheetShow: false,
       searchValue: "",
       inputShow: false,
+      filterShow: false,
     };
   },
   computed: {
@@ -76,12 +91,17 @@ export default {
     },
   },
   methods: {
+    handleFilter() {
+      this.filterShow = true;
+    },
     onSearch({ detail }) {
       this.searchValue = detail;
       this.$emit("search", detail);
     },
     onCancel() {
       this.inputShow = false;
+      this.searchValue = "";
+      this.$emit("search", "");
     },
     openSheet() {
       this.sheetShow = true;

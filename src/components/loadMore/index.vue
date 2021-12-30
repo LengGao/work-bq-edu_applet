@@ -11,19 +11,21 @@
   >
     <template v-if="data.length">
       <slot></slot>
-      <van-loading
-        type="spinner"
-        v-if="loadLoading"
-        custom-class="loading"
-        size="24rpx"
-        >加载中...</van-loading
-      >
-      <van-divider
-        v-if="!loadLoading && data.length === total"
-        custom-style="padding:0 100rpx"
-        contentPosition="center"
-        >没有更多了</van-divider
-      >
+      <view class="footer">
+        <van-loading
+          type="spinner"
+          v-if="loadLoading"
+          custom-class="loading"
+          size="24rpx"
+          >加载中...</van-loading
+        >
+        <van-divider
+          v-if="!loadLoading && data.length === total"
+          custom-style="padding:0 100rpx"
+          contentPosition="center"
+          >没有更多了</van-divider
+        >
+      </view>
     </template>
     <NoData v-else />
   </scroll-view>
@@ -75,16 +77,21 @@ export default {
       this.$emit("refresh", e);
     },
     handleLoadMore(e) {
-      this.$emit("load-more", e);
+      if (!this.loadLoading && this.data.length < this.total) {
+        this.$emit("load-more", e);
+      }
     },
   },
 };
 </script>
 
 <style lang="less" scoped>
-/deep/.loading {
-  width: 100%;
-  text-align: center;
-  padding: 20rpx;
+.footer {
+  min-height: 80rpx;
+  /deep/.loading {
+    width: 100%;
+    text-align: center;
+    padding: 20rpx;
+  }
 }
 </style>
