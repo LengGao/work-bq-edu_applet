@@ -1,12 +1,10 @@
 <template>
   <view class="pay-record">
-    <view class="type-title">
-      <van-icon name="label-o" size="40rpx" color="#999" />
-      <text>回款记录</text>
-    </view>
+    <Title title="回款记录"> </Title>
     <van-cell-group
       custom-class="cell-group"
       inset
+      :border="false"
       v-for="(item, index) in data.pay_log"
       :key="index"
     >
@@ -36,14 +34,12 @@
         </template>
       </van-cell>
     </van-cell-group>
-    <view class="type-title">
-      <van-icon name="label-o" size="40rpx" color="#999" />
-      <text>回款计划</text>
-    </view>
+    <Title title="回款计划"> </Title>
     <template v-if="data.pay_plan.length">
       <van-cell-group
         custom-class="cell-group"
         inset
+        :border="false"
         v-for="(item, index) in data.pay_plan"
         :key="index"
       >
@@ -70,7 +66,7 @@
       </van-cell-group>
     </template>
     <template v-else>
-      <van-cell-group inset>
+      <van-cell-group inset :border="false" custom-class="cell-group">
         <van-cell :border="false"></van-cell>
         <van-cell
           :border="false"
@@ -84,12 +80,16 @@
 </template>
 
 <script>
+import Title from "@/components/title/index.vue";
 export default {
   props: {
     data: {
       type: Object,
       default: () => ({}),
     },
+  },
+  components: {
+    Title,
   },
   data() {
     return {
@@ -109,18 +109,10 @@ export default {
 @import "@/styles/var";
 .pay-record {
   padding: 20rpx 0;
-  background-color: #f2f6fc;
-  .type-title {
-    padding: 0 20rpx 20rpx;
-    .flex-c();
-    text {
-      color: @f-c-999;
-      margin-left: 4rpx;
-      align-self: flex-start;
-    }
-  }
+  min-height: 65vh;
   /deep/.cell-group {
     margin-bottom: 20rpx;
+    border: @border;
   }
   /deep/.title {
     flex: inherit;

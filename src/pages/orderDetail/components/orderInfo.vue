@@ -141,8 +141,7 @@ export default {
 <style lang="less" scoped>
 @import "@/styles/var";
 .order-info {
-  padding-top: 20rpx;
-  background-color: #f2f6fc;
+  border-top: 20rpx solid #f2f6fc;
   /deep/.title {
     flex: inherit;
     flex-shrink: 0;

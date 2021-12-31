@@ -1,5 +1,5 @@
 <template>
-  <view class="order-list">
+  <view class="order-approve-list">
     <SearchBar @search="handleSearch" />
     <LoadMore
       :data="listData"
@@ -16,19 +16,15 @@
         :key="item.order_id"
         @click="toDetail(item.order_id)"
       >
-        <view class="item-info">
-          <view class="item-info-user">
-            {{ item.surname || "" }}-{{ item.project_name }}
+        <view class="item-submit">
+          <view class="item-submit-name">
+            <text>{{ item.submit_name || "--" }}</text>
+            提交了订单审批
           </view>
-          <view class="item-info-money"
-            >应收 {{ item.order_money | moneyFormat }} / 已收
-            {{ item.pay_money | moneyFormat }}
-          </view>
+          <view class="item-submit-time">{{ item.create_time }} </view>
         </view>
-        <view class="item-status">
-          <van-tag plain :color="item.verify_status | orderApplyStatus">{{
-            item.verify_status | orderApplyStatus(true)
-          }}</van-tag>
+        <view class="item-customer">
+          {{ item.surname || "" }}-{{ item.project_name }}
         </view>
       </view>
     </LoadMore>
@@ -38,7 +34,7 @@
 <script>
 import SearchBar from "@/components/searchBar/index.vue";
 import LoadMore from "@/components/loadMore/index.vue";
-import { getCrmOrderList } from "@/api/order";
+import { getCrmApproveOrder } from "@/api/order";
 export default {
   components: {
     SearchBar,
@@ -56,37 +52,40 @@ export default {
       },
     };
   },
-  onLoad() {
-    this.getCrmOrderList();
+  onShow() {
+    this.pageNum = 1;
+    this.getCrmApproveOrder();
   },
   methods: {
     toDetail(orderId) {
       uni.navigateTo({
-        url: `/pages/orderDetail/index?orderId=${orderId}`,
+        url: `/pages/orderDetail/index?orderId=${orderId}&approve=1`,
       });
     },
     handleSearch(val) {
       this.pageNum = 1;
       this.searchData.keyword = val;
-      this.getCrmOrderList();
+      this.getCrmApproveOrder();
     },
     handleLoadMore() {
       this.pageNum++;
       this.listLoading = true;
-      this.getCrmOrderList();
+      this.getCrmApproveOrder();
     },
     handleRefresh() {
       this.listRefreshLoading = true;
       this.pageNum = 1;
-      this.getCrmOrderList();
+      this.getCrmApproveOrder();
     },
-    async getCrmOrderList() {
+    async getCrmApproveOrder() {
       this.checkedIds = [];
       const data = {
         page: this.pageNum,
+        finish_status: 2, //待处理
+        verify_status: 1, //待审核
         ...this.searchData,
       };
-      const res = await getCrmOrderList(data);
+      const res = await getCrmApproveOrder(data);
       this.listRefreshLoading = false;
       this.listLoading = false;
       if (this.pageNum === 1) {
@@ -102,31 +101,44 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
-.order-list {
+.order-approve-list {
   height: 100%;
   /deep/.load-more {
     height: calc(100% - 50px);
   }
   .item {
-    .flex-c-b();
     padding: 20rpx;
     border-bottom: 2rpx solid #efefef;
     &:active {
       background-color: #f2f6fc;
     }
-    &-info {
-      &-user {
-        margin-bottom: 10rpx;
-        min-width: 100rpx;
-        margin-right: 10rpx;
-        font-size: 32rpx;
+    &-submit {
+      .flex-c-b();
+      margin-bottom: 10rpx;
+      &-name {
+        color: @f-c-999;
+        text {
+          display: inline-block;
+          color: #fd6500;
+          min-width: 80rpx;
+          margin: 0 16rpx 0 8rpx;
+        }
+        &::before {
+          content: "";
+          display: inline-block;
+          width: 10rpx;
+          height: 10rpx;
+          .radius(50%);
+          background-color: #fd6500;
+          vertical-align: middle;
+        }
       }
-      &-money {
+      &-time {
         color: @f-c-999;
       }
     }
-    &-status {
-      flex-shrink: 0;
+    &-customer {
+      font-size: 32rpx;
     }
   }
 }

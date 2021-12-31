@@ -7,6 +7,8 @@
           :text="item.title"
           v-for="(item, index) in items"
           :key="index"
+          link-type="navigateTo"
+          :url="item.path"
         />
       </van-grid>
     </view>
@@ -110,7 +112,7 @@ export default {
       items: [
         {
           title: "客户管理",
-          path: "",
+          path: "/pages/customerList/index",
           icon: "",
         },
         {
@@ -120,7 +122,7 @@ export default {
         },
         {
           title: "订单管理",
-          path: "",
+          path: "/pages/orderList/index",
           icon: "",
         },
         {
@@ -130,7 +132,7 @@ export default {
         },
         {
           title: "订单审批",
-          path: "",
+          path: "/pages/orderApprove/index",
           icon: "",
         },
         {
