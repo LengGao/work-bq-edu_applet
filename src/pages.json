@@ -8,6 +8,13 @@
 			}
 		},
 		{
+			"path": "pages/addCustomer/index",
+			"style": {
+				"navigationBarTitleText": "添加客户",
+				"usingComponents": {}
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "首页",
@@ -44,8 +51,7 @@
 					"van-notice-bar": "/wxcomponents/vant/notice-bar/index",
 					"van-tabbar": "/wxcomponents/vant/tabbar/index",
 					"van-tabbar-item": "/wxcomponents/vant/tabbar-item/index",
-					"van-dialog": "/wxcomponents/vant/dialog/index",
-					"van-field": "/wxcomponents/vant/field/index"
+					"van-dialog": "/wxcomponents/vant/dialog/index"
 				}
 			}
 		},
@@ -140,7 +146,10 @@
 			"van-radio-group": "/wxcomponents/vant/radio-group/index",
 			"van-calendar": "/wxcomponents/vant/calendar/index",
 			"van-steps": "/wxcomponents/vant/steps/index",
-			"van-cell-group": "/wxcomponents/vant/cell-group/index"
+			"van-cell-group": "/wxcomponents/vant/cell-group/index",
+			"van-field": "/wxcomponents/vant/field/index",
+			"van-area": "/wxcomponents/vant/area/index",
+			"van-dialog": "/wxcomponents/vant/dialog/index"
 		}
 	}
 }

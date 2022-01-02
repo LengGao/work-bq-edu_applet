@@ -3,6 +3,7 @@
     class="drag-button"
     @touchmove.stop="onTouchMove"
     @click.stop="handleClick"
+    @tap="handleTap"
     :style="style"
   >
     <van-icon :name="icon" :size="`${iconSize}rpx`" color="#fff" />
@@ -38,6 +39,9 @@ export default {
     this.initPosition();
   },
   methods: {
+    handleTap(e) {
+      this.$emit("tap", e);
+    },
     handleClick(e) {
       this.$emit("click", e);
     },

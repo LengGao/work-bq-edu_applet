@@ -35,7 +35,7 @@
         </view>
       </view>
     </LoadMore>
-    <DragButton />
+    <DragButton @tap="toAdd" />
   </view>
 </template>
 
@@ -73,10 +73,15 @@ export default {
       },
     };
   },
-  onLoad() {
+  onShow() {
     this.getCrmCustomerList();
   },
   methods: {
+    toAdd() {
+      uni.navigateTo({
+        url: "/pages/addCustomer/index",
+      });
+    },
     handleSearch(val) {
       this.pageNum = 1;
       this.searchData.keyword = val;
