@@ -35,17 +35,20 @@
         </view>
       </view>
     </LoadMore>
+    <DragButton />
   </view>
 </template>
 
 <script>
 import SearchBar from "@/components/searchBar/index.vue";
 import LoadMore from "@/components/loadMore/index.vue";
+import DragButton from "@/components/dragButton/index.vue";
 import { getCrmCustomerList } from "@/api/customer";
 export default {
   components: {
     SearchBar,
     LoadMore,
+    DragButton,
   },
   data() {
     return {
