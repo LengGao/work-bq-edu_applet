@@ -1,11 +1,10 @@
 <template>
   <view class="select">
-    <van-cell :title="title" is-link :value="checkedName" @click="onOpen" />
     <van-popup
-      :show="popupShow"
+      :show="show"
       position="right"
-      custom-style="width: 80%;height:100%"
-      @close="onClose"
+      custom-style="width: 80%;height:100%;overflow: hidden;display: flex;flex-direction: column;"
+      @close="onCancel"
       safe-area-inset-bottom
       z-index="1000"
     >
@@ -14,13 +13,30 @@
         placeholder="请输入搜索关键词"
         shape="round"
         clearable
-        @change="onInputChange"
+        @change="({ detail }) => filterOptions(detail)"
       />
+      <view class="select-checked">
+        <van-tag
+          plain
+          custom-class="tag"
+          type="primary"
+          v-for="(item, index) in checkedArr"
+          closeable
+          :key="item.value"
+          size="medium"
+          @close="handleTagDel(index)"
+          >{{ item.name }}</van-tag
+        >
+      </view>
       <view class="select-container">
-        <van-checkbox-group v-if="multiple" :value="value" @change="onChange">
+        <van-checkbox-group
+          v-if="multiple"
+          :value="checkedValue"
+          @change="onChange"
+        >
           <van-checkbox
             icon-size="28rpx"
-            custom-class="box"
+            custom-class="checkbox"
             label-class="title"
             :name="item.value"
             v-for="item in list"
@@ -28,10 +44,10 @@
             >{{ item.name }}</van-checkbox
           >
         </van-checkbox-group>
-        <van-radio-group v-else :value="value" @change="onChange">
+        <van-radio-group v-else :value="checkedValue" @change="onChange">
           <van-radio
             icon-size="28rpx"
-            custom-class="box"
+            custom-class="checkbox"
             label-class="title"
             :name="item.value"
             v-for="item in list"
@@ -50,7 +66,7 @@
         <van-button @click="onCancel" custom-class="btn" round
           >取 消</van-button
         >
-        <van-button type="info" @click="onClose" custom-class="btn" round
+        <van-button type="info" @click="handleConfirm" custom-class="btn" round
           >确 定</van-button
         >
       </view>
@@ -61,13 +77,9 @@
 <script>
 export default {
   props: {
-    value: {
-      type: [String, Number, Array],
-      default: "",
-    },
-    title: {
-      type: String,
-      default: "",
+    show: {
+      type: Boolean,
+      default: false,
     },
     multiple: {
       type: Boolean,
@@ -80,32 +92,32 @@ export default {
   },
   data() {
     return {
-      popupShow: false,
       searchValue: "",
       list: [],
-      cacheValue: "",
+      checkedValue: null,
+      prevCheckedValue: null,
+      checkedArr: [],
     };
   },
-  computed: {
-    checkedName() {
-      if (!this.value) {
-        return "";
-      }
+  watch: {
+    options() {
+      this.filterOptions();
+    },
+    checkedValue(value) {
       if (this.multiple) {
-        console.log(this.value);
-        return this.options
-          .filter((item) => this.value.includes(item.value + ""))
-          .map((item) => item.name)
-          .join("，");
+        this.checkedArr = this.list.filter(
+          (item) => value && value.includes(item.value + "")
+        );
+        return;
       }
-      return this.options.filter((item) => this.value == item.value)[0].name;
+      this.checkedArr = this.list.filter((item) => item.value == value);
     },
   },
-  created() {
-    this.setOptions();
-  },
   methods: {
-    setOptions(val) {
+    handleTagDel(index) {
+      this.checkedValue.splice(index, 1);
+    },
+    filterOptions(val) {
       this.list = this.options.filter((item) => {
         if (val) {
           return item.name.includes(val);
@@ -114,30 +126,33 @@ export default {
       });
     },
     onChange({ detail }) {
-      this.$emit("input", detail);
+      this.checkedValue = detail;
     },
-    onInputChange({ detail }) {
-      console.log(detail);
-      this.setOptions(detail);
-    },
-    onClose() {
-      this.popupShow = false;
-    },
-    onOpen() {
-      if (this.multiple) {
-        this.cacheValue = [...this.value];
-      } else {
-        this.cacheValue = this.value;
+    handleConfirm() {
+      if (!this.checkedValue) {
+        uni.showToast({
+          icon: "none",
+          title: "请选择",
+        });
+        return;
       }
-      this.popupShow = true;
+      if (this.multiple) {
+        this.$emit("confirm", [...this.checkedArr]);
+        this.prevCheckedValue = [...this.checkedValue];
+        return;
+      }
+
+      this.prevCheckedValue = this.checkedValue;
+      this.$emit("confirm", this.checkedArr[0]);
     },
     onCancel() {
+      this.$emit("close");
       if (this.multiple) {
-        this.$emit("input", [...this.cacheValue]);
+        this.prevCheckedValue &&
+          (this.checkedValue = [...this.prevCheckedValue]);
       } else {
-        this.$emit("input", this.cacheValue);
+        this.checkedValue = this.prevCheckedValue;
       }
-      this.onClose();
     },
   },
 };
@@ -145,8 +160,14 @@ export default {
 
 <style lang="less" scoped>
 .select {
+  &-checked {
+    padding: 0 20rpx;
+    /deep/.tag {
+      margin: 0 16rpx 16rpx 0;
+    }
+  }
   &-container {
-    height: calc(100% - 54px - 72px);
+    flex: 1;
     overflow-y: auto;
   }
   &-footer {
@@ -158,7 +179,7 @@ export default {
       height: 40px;
     }
   }
-  /deep/.box {
+  /deep/.checkbox {
     margin: 0 20rpx;
     border-bottom: 1px solid #efefef;
     &:active {

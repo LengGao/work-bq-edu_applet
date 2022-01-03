@@ -25,3 +25,52 @@ export function createCrmCustomer(data) {
         data
     })
 }
+export function getStaffList(data) {
+    return request({
+        url: '/staff/index',
+        method: 'get',
+        data,
+    })
+}
+// 报名时选择项目
+export function getCateProjectOption(params) {
+    return request({
+        url: '/project/cate_project',
+        method: 'get',
+        params,
+    })
+}
+// 报名时选择项目-查询已选项目的详情
+export function getCateProjectDetail(data) {
+    return request({
+        url: '/project/mult_detail',
+        method: 'post',
+        data,
+    })
+}
+// crm报名 
+export function createCrmOrder(data) {
+    return request({
+        url: '/CrmOrder/create',
+        method: 'post',
+        data
+    })
+}
+/**
+ * 上传图片url
+ */
+export function uploadImage(file) {
+    return new Promise((resolve, reject) => {
+        wx.uploadFile({
+            url: `${process.env.VUE_APP_BASE_API}/oss/uploadImage`, // 仅为示例，非真实的接口地址
+            filePath: file.url,
+            name: 'image',
+            success: (res) => {
+                const data = JSON.parse(res.data)
+                resolve(data.data.data)
+            },
+            fail: reject
+        });
+    })
+
+}
