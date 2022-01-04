@@ -17,11 +17,36 @@
       <view class="select-project-container">
         <van-checkbox-group :value="checkedValue" @change="onChange">
           <block v-for="item in projectOptions" :key="item.value">
-            <block v-if="item.children.length">
+            <block v-if="optionsLevel === 0">
               <van-cell
-                :title="item.label"
+                :title="item.type_name"
                 is-link
-                @click="handleNextLevel(item.children)"
+                @click="handleNextLevel({ type_id: item.type_id })"
+              />
+            </block>
+            <block v-else-if="optionsLevel === 1">
+              <van-cell
+                :title="item.school_name"
+                is-link
+                @click="
+                  handleNextLevel({
+                    type_id: item.type_id,
+                    school_id: item.school_id,
+                  })
+                "
+              />
+            </block>
+            <block v-else-if="optionsLevel === 2">
+              <van-cell
+                :title="item.level_name"
+                is-link
+                @click="
+                  handleNextLevel({
+                    type_id: item.type_id,
+                    school_id: item.school_id,
+                    level_id: item.level_id,
+                  })
+                "
               />
             </block>
             <block v-else>
@@ -29,8 +54,8 @@
                 icon-size="28rpx"
                 custom-class="checkbox"
                 label-class="title"
-                :name="`${item.label},${item.value}`"
-                >{{ item.label }}</van-checkbox
+                :name="JSON.stringify(item)"
+                >{{ item.major_name }}</van-checkbox
               >
             </block>
           </block>
@@ -49,7 +74,7 @@
 </template>
 
 <script>
-import { getCateProjectOption } from "@/api/customer";
+import { getUniversityMajorDetailList } from "@/api/customer";
 export default {
   props: {
     show: {
@@ -71,7 +96,7 @@ export default {
     };
   },
   created() {
-    this.getCateProjectOption();
+    this.getUniversityMajorDetailList();
   },
   methods: {
     resset() {
@@ -81,9 +106,9 @@ export default {
     handleBackLevel() {
       this.projectOptions = this.cacheListMap[--this.optionsLevel];
     },
-    handleNextLevel(projectOptions) {
+    handleNextLevel(data) {
       this.cacheListMap[this.optionsLevel] = [...this.projectOptions];
-      this.projectOptions = [...projectOptions];
+      this.getUniversityMajorDetailList(data);
       this.optionsLevel++;
     },
     handleTagDel(index) {
@@ -102,32 +127,32 @@ export default {
       }
       this.$emit(
         "confirm",
-        this.checkedValue.map((item) => {
-          const arr = item.split(",");
-          return {
-            name: arr[0],
-            value: arr[1],
-          };
-        })
+        this.checkedValue.map((item) => JSON.parse(item))
       );
       this.prevCheckedValue = [...this.checkedValue];
       return;
     },
     onCancel() {
       this.$emit("close");
-      if (this.prevCheckedValue) {
+      if (this.prevCheckedValue.length) {
         this.checkedValue = [...this.prevCheckedValue];
       }
     },
-    // 获取项目选项
-    async getCateProjectOption() {
+    // 学历报名的级联选项
+    async getUniversityMajorDetailList({
+      type_id = 0,
+      school_id = 0,
+      level_id = 0,
+    } = {}) {
       const data = {
-        no_edu: 1,
+        limit: 9999,
+        status: 1,
+        type_id,
+        school_id,
+        level_id,
       };
-      const res = await getCateProjectOption(data);
-      if (res.code === 0) {
-        this.projectOptions = res.data || [];
-      }
+      const res = await getUniversityMajorDetailList(data);
+      this.projectOptions = res.data.list;
     },
   },
 };

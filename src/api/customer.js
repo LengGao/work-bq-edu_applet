@@ -48,11 +48,21 @@ export function getCateProjectDetail(data) {
         data,
     })
 }
+// 院校专业列表
+export function getUniversityMajorDetailList(data) {
+    return request({
+        url: '/UniversityMajorDetail/page',
+        method: 'get',
+        loading: true,
+        data,
+    })
+}
 // crm报名 
 export function createCrmOrder(data) {
     return request({
         url: '/CrmOrder/create',
         method: 'post',
+        showToast: true,
         data
     })
 }

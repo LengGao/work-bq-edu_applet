@@ -42,3 +42,12 @@ export function getCrmApproveOrder(data) {
         data
     })
 }
+// crm创建回款计划
+export function createOrderPayPlan(data) {
+    return request({
+        url: '/OrderPayPlan/create',
+        method: 'post',
+        showToast: true,
+        data
+    })
+}

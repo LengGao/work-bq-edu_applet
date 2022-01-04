@@ -35,7 +35,7 @@
           <van-radio-group
             :value="formData.type"
             direction="horizontal"
-            @change="({ detail }) => (formData.type = detail)"
+            @change="handleTypeChange"
           >
             <van-radio name="0">职业教育</van-radio>
             <van-radio name="1">学历教育</van-radio>
@@ -48,7 +48,7 @@
         title-width="200rpx"
         is-link
         :value="checkedProjectName || '请选择'"
-        @click="selectProjectShow = true"
+        @click="openSelceProjectSheet"
       />
       <van-field
         :value="formData.order_money"
@@ -138,11 +138,16 @@
     </van-cell-group>
     <van-cell-group custom-class="group-cell">
       <van-cell
-        title="回款期次"
         is-link
-        :value="formData.education || '请选择'"
-        @click="openSheet('eduOptions')"
-      />
+        title-width="100px"
+        :value="planCheckedName || '请选择'"
+        @click="openSheet('planOptions')"
+      >
+        <view class="period" slot="title" @click.stop="toConfigPlan">
+          <view class="period-text">回款期次</view>
+          <view class="period-btn">配置</view>
+        </view>
+      </van-cell>
       <van-field
         :value="formData.pay_money"
         required
@@ -154,6 +159,7 @@
       />
       <van-cell
         title="支付方式"
+        required
         is-link
         title-width="200rpx"
         :value="formData.pay_type || '请选择'"
@@ -162,6 +168,7 @@
       <van-cell
         title="回款日期"
         is-link
+        required
         :value="formData.pay_day || '请选择'"
         @click="datePickerShow = true"
       />
@@ -176,7 +183,11 @@
     </van-cell-group>
 
     <view class="add-curtomer-submit">
-      <van-button type="primary" round @click="handleSave(1)"
+      <van-button
+        type="primary"
+        :loading="saveLoading"
+        round
+        @click="handleSave"
         >提交订单</van-button
       >
     </view>
@@ -187,12 +198,15 @@
       @close="sheetShow = false"
       @select="onSheetSelect"
     />
-    <van-calendar
+    <DatePicker
       :show="datePickerShow"
       @close="datePickerShow = false"
+      @cancel="datePickerShow = false"
       @confirm="handleDateChange"
-      :show-confirm="false"
-    />
+      :value="currentDate"
+      :max-date="currentDate"
+    >
+    </DatePicker>
     <Select
       :show="selectShow"
       @close="selectShow = false"
@@ -204,6 +218,13 @@
       :show="selectProjectShow"
       @close="selectProjectShow = false"
       @confirm="handleSelectProjectChange"
+      ref="selectProject"
+    />
+    <SelectEduProject
+      ref="selectEduProject"
+      :show="selectEduProjectShow"
+      @close="selectEduProjectShow = false"
+      @confirm="handleSelectEduProjectChange"
     />
   </view>
 </template>
@@ -216,15 +237,21 @@ import {
   createCrmOrder,
   uploadImage,
 } from "@/api/customer";
+import DatePicker from "@/components/datePicker/index.vue";
 import Select from "@/components/select/index.vue";
 import SelectProject from "./components/selectProject.vue";
+import SelectEduProject from "./components/selectEduProject.vue";
 export default {
   components: {
     Select,
     SelectProject,
+    SelectEduProject,
+    DatePicker,
   },
   data() {
     return {
+      saveLoading: false,
+      currentDate: new Date().getTime(),
       checkedStaffName: "",
       formData: {
         surname: "",
@@ -244,59 +271,164 @@ export default {
         tips: "",
         pay_day: "",
         pay_type: "",
+        id: "",
+        projectData: [],
       },
-      // 选择客户来源、学历
+      // 选择支付方式
       sheetShow: false,
       payOptions: [],
       sheetActions: [],
       sheetChecked: "",
-      eduOptions: [],
-      // 省市区弹窗
+      // 回款日期
       datePickerShow: false,
       // 客户共享
       selectShow: false,
       staffOptions: [],
-      //选择项目
+      //选择职称项目
       selectProjectShow: false,
       checkedProjectName: "",
-      projectData: [],
+      // 选择学历项目
+      selectEduProjectShow: false,
       // 上传
       fileList: [],
+      //回款计划
+      planData: [],
+      planOptions: [],
+      planCheckedName: "",
+      planCheckedIndex: 0,
     };
   },
-  onLoad() {
+  onLoad({ userId = "", userName = "", userMobile = "", userIdCard = "" }) {
     this.getCustomfieldOptions();
     this.getStaffList();
+    this.formData.id = userId;
+    this.formData.surname = userName;
+    this.formData.mobile = userMobile;
+    this.formData.id_card_number = userIdCard;
   },
   methods: {
-    // 保存
-    handleSave(type) {
-      const phoneReg = /^1[3-9]\d{9}$/;
-      if (!this.formData.surname) {
-        uni.showToast({
-          icon: "none",
-          title: "客户姓名不能为空",
-        });
-        return;
-      }
-
-      if (!phoneReg.test(this.formData.mobile)) {
-        uni.showToast({
-          icon: "none",
-          title: "请输入正确的手机号",
-        });
-        return;
-      }
-
-      this.createCrmOrder(type);
+    // 报名类型切换
+    handleTypeChange({ detail }) {
+      this.formData.type = detail;
+      this.formData.projectData = [];
+      this.checkedProjectName = "";
+      this.$refs.selectEduProject.resset();
+      this.$refs.selectProject.resset();
     },
+    // 打开报名项目弹窗
+    openSelceProjectSheet() {
+      if (this.formData.type == 0) {
+        this.selectProjectShow = true;
+      } else {
+        this.selectEduProjectShow = true;
+      }
+    },
+    // 获取配置好的计划
+    getPlanData(data) {
+      this.planData = data;
+      this.planOptions = data.map((item, index) => ({
+        name: `第${index + 1}期 ${item.day} ￥${item.money}`,
+        value: index,
+      }));
+    },
+    toConfigPlan() {
+      uni.navigateTo({
+        url: "/pages/payPlanConfig/index",
+      });
+    },
+    // 保存
+    handleSave() {
+      this.validate(
+        [
+          {
+            key: "surname",
+            errmsg: "客户姓名不能为空",
+          },
+          {
+            key: "id_card_number",
+            errmsg: "请输入正确的身份证号码",
+            minLength: 18,
+          },
+          {
+            key: "mobile",
+            errmsg: "请输入正确的手机号",
+            reg: /^1[3-9]\d{9}$/,
+          },
+
+          {
+            key: "projectData",
+            errmsg: "请选择报名项目",
+            minLength: 1,
+          },
+          {
+            key: "order_money",
+            errmsg: "请输入订单金额",
+          },
+          {
+            key: "pay_money",
+            errmsg: "请输入回款金额",
+          },
+          {
+            key: "pay_type",
+            errmsg: "请选择支付方式",
+          },
+          {
+            key: "pay_day",
+            errmsg: "请选择回款日期",
+          },
+        ],
+        () => {
+          this.createCrmOrder();
+        }
+      );
+    },
+    validate(arr, cb) {
+      for (const item of arr) {
+        if (!this.formData[item.key]) {
+          uni.showToast({
+            icon: "none",
+            title: item.errmsg,
+          });
+          return;
+        }
+        if (item.reg) {
+          if (!item.reg.test(this.formData[item.key])) {
+            uni.showToast({
+              icon: "none",
+              title: item.errmsg,
+            });
+            return;
+          }
+        }
+        if (item.minLength) {
+          if (this.formData[item.key].length < item.minLength) {
+            uni.showToast({
+              icon: "none",
+              title: item.errmsg,
+            });
+            return;
+          }
+        }
+      }
+      cb && cb();
+    },
+    // 上传凭证
     async handleAfterRead({ detail }) {
-      console.log(detail);
       const { file } = detail;
       const { url } = await uploadImage(file);
       this.fileList.push({ url, isImage: true });
     },
-    // 选择项目
+    // 选择学历项目
+    handleSelectEduProjectChange(project) {
+      this.formData.projectData = project;
+      this.checkedProjectName = project
+        .map(
+          (item) => `${item.school_name}-${item.level_name}-${item.major_name}`
+        )
+        .join(",");
+      this.selectEduProjectShow = false;
+    },
+    // 选择职称项目
     handleSelectProjectChange(project) {
       const idStr = project.length
         ? project.map((item) => item.value).join(",")
@@ -307,10 +439,10 @@ export default {
       this.selectProjectShow = false;
       this.getCateProjectDetail(idStr);
     },
-    // 已选项目详情
+    // 已选职称项目详情
     async getCateProjectDetail(idStr) {
       if (!idStr) {
-        this.projectData = [];
+        this.formData.projectData = [];
         return;
       }
       const data = {
@@ -318,29 +450,31 @@ export default {
       };
       const res = await getCateProjectDetail(data);
       if (res.code === 0) {
-        this.projectData = res.data;
+        this.formData.projectData = res.data;
       }
     },
-    // 选择客户共享人
+    // 选择业绩共享人
     handleSelectChange(checked) {
-      console.log(checked);
       this.selectShow = false;
       this.checkedStaffName = checked.map((item) => item.name).join(",");
       this.formData.union_staff_id = checked
         .map((item) => item.value)
         .join(",");
     },
-    // 日期格式
-    formatDate(date) {
-      date = new Date(date);
-      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-    },
-    handleDateChange({ detail }) {
-      this.formData.pay_day = this.formatDate(detail);
+    // 回款日期
+    handleDateChange(day) {
+      this.formData.pay_day = day;
       this.datePickerShow = false;
     },
-    // 选择客户来源、学历
+    // 打开选择客户回款日期、支付方式
     openSheet(key) {
+      if (key === "planOptions" && !this.planOptions.length) {
+        uni.showToast({
+          icon: "none",
+          title: "请先配置",
+        });
+        return;
+      }
       this.sheetChecked = key;
       this.sheetActions = this[key];
       this.sheetShow = true;
@@ -350,8 +484,9 @@ export default {
         this.formData.pay_type = detail.name;
         return;
       }
-      if (this.sheetChecked === "eduOptions") {
-        this.formData.education = detail.name;
+      if (this.sheetChecked === "planOptions") {
+        this.planCheckedName = detail.name;
+        this.planCheckedIndex = detail.value;
         return;
       }
     },
@@ -359,7 +494,7 @@ export default {
     async createCrmOrder() {
       let data = {
         order_token: Date.now(),
-        id: 22589,
+        id: this.formData.id,
         order_money: this.formData.order_money,
         surname: this.formData.surname,
         mobile: this.formData.mobile,
@@ -381,7 +516,7 @@ export default {
           others: this.formData.others || 0,
           examination: this.formData.examination || 0,
           project: JSON.stringify(
-            this.majorData.map((item) => ({
+            this.formData.projectData.map((item) => ({
               id: item.id,
               type: {
                 id: item.type_id,
@@ -416,7 +551,7 @@ export default {
         data = {
           ...data,
           project: JSON.stringify(
-            this.projectData.map((item) => ({
+            this.formData.projectData.map((item) => ({
               id: item.id,
               project_name: item.project_name,
               project_price: item.price,
@@ -429,30 +564,37 @@ export default {
           ),
         };
       }
-      // let pay_plan = [
-      //   {
-      //     pay_day: this.formData.pay_day,
-      //     pay_money: this.formData.pay_money,
-      //     pay_type: this.formData.pay_type,
-      //   },
-      // ];
-      // if (this.planOptions.length) {
-      //   pay_plan = this.planOptions.map((item, index) => {
-      //     if (index === this.formData.planIndex) {
-      //       return {
-      //         ...item,
-      //         pay_day: this.formData.pay_day,
-      //         pay_money: this.formData.pay_money,
-      //         pay_type: this.formData.pay_type,
-      //       };
-      //     }
-      //     return item;
-      //   });
-      // }
-      // data.pay_plan = JSON.stringify(pay_plan);
-      console.log(data);
-      const res = await createCrmOrder(data);
-      console.log(res);
+      let pay_plan = [
+        {
+          pay_day: this.formData.pay_day,
+          pay_money: this.formData.pay_money,
+          pay_type: this.formData.pay_type,
+        },
+      ];
+      if (this.planData.length) {
+        pay_plan = this.planData.map((item, index) => {
+          if (index === this.planCheckedIndex) {
+            return {
+              ...item,
+              pay_day: this.formData.pay_day,
+              pay_money: this.formData.pay_money,
+              pay_type: this.formData.pay_type,
+            };
+          }
+          return item;
+        });
+      }
+      data.pay_plan = JSON.stringify(pay_plan);
+      this.saveLoading = true;
+      const res = await createCrmOrder(data).catch(() => {
+        this.saveLoading = false;
+      });
+      if (res.code === 0) {
+        setTimeout(() => {
+          this.saveLoading = false;
+          uni.navigateBack();
+        }, 800);
+      }
     },
     // 获取老师选项
     async getStaffList() {
@@ -493,6 +635,13 @@ page {
   padding-bottom: 200rpx;
   /deep/.group-cell {
     border-top: 20rpx solid #f2f6fc;
+  }
+  /deep/.period {
+    .flex-c();
+    &-btn {
+      color: @primary;
+      margin-left: 10rpx;
+    }
   }
   &-submit {
     padding-bottom: 60rpx;

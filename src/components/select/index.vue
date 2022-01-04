@@ -115,7 +115,11 @@ export default {
   },
   methods: {
     handleTagDel(index) {
-      this.checkedValue.splice(index, 1);
+      if (this.multiple) {
+        this.checkedValue.splice(index, 1);
+      } else {
+        this.checkedValue = "";
+      }
     },
     filterOptions(val) {
       this.list = this.options.filter((item) => {
@@ -129,13 +133,6 @@ export default {
       this.checkedValue = detail;
     },
     handleConfirm() {
-      if (!this.checkedValue) {
-        uni.showToast({
-          icon: "none",
-          title: "请选择",
-        });
-        return;
-      }
       if (this.multiple) {
         this.$emit("confirm", [...this.checkedArr]);
         this.prevCheckedValue = [...this.checkedValue];
@@ -148,8 +145,9 @@ export default {
     onCancel() {
       this.$emit("close");
       if (this.multiple) {
-        this.prevCheckedValue &&
-          (this.checkedValue = [...this.prevCheckedValue]);
+        this.checkedValue = this.prevCheckedValue
+          ? [...this.prevCheckedValue]
+          : [];
       } else {
         this.checkedValue = this.prevCheckedValue;
       }

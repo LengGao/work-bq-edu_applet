@@ -1,69 +1,53 @@
 <template>
-  <view class="date-picker">
-    <van-cell
-      :title="title"
-      title-class="title"
-      :value="date"
-      @click="show = true"
-    />
-    <van-calendar
+  <van-popup :show="show" @close="$emit('close')" position="bottom">
+    <van-datetime-picker
+      @confirm="handleDateConfirm"
+      @cancel="$emit('cancel')"
       :type="type"
-      :show="show"
-      allow-same-day
-      @close="show = false"
-      color="#199fff"
-      @confirm="onConfirm"
+      :value="value"
+      :min-date="minDate"
+      :max-date="maxDate"
     />
-  </view>
+  </van-popup>
 </template>
 
 <script>
 export default {
   props: {
+    show: {
+      type: Boolean,
+      default: false,
+    },
     value: {
-      type: [Date, String, Array],
-      default: "",
+      type: Number,
+      default: new Date().getTime(),
     },
     type: {
       type: String,
-      default: "single",
+      default: "date",
     },
-    title: {
-      type: String,
-      default: "",
+    minDate: {
+      type: Number,
+      default: new Date("2015").getTime(),
     },
-  },
-  data() {
-    return {
-      date: "",
-      show: false,
-    };
+    maxDate: {
+      type: Number,
+      default: new Date("2035").getTime(),
+    },
   },
   methods: {
-    onConfirm({ detail }) {
-      console.log(detail);
-      if (this.type === "range") {
-        const [start, end] = detail;
-        this.date = `${this.formatDate(start)} - ${this.formatDate(end)}`;
-      } else {
-        this.date = this.formatDate(detail);
-      }
-      this.$emit("input", this.date);
-      this.show = false;
+    // 日期格式
+    formatDate(dateTime) {
+      const date = new Date(dateTime);
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      return `${date.getFullYear()}-${month < 10 ? "0" + month : month}-${
+        day < 10 ? "0" + day : day
+      }`;
     },
-    formatDate(date) {
-      date = new Date(date);
-      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    handleDateConfirm({ detail }) {
+      this.$emit("confirm", this.formatDate(detail));
     },
   },
 };
 </script>
-
-<style lang="less" scoped>
-.date-picker {
-  /deep/.title {
-    flex: inherit;
-    flex-shrink: 0;
-  }
-}
-</style>

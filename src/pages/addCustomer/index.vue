@@ -82,9 +82,15 @@
         plain
         round
         @click="handleSave(1)"
+        :loading="addLoading"
         >保存</van-button
       >
-      <van-button type="primary" custom-class="b-r" round @click="handleSave(2)"
+      <van-button
+        type="primary"
+        :loading="addLoading"
+        custom-class="b-r"
+        round
+        @click="handleSave(2)"
         >保存并报名</van-button
       >
     </view>
@@ -127,6 +133,7 @@ export default {
     return {
       areaList,
       area: "",
+      addLoading: false,
       formData: {
         name: "",
         mobile: "",
@@ -253,12 +260,16 @@ export default {
         this.addLoading = false;
       });
       if (res.code === 0) {
-        //   if (type === 1) {
         setTimeout(() => {
-          this.addLoading = false;
-          uni.navigateBack();
+          if (type === 2) {
+            uni.redirectTo({
+              url: `/pages/customeSignUp/index?userId=${res.data.id}&userName=${res.data.surname}&userMobile=${res.data.mobile}`,
+            });
+          } else {
+            this.addLoading = false;
+            uni.navigateBack();
+          }
         }, 800);
-        //   }
       }
     },
     // 获取客户来源
