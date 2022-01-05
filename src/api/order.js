@@ -4,7 +4,6 @@ export function getCrmOrderList(data) {
     return request({
         url: '/CrmOrder/index',
         method: 'post',
-        loading: true,
         data
     })
 }

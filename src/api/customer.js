@@ -4,7 +4,6 @@ export function getCrmCustomerList(data) {
     return request({
         url: '/CrmCustomer/index',
         method: 'post',
-        loading: true,
         data
     })
 }
@@ -72,7 +71,7 @@ export function createCrmOrder(data) {
 export function uploadImage(file) {
     return new Promise((resolve, reject) => {
         wx.uploadFile({
-            url: `${process.env.VUE_APP_BASE_API}/oss/uploadImage`, // 仅为示例，非真实的接口地址
+            url: `${process.env.VUE_APP_BASE_API}/oss/uploadImage`,
             filePath: file.url,
             name: 'image',
             success: (res) => {
@@ -83,4 +82,12 @@ export function uploadImage(file) {
         });
     })
 
+}
+// 教务开课列表
+export function projectUser(data) {
+    return request({
+        url: '/CrmOrder/projectUser',
+        method: 'post',
+        data
+    })
 }

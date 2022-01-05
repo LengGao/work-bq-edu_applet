@@ -94,30 +94,6 @@ export default {
         },
       });
     },
-    // wxGetUserInfo() {
-    //   return new Promise((resolve, reject) => {
-    //     uni.getUserProfile({
-    //       desc: "用于完善用户信息",
-    //       success: resolve,
-    //       fail: reject,
-    //     });
-    //   });
-    // },
-    //   async getUserInfo() {
-    //   this.loading = true;
-    //   const { iv, encryptedData } = await this.wxGetUserInfo().catch(() => {
-    //     this.loading = false;
-    //   });
-    //   this.loading = false;
-    //   if (iv) {
-    //     uni.setStorageSync("iv", iv);
-    //     uni.setStorageSync("encryptedData", encryptedData);
-    //     uni.setStorageSync("wxCode", this.wxCode);
-    //     uni.navigateTo({
-    //       url: `/pages/login/getPhone`,
-    //     });
-    //   }
-    // },
   },
 };
 </script>

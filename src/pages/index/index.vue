@@ -126,7 +126,7 @@ export default {
         },
         {
           title: "教务开课",
-          path: "",
+          path: "/pages/eduOpenClass/index",
           icon: "",
         },
         {

@@ -48,6 +48,7 @@
 </template>
 
 <script>
+//图表是定制过的： https://echarts.apache.org/zh/builder.html
 import Panel from "./components/Panel.vue";
 import SalesData from "./components/SalesData.vue";
 import GaugeChart from "./components/GaugeChart.vue";

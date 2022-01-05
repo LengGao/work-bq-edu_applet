@@ -13,6 +13,13 @@
 			}
 		},
 		{
+			"path": "pages/eduOpenClass/index",
+			"style": {
+				"navigationBarTitleText": "教务开课",
+				"usingComponents": {}
+			}
+		},
+		{
 			"path": "pages/login/index",
 			"style": {
 				"navigationBarTitleText": "登录",
