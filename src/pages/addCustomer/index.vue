@@ -181,7 +181,7 @@ export default {
       tags: [],
     };
   },
-  onLoad() {
+  onShow() {
     this.getCustomfieldOptions();
   },
   methods: {

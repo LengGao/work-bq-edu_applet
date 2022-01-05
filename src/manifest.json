@@ -48,8 +48,6 @@
 	"quickapp": { /* 快应用特有相关 */},
 	"mp-weixin": { /* 微信小程序特有相关 */
 		"appid": "wxb8322f5e02dbbc3d",
-		// "appid": "wxbaf20015e7465038", //汇才
-		// "appid": "wx6949fabbcb9f4cd7", // 佰业
 		"setting": {
 			"urlCheck": false,
 			"packNpmManually": true,

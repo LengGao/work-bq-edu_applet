@@ -1,16 +1,12 @@
 import store from '@/store'
 const toLogin = () => {
-    uni.redirectTo({
+    uni.navigateTo({
         url: "/pages/login/index"
     });
 }
 const errorHandler = {
-    '-1': toLogin,
+    '3001': toLogin,
 }
-const sleep = (time) => new Promise(resolve => {
-    setTimeout(resolve, time);
-})
-
 const uniToast = (options) => {
     Promise.resolve().then(() => {
         uni.showToast(options)
@@ -19,9 +15,12 @@ const uniToast = (options) => {
 const requset = (options) => new Promise(async (resolve, reject) => {
     const { auth = true, loading, data, header = {}, url, showToast = false } = options
     // 需要鉴权的接口必须有token
-    if (auth !== false && !store.getters.token) {
-        toLogin()
-        return
+    if (auth) {
+        if (!store.getters.token) {
+            toLogin()
+            return
+        }
+        header.token = store.getters.token
     }
     loading && uni.showLoading({
         title: "加载中",
@@ -29,18 +28,13 @@ const requset = (options) => new Promise(async (resolve, reject) => {
     console.log(`${url} >>参数：`, data)
     uni.request({
         ...options,
-        data: {
-            ...data,
-        },
-        header: {
-            ...header,
-            token: store.getters.token,
-        },
+        data,
+        header,
         url: process.env.VUE_APP_BASE_API + url,
         success: (response) => {
             const { data } = response
             // console.log(`${url} >>success：`, data)
-            if (data.code !== 0) {
+            if (data.code !== 0 && data.code !== 5) {
                 errorHandler[data.code] && errorHandler[data.code]()
                 uniToast({
                     icon: 'none',

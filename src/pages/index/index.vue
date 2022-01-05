@@ -89,7 +89,6 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import {
   getStaffNotice,
   getReceivablePlan,
@@ -211,7 +210,7 @@ export default {
       ],
     };
   },
-  onLoad() {
+  onShow() {
     this.getStaffNotice();
   },
   methods: {

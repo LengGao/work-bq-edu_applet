@@ -56,7 +56,7 @@ export default {
       },
     };
   },
-  onLoad() {
+  onShow() {
     this.getCrmOrderList();
   },
   methods: {

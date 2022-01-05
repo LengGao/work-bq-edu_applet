@@ -9,3 +9,21 @@ export const getVersion = (data) => {
         loading: true
     })
 }
+//根据微信code登录
+export const appletLogin = (data) => {
+    return request({
+        url: '/passport/appletLogin',
+        method: 'post',
+        data,
+        auth: false,
+    })
+}
+//绑定账号登录
+export const appletBindPhone = (data) => {
+    return request({
+        url: '/passport/appletBindPhone',
+        method: 'post',
+        data,
+        auth: false,
+    })
+}
