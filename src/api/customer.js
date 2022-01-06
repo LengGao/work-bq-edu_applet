@@ -24,13 +24,7 @@ export function createCrmCustomer(data) {
         data
     })
 }
-export function getStaffList(data) {
-    return request({
-        url: '/staff/index',
-        method: 'get',
-        data,
-    })
-}
+
 // 报名时选择项目
 export function getCateProjectOption(params) {
     return request({

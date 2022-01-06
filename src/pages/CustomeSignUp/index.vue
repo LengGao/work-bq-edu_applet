@@ -212,6 +212,8 @@
       @close="selectShow = false"
       @confirm="handleSelectChange"
       :options="staffOptions"
+      option-name="staff_name"
+      option-value="staff_id"
       multiple
     />
     <SelectProject
@@ -232,7 +234,6 @@
 <script>
 import {
   getCustomfieldOptions,
-  getStaffList,
   getCateProjectDetail,
   createCrmOrder,
   uploadImage,
@@ -241,6 +242,7 @@ import DatePicker from "@/components/datePicker/index.vue";
 import Select from "@/components/select/index.vue";
 import SelectProject from "./components/selectProject.vue";
 import SelectEduProject from "./components/selectEduProject.vue";
+import { mapGetters } from "vuex";
 export default {
   components: {
     Select,
@@ -283,7 +285,6 @@ export default {
       datePickerShow: false,
       // 客户共享
       selectShow: false,
-      staffOptions: [],
       //选择职称项目
       selectProjectShow: false,
       checkedProjectName: "",
@@ -298,9 +299,11 @@ export default {
       planCheckedIndex: 0,
     };
   },
+  computed: {
+    ...mapGetters(["staffOptions"]),
+  },
   onLoad({ userId = "", userName = "", userMobile = "", userIdCard = "" }) {
     this.getCustomfieldOptions();
-    this.getStaffList();
     this.formData.id = userId;
     this.formData.surname = userName;
     this.formData.mobile = userMobile;
@@ -456,9 +459,9 @@ export default {
     // 选择业绩共享人
     handleSelectChange(checked) {
       this.selectShow = false;
-      this.checkedStaffName = checked.map((item) => item.name).join(",");
+      this.checkedStaffName = checked.map((item) => item.staff_name).join(",");
       this.formData.union_staff_id = checked
-        .map((item) => item.value)
+        .map((item) => item.staff_id)
         .join(",");
     },
     // 回款日期
@@ -596,17 +599,7 @@ export default {
         }, 800);
       }
     },
-    // 获取老师选项
-    async getStaffList() {
-      const data = {
-        limit: 9999,
-      };
-      const res = await getStaffList(data);
-      this.staffOptions = res.data.list.map((item) => ({
-        name: item.staff_name,
-        value: item.staff_id,
-      }));
-    },
+
     // 获取支付方式
     async getCustomfieldOptions() {
       const data = {

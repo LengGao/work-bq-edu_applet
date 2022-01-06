@@ -76,3 +76,27 @@ export function orderOpen(data) {
         data
     })
 }
+// 获取项目选项
+export function getProjectOptions(data) {
+    return request({
+        url: '/project/getproject',
+        method: 'get',
+        data,
+    })
+}
+// 获取分类选项
+export function getCateList(data) {
+    return request({
+        url: '/courseCategory/getcategorytree',
+        method: 'get',
+        data,
+    })
+}
+// 获取员工选项
+export function getStaffList(data) {
+    return request({
+        url: '/staff/index',
+        method: 'get',
+        data,
+    })
+}

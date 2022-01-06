@@ -22,10 +22,10 @@
           type="primary"
           v-for="(item, index) in checkedArr"
           closeable
-          :key="item.value"
+          :key="item[optionValue]"
           size="medium"
           @close="handleTagDel(index)"
-          >{{ item.name }}</van-tag
+          >{{ item[optionName] }}</van-tag
         >
       </view>
       <view class="select-container">
@@ -38,10 +38,10 @@
             icon-size="28rpx"
             custom-class="checkbox"
             label-class="title"
-            :name="item.value"
+            :name="item[optionValue]"
             v-for="item in list"
-            :key="item.value"
-            >{{ item.name }}</van-checkbox
+            :key="item[optionValue]"
+            >{{ item[optionName] }}</van-checkbox
           >
         </van-checkbox-group>
         <van-radio-group v-else :value="checkedValue" @change="onChange">
@@ -49,10 +49,10 @@
             icon-size="28rpx"
             custom-class="checkbox"
             label-class="title"
-            :name="item.value"
+            :name="item[optionValue]"
             v-for="item in list"
-            :key="item.value"
-            >{{ item.name }}
+            :key="item[optionValue]"
+            >{{ item[optionName] }}
           </van-radio>
           <van-divider
             v-if="!list.length"
@@ -85,6 +85,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    optionName: {
+      type: String,
+      default: "name",
+    },
+    optionValue: {
+      type: String,
+      default: "value",
+    },
     options: {
       type: Array,
       default: () => [],
@@ -106,11 +114,13 @@ export default {
     checkedValue(value) {
       if (this.multiple) {
         this.checkedArr = this.list.filter(
-          (item) => value && value.includes(item.value + "")
+          (item) => value && value.includes(item[this.optionValue] + "")
         );
         return;
       }
-      this.checkedArr = this.list.filter((item) => item.value == value);
+      this.checkedArr = this.list.filter(
+        (item) => item[this.optionValue] == value
+      );
     },
   },
   methods: {
@@ -124,7 +134,7 @@ export default {
     filterOptions(val) {
       this.list = this.options.filter((item) => {
         if (val) {
-          return item.name.includes(val);
+          return item[this.optionName].includes(val);
         }
         return true;
       });

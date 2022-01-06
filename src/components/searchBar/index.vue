@@ -47,12 +47,10 @@
       @close="onSheetClose"
       @select="onSheetSelect"
     />
-    <SearchPopup v-model="filterShow" />
   </view>
 </template>
 
 <script>
-import SearchPopup from "@/components/searchPopup/index.vue";
 export default {
   name: "searchBar",
   props: {
@@ -64,9 +62,6 @@ export default {
       type: Array,
       default: () => [],
     },
-  },
-  components: {
-    SearchPopup,
   },
   data() {
     return {
@@ -92,7 +87,7 @@ export default {
   },
   methods: {
     handleFilter() {
-      this.filterShow = true;
+      this.$emit("filter-click");
     },
     onSearch({ detail }) {
       this.searchValue = detail;
