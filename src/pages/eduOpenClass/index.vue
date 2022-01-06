@@ -1,6 +1,11 @@
 <template>
   <view class="customer-list">
-    <SearchBar @search="handleSearch" />
+    <van-search
+      :value="keyword"
+      @change="handleSearch"
+      shape="round"
+      placeholder="请输入客户姓名"
+    />
     <LoadMore
       :data="listData"
       :total="listTotal"
@@ -25,28 +30,29 @@
             >{{ item.create_time }} | {{ item.customer_type || "--" }}
           </view>
         </view>
-        <view class="item-actions">
-          <van-icon
-            name="orders-o"
-            size="40rpx"
-            @click="makePhoneCall(item.mobile)"
-          />
+        <view
+          class="item-actions"
+          v-if="!row.open_course"
+          @click="openCourseConfirm(item.id)"
+        >
+          <van-icon name="orders-o" size="40rpx" />
           <view class="btn-name">开课</view>
         </view>
       </view>
     </LoadMore>
     <DragButton @tap="toAdd" />
+    <van-dialog id="van-dialog" />
   </view>
 </template>
 
 <script>
-import SearchBar from "@/components/searchBar/index.vue";
+import Dialog from "@/wxcomponents/vant/dialog/dialog";
 import LoadMore from "@/components/loadMore/index.vue";
 import DragButton from "@/components/dragButton/index.vue";
-import { projectUser } from "@/api/customer";
+import { projectUser, eduOpenCourse } from "@/api/customer";
+import { mapGetters } from "vuex";
 export default {
   components: {
-    SearchBar,
     LoadMore,
     DragButton,
   },
@@ -57,10 +63,11 @@ export default {
       listLoading: false,
       pageNum: 1,
       listTotal: 0,
-      searchData: {
-        keyword: "",
-      },
+      keyword: "",
     };
+  },
+  computed: {
+    ...mapGetters(["staffId"]),
   },
   onShow() {
     this.projectUser();
@@ -68,12 +75,33 @@ export default {
   methods: {
     toAdd() {
       uni.navigateTo({
-        url: "/pages/addCustomer/index",
+        url: "/pages/addStudent/index",
       });
     },
-    handleSearch(val) {
+    openCourseConfirm(id) {
+      Dialog.confirm({
+        message: "是否确定一键开通课程和题库？",
+      })
+        .then(() => {
+          this.eduOpenCourse(id);
+        })
+        .catch(() => {
+          // on cancel
+        });
+    },
+    async eduOpenCourse(id) {
+      const data = { id };
+      const res = await eduOpenCourse(data);
+      if (res.code === 0) {
+        this.projectUser();
+      }
+    },
+    handleResetSearch() {
+      this.keyword && this.handleSearch({ detail: "" });
+    },
+    handleSearch({ detail }) {
       this.pageNum = 1;
-      this.searchData.keyword = val;
+      this.keyword = detail;
       this.projectUser();
     },
     handleLoadMore() {
@@ -90,7 +118,8 @@ export default {
       this.checkedIds = [];
       const data = {
         page: this.pageNum,
-        ...this.searchData,
+        staff_id: this.staffId,
+        keyword: this.keyword,
       };
       const res = await projectUser(data);
       this.listRefreshLoading = false;
@@ -101,14 +130,6 @@ export default {
         this.listData.push(...res.data.list);
       }
       this.listTotal = res.data.total;
-    },
-    makePhoneCall(phoneNumber) {
-      uni.makePhoneCall({
-        phoneNumber,
-        fail(err) {
-          console.log(err);
-        },
-      });
     },
   },
 };

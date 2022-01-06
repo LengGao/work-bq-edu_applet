@@ -50,3 +50,29 @@ export function createOrderPayPlan(data) {
         data
     })
 }
+// 教务开课-获取机构
+export function getOrganizationOptions(data) {
+    return request({
+        url: '/Organization/switchList',
+        method: 'get',
+        data
+    })
+}
+// 教务开课-获取机构项目班型
+export function getInstitutionClassType(data) {
+    return request({
+        url: '/CrmCourse/classType',
+        method: 'post',
+        loading: true,
+        data
+    })
+}
+// 教务添加学生开课
+export function orderOpen(data) {
+    return request({
+        url: '/CrmOrder/orderOpen',
+        method: 'post',
+        showToast: true,
+        data
+    })
+}

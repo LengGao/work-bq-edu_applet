@@ -91,3 +91,11 @@ export function projectUser(data) {
         data
     })
 }
+// 一键开课
+export function eduOpenCourse(data) {
+    return request({
+        url: '/CrmOrder/eduOpenCourse',
+        method: 'get',
+        data
+    })
+}

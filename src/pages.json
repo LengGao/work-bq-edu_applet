@@ -20,6 +20,13 @@
 			}
 		},
 		{
+			"path": "pages/addStudent/index",
+			"style": {
+				"navigationBarTitleText": "添加学生",
+				"usingComponents": {}
+			}
+		},
+		{
 			"path": "pages/login/index",
 			"style": {
 				"navigationBarTitleText": "登录",
