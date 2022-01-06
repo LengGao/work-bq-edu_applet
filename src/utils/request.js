@@ -1,9 +1,18 @@
 import store from '@/store'
-const toLogin = () => {
+const debounce = (fn, delay = 300) => {
+    let timer = null
+    return function (...args) {
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+            fn.apply(this, args)
+        }, delay);
+    }
+}
+const toLogin = debounce(() => {
     uni.navigateTo({
         url: "/pages/login/index"
     });
-}
+})
 const errorHandler = {
     '3001': toLogin,
 }
