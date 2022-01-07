@@ -69,6 +69,7 @@ export default {
   },
 
   onShow() {
+    this.pageNum = 1;
     this.getCrmOrderList();
   },
   methods: {

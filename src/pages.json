@@ -115,13 +115,6 @@
 			}
 		},
 		{
-			"path": "pages/login/getPhone",
-			"style": {
-				"navigationBarTitleText": "授权手机号",
-				"usingComponents": {}
-			}
-		},
-		{
 			"path": "pages/user/index",
 			"style": {
 				"navigationBarTitleText": "个人中心",
