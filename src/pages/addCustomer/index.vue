@@ -126,8 +126,9 @@
 </template>
 
 <script>
-import { getCustomfieldOptions, createCrmCustomer } from "@/api/customer";
+import { createCrmCustomer } from "@/api/customer";
 import { areaList } from "@vant/area-data";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
@@ -147,32 +148,9 @@ export default {
       },
       // 选择客户来源、学历
       sheetShow: false,
-      fromOptions: [],
       sheetActions: [],
       sheetChecked: "",
-      eduOptions: [
-        {
-          name: "初中及以下",
-        },
-        {
-          name: "中专/中技",
-        },
-        {
-          name: "高中",
-        },
-        {
-          name: "高中",
-        },
-        {
-          name: "大专",
-        },
-        {
-          name: "本科",
-        },
-        {
-          name: "研究生及以上",
-        },
-      ],
+
       // 省市区弹窗
       popupShow: false,
       // 添加标签
@@ -181,8 +159,8 @@ export default {
       tags: [],
     };
   },
-  onShow() {
-    this.getCustomfieldOptions();
+  computed: {
+    ...mapGetters(["fromOptions", "eduOptions"]),
   },
   methods: {
     // 保存
@@ -270,18 +248,6 @@ export default {
             uni.navigateBack();
           }
         }, 800);
-      }
-    },
-    // 获取客户来源
-    async getCustomfieldOptions() {
-      const data = {
-        field_name: "customer_source",
-      };
-      const res = await getCustomfieldOptions(data);
-      if (res.code === 0) {
-        this.fromOptions = res.data.field_content.map((item) => ({
-          name: item,
-        }));
       }
     },
   },

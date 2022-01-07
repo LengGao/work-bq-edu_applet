@@ -6,6 +6,7 @@
       @sheet-change="handleListTypeChange"
       @search="handleSearch"
       @filter-click="drawerShow = true"
+      placeholder="请输入客户姓名/手机号码"
     />
     <LoadMore
       :data="listData"
@@ -19,25 +20,21 @@
       <view class="item" v-for="item in listData" :key="item.id">
         <view class="item-info">
           <view class="item-info-status">
-            <view class="user-name">{{ item.name }}</view>
-            <van-tag plain type="success" v-if="row.deal_num">已成交</van-tag>
-            <van-tag plain type="warning" v-else>未成交</van-tag>
+            <view class="user-name">{{
+              item.name || item.nickname || "--"
+            }}</view>
           </view>
-          <view class="item-info-time"
-            >{{ item.create_time }} | {{ item.from || "--" }}
-          </view>
+          <view class="item-info-time">加入时间：{{ item.create_time }} </view>
         </view>
-        <view class="item-actions">
-          <van-icon
-            name="phone"
-            size="50rpx"
-            @click="makePhoneCall(item.mobile)"
-            color="#81d3f8"
-          />
+        <view
+          class="item-actions"
+          @click="receiveHighSeas(listType === 2 ? item.intent_id : item.id)"
+        >
+          <van-icon name="friends" size="50rpx" />
+          <view>领取客户</view>
         </view>
       </view>
     </LoadMore>
-    <DragButton @tap="toAdd" />
     <SearchDrawer
       :show="drawerShow"
       @close="drawerShow = false"
@@ -49,14 +46,17 @@
 <script>
 import SearchBar from "@/components/searchBar/index.vue";
 import LoadMore from "@/components/loadMore/index.vue";
-import DragButton from "@/components/dragButton/index.vue";
 import SearchDrawer from "./components/searchDrawer.vue";
-import { getCrmCustomerList } from "@/api/customer";
+import {
+  getCrmList,
+  getDpAppletList,
+  getOrgAppletList,
+  receiveHighSeas,
+} from "@/api/customer";
 export default {
   components: {
     SearchBar,
     LoadMore,
-    DragButton,
     SearchDrawer,
   },
   data() {
@@ -64,12 +64,16 @@ export default {
       listType: 1,
       listTypes: [
         {
-          name: "我的客户",
+          name: "招生公海",
           value: 1,
         },
         {
-          name: "全部客户",
+          name: "东培公海",
           value: 2,
+        },
+        {
+          name: "机构公海",
+          value: 3,
         },
       ],
       listData: [],
@@ -83,50 +87,55 @@ export default {
     };
   },
   onShow() {
-    this.getCrmCustomerList();
+    this.getCrmList();
   },
   methods: {
+    async receiveHighSeas(id) {
+      const data = {
+        type: this.listType,
+        id,
+      };
+      await receiveHighSeas(data);
+      this.handleListTypeChange();
+    },
     handleListTypeChange() {
       this.pageNum = 1;
-      this.getCrmCustomerList();
+      this.getCrmList();
     },
     handleDrawerSearch(data) {
       this.searchData = data;
       this.pageNum = 1;
-      this.getCrmCustomerList();
+      this.getCrmList();
       this.drawerShow = false;
-    },
-    toAdd() {
-      uni.navigateTo({
-        url: "/pages/addCustomer/index",
-      });
     },
     handleSearch(val) {
       this.pageNum = 1;
       this.keyword = val;
-      this.getCrmCustomerList();
+      this.getCrmList();
     },
     handleLoadMore() {
       this.pageNum++;
       this.listLoading = true;
-      this.getCrmCustomerList();
+      this.getCrmList();
     },
     handleRefresh() {
       this.listRefreshLoading = true;
       this.pageNum = 1;
-      this.getCrmCustomerList();
+      this.getCrmList();
     },
-    async getCrmCustomerList() {
+    async getCrmList() {
       this.checkedIds = [];
       const data = {
         page: this.pageNum,
         keyword: this.keyword,
         ...this.searchData,
       };
-      if (this.listType === 1) {
-        data.staff_id = this.$store.getters.staffId;
-      }
-      const res = await getCrmCustomerList(data);
+      const apiMap = {
+        1: getCrmList,
+        2: getDpAppletList,
+        3: getOrgAppletList,
+      };
+      const res = await apiMap[this.listType](data);
       this.listRefreshLoading = false;
       this.listLoading = false;
       if (this.pageNum === 1) {
@@ -175,6 +184,10 @@ export default {
       &-time {
         color: @f-c-999;
       }
+    }
+    &-actions {
+      text-align: center;
+      color: @primary;
     }
   }
 }

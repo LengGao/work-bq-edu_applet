@@ -93,3 +93,45 @@ export function eduOpenCourse(data) {
         data
     })
 }
+// 获取客户标签
+export function getCrmTags(data) {
+    return request({
+        url: '/CrmTags/index',
+        method: 'get',
+        data
+    })
+}
+// 获取招生公海客户列表
+export function getCrmList(data) {
+    return request({
+        url: '/HighSeas/getCrmList',
+        method: 'get',
+        data
+    })
+}
+// 获取机构公海客户列表
+export function getOrgAppletList(data) {
+    return request({
+        url: '/HighSeas/orgApplet',
+        method: 'get',
+        data
+    })
+}
+// 获取东培公海客户列表
+export function getDpAppletList(data) {
+    return request({
+        url: '/HighSeas/dpApplet',
+        method: 'get',
+        data
+    })
+}
+// 领取公海客户
+export function receiveHighSeas(data) {
+    return request({
+        url: '/HighSeas/receive',
+        method: 'post',
+        showToast: true,
+        loading: true,
+        data
+    })
+}

@@ -1,6 +1,10 @@
 <template>
   <view class="order-approve-list">
-    <SearchBar @search="handleSearch" />
+    <SearchBar
+      @search="handleSearch"
+      placeholder="请输入客户姓名"
+      @filter-click="drawerShow = true"
+    />
     <LoadMore
       :data="listData"
       :total="listTotal"
@@ -17,7 +21,11 @@
         @click="toDetail(item.order_id)"
       >
         <view class="item-submit">
-          <view class="item-submit-name">
+          <view class="item-submit-name finish" v-if="item.finish_staff_id">
+            <text>{{ item.submit_name || "--" }}</text>
+            提交了订单审批
+          </view>
+          <view class="item-submit-name" v-else>
             <text>{{ item.submit_name || "--" }}</text>
             提交了订单审批
           </view>
@@ -28,17 +36,24 @@
         </view>
       </view>
     </LoadMore>
+    <SearchDrawer
+      :show="drawerShow"
+      @close="drawerShow = false"
+      @search="handleDrawerSearch"
+    />
   </view>
 </template>
 
 <script>
 import SearchBar from "@/components/searchBar/index.vue";
 import LoadMore from "@/components/loadMore/index.vue";
+import SearchDrawer from "./components/searchDrawer.vue";
 import { getCrmApproveOrder } from "@/api/order";
 export default {
   components: {
     SearchBar,
     LoadMore,
+    SearchDrawer,
   },
   data() {
     return {
@@ -47,9 +62,9 @@ export default {
       listLoading: false,
       pageNum: 1,
       listTotal: 0,
-      searchData: {
-        keyword: "",
-      },
+      searchData: {},
+      keyword: "",
+      drawerShow: false,
     };
   },
   onShow() {
@@ -62,9 +77,15 @@ export default {
         url: `/pages/orderDetail/index?orderId=${orderId}&approve=1`,
       });
     },
+    handleDrawerSearch(data) {
+      this.searchData = data;
+      this.pageNum = 1;
+      this.getCrmApproveOrder();
+      this.drawerShow = false;
+    },
     handleSearch(val) {
       this.pageNum = 1;
-      this.searchData.keyword = val;
+      this.keyword = val;
       this.getCrmApproveOrder();
     },
     handleLoadMore() {
@@ -81,8 +102,7 @@ export default {
       this.checkedIds = [];
       const data = {
         page: this.pageNum,
-        finish_status: 2, //待处理
-        verify_status: 1, //待审核
+        keyword: this.keyword,
         ...this.searchData,
       };
       const res = await getCrmApproveOrder(data);
@@ -131,6 +151,14 @@ export default {
           .radius(50%);
           background-color: #fd6500;
           vertical-align: middle;
+        }
+        &.finish {
+          text {
+            color: @primary;
+          }
+          &::before {
+            display: none;
+          }
         }
       }
       &-time {

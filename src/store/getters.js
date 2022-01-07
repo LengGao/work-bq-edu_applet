@@ -5,6 +5,7 @@ const getters = {
     userInfo: state => state.user.userInfo,
     payStatusOptions: state => state.options.payStatusOptions,
     approveOptions: state => state.options.approveOptions,
+    eduOptions: state => state.options.eduOptions,
     projectOptions: state => {
         if (!state.options.projectOptions.length) {
             store.dispatch('getProjectOptions')
@@ -22,6 +23,18 @@ const getters = {
             store.dispatch('getStaffOptions')
         }
         return state.options.staffOptions
+    },
+    fromOptions: state => {
+        if (!state.options.fromOptions.length) {
+            store.dispatch('getFromOptions')
+        }
+        return state.options.fromOptions
+    },
+    tagOptions: state => {
+        if (!state.options.tagOptions.length) {
+            store.dispatch('getCrmTags')
+        }
+        return state.options.tagOptions
     }
 }
 export default getters

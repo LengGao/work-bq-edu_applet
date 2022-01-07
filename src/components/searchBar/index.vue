@@ -4,7 +4,7 @@
       custom-class="search-bar-input"
       v-if="inputShow"
       :value="searchValue"
-      placeholder="请输入搜索关键词"
+      :placeholder="placeholder"
       show-action
       focus
       clearable
@@ -58,6 +58,10 @@ export default {
       type: [String, Number],
       default: "",
     },
+    placeholder: {
+      type: String,
+      default: "请输入搜索关键词",
+    },
     sheetActions: {
       type: Array,
       default: () => [],
@@ -102,6 +106,7 @@ export default {
       this.sheetShow = true;
     },
     onSheetSelect({ detail }) {
+      this.$emit("input", detail.value);
       this.$emit("sheet-change", detail.value);
     },
     onSheetClose() {
