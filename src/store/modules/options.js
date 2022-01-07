@@ -4,7 +4,55 @@ const options = {
     state: {
         projectOptions: [],
         categoryOptions: [],
-        staffOptions: []
+        staffOptions: [],
+        payStatusOptions: [
+            {
+                value: 0,
+                name: "未付款",
+            },
+            {
+                value: 1,
+                name: "新订单",
+            },
+            {
+                value: 2,
+                name: "部分付款",
+            },
+            {
+                value: 3,
+                name: "已付款",
+            },
+            {
+                value: 4,
+                name: "已作废",
+            },
+            {
+                value: 5,
+                name: "已退款",
+            },
+        ],
+        approveOptions: [
+            {
+                value: 1,
+                name: "待审核",
+            },
+            {
+                value: 2,
+                name: "（多人）审核中",
+            },
+            {
+                value: 3,
+                name: "审核通过",
+            },
+            {
+                value: 8,
+                name: "已撤销审核",
+            },
+            {
+                value: 9,
+                name: "驳回不通过",
+            },
+        ],
     },
     mutations: {
         SET_PROJECT_OPTIONS(state, data) {

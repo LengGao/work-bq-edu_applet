@@ -1,6 +1,6 @@
 <template>
   <view class="order-list">
-    <SearchBar @search="handleSearch" @filter-click="openDrawer" />
+    <SearchBar @search="handleSearch" @filter-click="drawerShow = true" />
     <LoadMore
       :data="listData"
       :total="listTotal"
@@ -32,123 +32,24 @@
         </view>
       </view>
     </LoadMore>
-    <van-popup
+    <SearchDrawer
       :show="drawerShow"
-      position="right"
-      custom-style="height: 100%;width:80%"
       @close="drawerShow = false"
-    >
-      <!-- :border="false" -->
-      <van-cell-group>
-        <van-cell
-          title="所属分类"
-          is-link
-          :value="checkedCategorytName || '请选择'"
-          @click="selectCategoryShow = true"
-        />
-        <van-cell
-          title="所属项目"
-          title-width="70px"
-          is-link
-          :value="checkedProjectName || '请选择'"
-          @click="selectProjectShow = true"
-        />
-        <van-cell
-          title="业绩归属"
-          is-link
-          :value="checkedStaffName || '请选择'"
-          @click="selectStaffShow = true"
-        />
-        <van-cell title="支付状态" is-link value="请选择" />
-        <van-cell title="审核状态" is-link value="请选择" />
-        <van-cell
-          title="创建时间"
-          is-link
-          value="请选择"
-          @click="calendarShow = true"
-        />
-        <van-field
-          type="number"
-          value="username"
-          input-align="right"
-          clearable
-          label="订单金额-起"
-          placeholder="请输入"
-        />
-        <van-field
-          type="number"
-          value="username"
-          input-align="right"
-          clearable
-          label="订单金额-止"
-          placeholder="请输入"
-        />
-        <van-field
-          type="number"
-          value="username"
-          input-align="right"
-          clearable
-          label="回款金额-起"
-          placeholder="请输入"
-        />
-        <van-field
-          type="number"
-          value="username"
-          input-align="right"
-          clearable
-          label="回款金额-止"
-          placeholder="请输入"
-        />
-      </van-cell-group>
-    </van-popup>
-    <Calendar
-      :show="calendarShow"
-      @close="calendarShow = false"
-      @confirm="onCalendarConfirm"
-    />
-    <Select
-      :show="selectProjectShow"
-      @close="selectProjectShow = false"
-      @confirm="handleSelectProjectChange"
-      :options="projectOptions"
-      option-name="project_name"
-      option-value="project_id"
-      multiple
-    />
-    <Select
-      :show="selectCategoryShow"
-      @close="selectCategoryShow = false"
-      @confirm="handleSelectCategoryChange"
-      :options="categoryOptions"
-      option-name="category_name"
-      option-value="category_id"
-      multiple
-    />
-    <Select
-      :show="selectStaffShow"
-      @close="selectStaffShow = false"
-      @confirm="handleSelectStaffChange"
-      :options="staffOptions"
-      option-name="staff_name"
-      option-value="staff_id"
-      multiple
+      @search="handleDrawerSearch"
     />
   </view>
 </template>
 
 <script>
-import Select from "@/components/select/index.vue";
-import SearchBar from "@/components/searchBar/index.vue";
 import LoadMore from "@/components/loadMore/index.vue";
-import Calendar from "@/components/calendar/index.vue";
+import SearchBar from "@/components/searchBar/index.vue";
+import SearchDrawer from "./components/searchDrawer.vue";
 import { getCrmOrderList } from "@/api/order";
-import { mapGetters } from "vuex";
 export default {
   components: {
     SearchBar,
     LoadMore,
-    Calendar,
-    Select,
+    SearchDrawer,
   },
   data() {
     return {
@@ -157,61 +58,21 @@ export default {
       listLoading: false,
       pageNum: 1,
       listTotal: 0,
-      searchData: {
-        keyword: "",
-        category_id: "",
-        project_id: "",
-        staff_id: "",
-      },
-      drawerShow: true,
-      calendarShow: false,
-      selectProjectShow: false,
-      checkedProjectName: "",
-      selectCategoryShow: false,
-      checkedCategorytName: "",
-      selectStaffShow: false,
-      checkedStaffName: "",
+      searchData: {},
+      keyword: "",
+      drawerShow: false,
     };
   },
-  computed: {
-    ...mapGetters(["projectOptions", "categoryOptions", "staffOptions"]),
-  },
+
   onShow() {
     this.getCrmOrderList();
   },
   methods: {
-    // 选择业绩归属人
-    handleSelectStaffChange(checked) {
-      this.selectStaffShow = false;
-      this.checkedStaffName = checked.map((item) => item.staff_name).join(",");
-      this.searchData.staff_id = checked.map((item) => item.staff_id).join(",");
-    },
-    // 选择分类
-    handleSelectCategoryChange(checked) {
-      this.selectCategoryShow = false;
-      this.searchData.category_id = checked
-        .map((item) => item.category_id)
-        .join(",");
-      this.checkedCategorytName = checked
-        .map((item) => item.category_name)
-        .join("，");
-    },
-    // 选择项目
-    handleSelectProjectChange(checked) {
-      this.selectProjectShow = false;
-      this.searchData.project_id = checked
-        .map((item) => item.project_id)
-        .join(",");
-      this.checkedProjectName = checked
-        .map((item) => item.project_name)
-        .join("，");
-    },
-    onCalendarConfirm(date) {
-      console.log(date);
-      this.calendarShow = false;
-    },
-    openDrawer() {
-      this.drawerShow = true;
+    handleDrawerSearch(data) {
+      this.searchData = data;
+      this.pageNum = 1;
+      this.getCrmOrderList();
+      this.drawerShow = false;
     },
     toDetail(orderId) {
       uni.navigateTo({
@@ -220,7 +81,7 @@ export default {
     },
     handleSearch(val) {
       this.pageNum = 1;
-      this.searchData.keyword = val;
+      this.keyword = val;
       this.getCrmOrderList();
     },
     handleLoadMore() {
@@ -237,6 +98,7 @@ export default {
       this.checkedIds = [];
       const data = {
         page: this.pageNum,
+        keyword: this.keyword,
         ...this.searchData,
       };
       const res = await getCrmOrderList(data);
