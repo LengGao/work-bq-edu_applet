@@ -5,6 +5,7 @@
       v-model="listType"
       @sheet-change="handleListTypeChange"
       @search="handleSearch"
+      placeholder="请输入客户姓名"
       @filter-click="drawerShow = true"
     />
     <LoadMore
@@ -28,12 +29,18 @@
           </view>
         </view>
         <view class="item-actions">
-          <van-icon
-            name="phone"
-            size="50rpx"
-            @click="makePhoneCall(item.mobile)"
-            color="#81d3f8"
-          />
+          <view class="btn">
+            <van-icon
+              name="phone"
+              size="50rpx"
+              @click="makePhoneCall(item.mobile)"
+            />
+            <view>电话</view>
+          </view>
+          <view class="btn add">
+            <van-icon name="add-square" size="50rpx" @click="toSignUp(item)" />
+            <view>报名</view>
+          </view>
         </view>
       </view>
     </LoadMore>
@@ -83,6 +90,7 @@ export default {
     };
   },
   onShow() {
+    this.pageNum = 1;
     this.getCrmCustomerList();
   },
   methods: {
@@ -99,6 +107,15 @@ export default {
     toAdd() {
       uni.navigateTo({
         url: "/pages/addCustomer/index",
+      });
+    },
+    toSignUp(row) {
+      uni.navigateTo({
+        url: `/pages/customeSignUp/index?userId=${row.id}&userName=${
+          row.name || ""
+        }&userMobile=${row.mobile || ""}&userIdCard=${
+          row.id_card_number || ""
+        }`,
       });
     },
     handleSearch(val) {
@@ -174,6 +191,16 @@ export default {
       }
       &-time {
         color: @f-c-999;
+      }
+    }
+    &-actions {
+      .flex-c();
+      .btn {
+        text-align: center;
+        color: @primary;
+        &.add {
+          margin-left: 40rpx;
+        }
       }
     }
   }

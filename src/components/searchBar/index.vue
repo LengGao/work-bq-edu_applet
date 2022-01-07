@@ -7,6 +7,7 @@
       :placeholder="placeholder"
       show-action
       focus
+      shape="round"
       clearable
       @search="onSearch"
       @cancel="onCancel"

@@ -123,6 +123,9 @@ export default {
       );
     },
   },
+  created() {
+    this.options.length && this.filterOptions();
+  },
   methods: {
     handleTagDel(index) {
       if (this.multiple) {

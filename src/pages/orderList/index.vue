@@ -1,6 +1,10 @@
 <template>
   <view class="order-list">
-    <SearchBar @search="handleSearch" @filter-click="drawerShow = true" />
+    <SearchBar
+      @search="handleSearch"
+      placeholder="请输入客户姓名"
+      @filter-click="drawerShow = true"
+    />
     <LoadMore
       :data="listData"
       :total="listTotal"

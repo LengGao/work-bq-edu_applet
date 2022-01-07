@@ -6,7 +6,7 @@
       @sheet-change="handleListTypeChange"
       @search="handleSearch"
       @filter-click="drawerShow = true"
-      placeholder="请输入客户姓名/手机号码"
+      placeholder="请输入客户姓名"
     />
     <LoadMore
       :data="listData"

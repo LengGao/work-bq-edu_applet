@@ -116,7 +116,7 @@ export default {
         },
         {
           title: "公海客户",
-          path: "",
+          path: "/pages/highSeasCustomers/index",
           icon: "",
         },
         {
