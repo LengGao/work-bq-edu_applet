@@ -45,3 +45,19 @@ export function getCustomerRankData(data) {
         data
     })
 }
+// 获取查看数据范围选项
+export function getGroupWithUser(data) {
+    return request({
+        url: '/index/getGroupWithUser',
+        method: 'get',
+        data
+    })
+}
+// 根据数据范围选项查询用户ID
+export function getUserId(data) {
+    return request({
+        url: '/index/getUserId',
+        method: 'post',
+        data
+    })
+}

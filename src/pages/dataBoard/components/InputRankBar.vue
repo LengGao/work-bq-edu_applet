@@ -1,10 +1,13 @@
 <template>
   <view class="input-rank-chart">
     <uni-ec-canvas
+      :style="{
+        height: (data.length < 5 ? 300 : data.length * 60) + 'px',
+      }"
       class="input-rank-chart-canvas"
       canvas-id="input-rank-chart-canvas"
       :ec="ec"
-      ref="chart"
+      ref="echats"
     ></uni-ec-canvas>
   </view>
 </template>
@@ -76,7 +79,6 @@ export default {
                 position: "right",
                 valueAnimation: true,
                 fontFamily: "monospace",
-                formatter: "{@product}个",
               },
             },
           ],
@@ -87,9 +89,14 @@ export default {
   watch: {
     data: {
       handler() {
-        this.updateChartData();
+        setTimeout(() => {
+          this.updateChartData();
+        }, 200);
       },
       deep: true,
+    },
+    "data.length"() {
+      this.$refs.echats.init();
     },
   },
   methods: {

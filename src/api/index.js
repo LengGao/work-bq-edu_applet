@@ -1,5 +1,12 @@
 import request from '@/utils/request'
-
+// 工作通知-标为已读
+export function readStaffNotice(data) {
+    return request({
+        url: '/StaffNotice/read',
+        method: 'get',
+        data
+    })
+}
 // 获取工作通知
 export function getStaffNotice(data) {
     return request({

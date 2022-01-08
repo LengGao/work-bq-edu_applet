@@ -18,14 +18,11 @@
         >按季度</van-button
       >
     </view>
-    <!-- <scroll-view class="chart-scroll" scroll-x>
-      <view class="chart-scroll-bar"></view> -->
     <uni-ec-canvas
       class="trend-chart-canvas"
       canvas-id="trend-chart-canvas"
       :ec="ec"
     ></uni-ec-canvas>
-    <!-- </scroll-view> -->
   </view>
 </template>
 
@@ -60,15 +57,11 @@ export default {
           },
           grid: {
             left: "0%",
-            right: "6%",
+            right: "0%",
             bottom: "1%",
             containLabel: true,
           },
-          legend: {
-            formatter: function (name) {
-              return name;
-            },
-          },
+          legend: {},
           xAxis: {
             data: [],
             axisTick: {
@@ -138,20 +131,7 @@ export default {
       this.ec.option.xAxis.data =
         this.value !== 1
           ? ["第一季度", "第二季度", "第三季度", "第四季度"]
-          : [
-              "1月",
-              "2月",
-              "3月",
-              "4月",
-              "5月",
-              "6月",
-              "7月",
-              "8月",
-              "9月",
-              "10月",
-              "11月",
-              "12月",
-            ];
+          : ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
       this.ec.option.series[0].data = totalData;
       this.ec.option.series[1].data = payData;
       this.ec.option.series[2].data = refundData;
@@ -167,13 +147,6 @@ export default {
     padding: 0 40rpx 20rpx;
     .flex-c-a();
   }
-  // .chart-scroll {
-  //   width: 100%;
-  //   height: 600rpx;
-  //   &-bar {
-  //     height: 40rpx;
-  //   }
-  // }
   &-canvas {
     width: 100%;
     height: 600rpx;

@@ -22,7 +22,7 @@
           type="primary"
           v-for="(item, index) in checkedArr"
           closeable
-          :key="item[optionValue]"
+          :key="key(item)"
           size="medium"
           @close="handleTagDel(index)"
           >{{ item[optionName] }}</van-tag
@@ -34,15 +34,15 @@
           :value="checkedValue"
           @change="onChange"
         >
-          <van-checkbox
-            icon-size="28rpx"
-            custom-class="checkbox"
-            label-class="title"
-            :name="item[optionValue]"
-            v-for="item in list"
-            :key="item[optionValue]"
-            >{{ item[optionName] }}</van-checkbox
-          >
+          <block v-for="item in list" :key="key(item)">
+            <van-checkbox
+              icon-size="28rpx"
+              custom-class="checkbox"
+              label-class="title"
+              :name="item[optionValue]"
+              >{{ item[optionName] }}</van-checkbox
+            >
+          </block>
         </van-checkbox-group>
         <van-radio-group v-else :value="checkedValue" @change="onChange">
           <van-radio
@@ -51,7 +51,7 @@
             label-class="title"
             :name="item[optionValue]"
             v-for="item in list"
-            :key="item[optionValue]"
+            :key="key(item)"
             >{{ item[optionName] }}
           </van-radio>
           <van-divider
@@ -113,14 +113,19 @@ export default {
     },
     checkedValue(value) {
       if (this.multiple) {
-        this.checkedArr = this.list.filter(
+        this.checkedArr = this.options.filter(
           (item) => value && value.includes(item[this.optionValue] + "")
         );
         return;
       }
-      this.checkedArr = this.list.filter(
+      this.checkedArr = this.options.filter(
         (item) => item[this.optionValue] == value
       );
+    },
+  },
+  computed: {
+    key() {
+      return (e) => e[this.optionValue];
     },
   },
   created() {

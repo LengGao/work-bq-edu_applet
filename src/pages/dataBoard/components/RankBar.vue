@@ -30,6 +30,10 @@
       class="rank-chart-canvas"
       canvas-id="rank-chart-canvas"
       :ec="ec"
+      :style="{
+        height: (data.length < 5 ? 300 : data.length * 60) + 'px',
+      }"
+      ref="echats"
     ></uni-ec-canvas>
   </view>
 </template>
@@ -109,9 +113,14 @@ export default {
   watch: {
     data: {
       handler() {
-        this.updateChartData();
+        setTimeout(() => {
+          this.updateChartData();
+        }, 200);
       },
       deep: true,
+    },
+    "data.length"() {
+      this.$refs.echats.init();
     },
   },
   methods: {

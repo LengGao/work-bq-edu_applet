@@ -4,7 +4,7 @@
     <view class="index-header">
       <view class="index-header-avatar">
         <template v-if="userInfo.head_photo">
-          <image :src="userInfo.head_photo" alt="" srcset="">
+          <image :src="userInfo.head_photo" >
         </template>
         <text v-else>{{userInfo.staff_name.substr(-2)}}</text>
       </view>
@@ -34,6 +34,7 @@
           :loading="workNoticeLoading"
           :data="workNoticeData"
           @more="handleNoticeMore"
+           @item-click="handleWorkNoticeClick"
           :total="workNoticeTotal"
           @refresherrefresh="onNoticeRefresh"
           :refresh-loading="workNoticeRefreshLoading"
@@ -104,6 +105,7 @@ import {
   getReceivablePlan,
   getSystemMsgList,
   staffFollow,
+  readStaffNotice,
 } from "@/api/index";
 import NoticeList from "./components/NoticeList.vue";
 import SystemNoticeList from "./components/SystemNoticeList.vue";
@@ -355,6 +357,20 @@ export default {
       }
     },
     // 工作通知
+    handleWorkNoticeClick(row) {
+      console.log(row);
+      this.readStaffNotice(row.id);
+      row.is_read = 1;
+      if (row.type === 1) {
+        uni.navigateTo({
+          url: `/pages/orderDetail/index?orderId=${row.order_id}&approve=1`,
+        });
+      }
+    },
+    async readStaffNotice(id) {
+      const data = { id };
+      await readStaffNotice(data);
+    },
     onNoticeRefresh() {
       this.workNoticeRefreshLoading = true;
       this.workNoticePage = 1;
