@@ -13,7 +13,7 @@
     <view class="index-grid">
       <van-grid column-num="4">
         <van-grid-item
-          icon="photo-o"
+          :icon="item.icon"
           :text="item.title"
           v-for="(item, index) in items"
           :key="index"
@@ -126,32 +126,27 @@ export default {
         {
           title: "客户管理",
           path: "/pages/customerList/index",
-          icon: "",
+          icon: "https://oss-file.beiqujy.com/default/crm_applet/9.png",
         },
         {
           title: "公海客户",
           path: "/pages/highSeasCustomers/index",
-          icon: "",
+          icon: "https://oss-file.beiqujy.com/default/crm_applet/10.png",
         },
         {
           title: "订单管理",
           path: "/pages/orderList/index",
-          icon: "",
+          icon: "https://oss-file.beiqujy.com/default/crm_applet/13.png",
         },
         {
           title: "教务开课",
           path: "/pages/eduOpenClass/index",
-          icon: "",
+          icon: "https://oss-file.beiqujy.com/default/crm_applet/11.png",
         },
         {
           title: "订单审批",
           path: "/pages/orderApprove/index",
-          icon: "",
-        },
-        {
-          title: "回款入账",
-          path: "",
-          icon: "",
+          icon: "https://oss-file.beiqujy.com/default/crm_applet/2.png",
         },
       ],
       // 工作通知

@@ -131,14 +131,14 @@
 		"list": [
 			{
 				"pagePath": "pages/index/index",
-				"iconPath": "static/tabbar/shuati.png",
-				"selectedIconPath": "static/tabbar/shuati-active.png",
+				"iconPath": "static/tabbar/work.png",
+				"selectedIconPath": "static/tabbar/work-active.png",
 				"text": "工作台"
 			},
 			{
 				"pagePath": "pages/dataBoard/index",
-				"iconPath": "static/tabbar/shuati.png",
-				"selectedIconPath": "static/tabbar/shuati-active.png",
+				"iconPath": "static/tabbar/data.png",
+				"selectedIconPath": "static/tabbar/data-active.png",
 				"text": "数据看板"
 			}
 		]
