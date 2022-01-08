@@ -35,7 +35,7 @@
         <ProjectInfo :data="detailData" />
       </van-tab>
       <van-tab title="回款记录">
-        <PayRecord :data="detailData" />
+        <PayRecord :data="detailData" @add-click="popupShow = true" />
       </van-tab>
     </van-tabs>
     <template v-if="isApprove">
@@ -94,6 +94,79 @@
         input-class="reject-reason"
       />
     </van-dialog>
+    <van-popup
+      :show="popupShow"
+      position="right"
+      custom-class="drawer"
+      @close="popupShow = false"
+    >
+      <view class="drawer-content">
+        <van-cell-group>
+          <van-cell
+            title-width="80px"
+            title="回款期次"
+            is-link
+            :value="checkedPeriodName || '请选择'"
+            @click="openSheet('periodOptions')"
+          />
+          <van-field
+            required
+            type="number"
+            :value="formData.pay_money"
+            input-align="right"
+            clearable
+            label="回款金额"
+            placeholder="请输入"
+            @input="({ detail }) => (formData.pay_money = detail)"
+          />
+          <van-cell
+            required
+            title="支付方式"
+            is-link
+            :value="formData.pay_type || '请选择'"
+            @click="openSheet('payTypeOptions')"
+          />
+          <van-cell
+            required
+            title-width="100px"
+            title="回款日期"
+            is-link
+            :value="formData.pay_date || '请选择'"
+            @click="datePickerShow = true"
+          />
+        </van-cell-group>
+      </view>
+      <view class="drawer-footer">
+        <van-button
+          type="default"
+          custom-class="btn reset"
+          round
+          plan
+          @click="handleDrawerReset"
+          >取 消</van-button
+        >
+        <van-button
+          type="primary"
+          custom-class="btn"
+          round
+          :loading="addLoading"
+          @click="handleDrawerConfirm"
+          >确 定</van-button
+        >
+      </view>
+    </van-popup>
+    <DatePicker
+      :show="datePickerShow"
+      @close="datePickerShow = false"
+      @confirm="onDatePickerConfirm"
+      :max-date="currentDate"
+    />
+    <van-action-sheet
+      :show="sheetShow"
+      :actions="sheetActions"
+      @close="sheetShow = false"
+      @select="onSheetSelect"
+    />
   </view>
 </template>
 
@@ -101,13 +174,21 @@
 import OrderInfo from "./components/orderInfo.vue";
 import ProjectInfo from "./components/projectInfo.vue";
 import PayRecord from "./components/payRecord.vue";
-import { getCrmOrderDetail, crmOrderApprove, hurryUp } from "@/api/order";
+import DatePicker from "@/components/datePicker/index.vue";
+import { mapGetters } from "vuex";
+import {
+  getCrmOrderDetail,
+  crmOrderApprove,
+  hurryUp,
+  payLogCreate,
+} from "@/api/order";
 import Dialog from "@/wxcomponents/vant/dialog/dialog";
 export default {
   components: {
     OrderInfo,
     ProjectInfo,
     PayRecord,
+    DatePicker,
   },
   data() {
     return {
@@ -125,14 +206,105 @@ export default {
       rejectDialog: false,
       rejectReason: "",
       orderId: "",
+      //添加回款记录
+      currentDate: new Date().getTime(),
+      popupShow: false,
+      sheetShow: false,
+      sheetActions: [],
+      sheetChecked: "",
+      datePickerShow: false,
+      checkedPeriodName: "",
+      formData: {
+        plan_id: "",
+        pay_date: "",
+        pay_type: "",
+        pay_money: "",
+      },
+      addLoading: false,
     };
+  },
+  computed: {
+    ...mapGetters(["payTypeOptions"]),
+    periodOptions() {
+      return this.detailData.pay_plan.map((item, index) => {
+        return {
+          name: `第${index + 1}期 ${item.day} ￥${item.money}`,
+          value: item.id,
+        };
+      });
+    },
   },
   onLoad({ orderId, approve }) {
     this.isApprove = !!approve;
     this.orderId = orderId;
+  },
+  onShow() {
     this.getCrmOrderDetail();
   },
   methods: {
+    //添加回款记录
+    async handleDrawerConfirm() {
+      if (this.formData.pay_money === "") {
+        uni.showToast({
+          icon: "none",
+          title: "回款金额不能为空",
+        });
+        return;
+      }
+      if (this.formData.pay_type === "") {
+        uni.showToast({
+          icon: "none",
+          title: "支付方式不能为空",
+        });
+        return;
+      }
+      if (this.formData.pay_date === "") {
+        uni.showToast({
+          icon: "none",
+          title: "回款日期不能为空",
+        });
+        return;
+      }
+      const data = {
+        ...this.formData,
+        order_id: this.orderId,
+      };
+      this.addLoading = true;
+      const res = await payLogCreate(data).catch(() => {});
+      this.addLoading = false;
+      if (res.code === 0) {
+        this.handleDrawerReset();
+        this.getCrmOrderDetail();
+      }
+    },
+    handleDrawerReset() {
+      this.popupShow = false;
+      for (const k in this.formData) {
+        this.formData[k] = "";
+      }
+      this.checkedPeriodName = "";
+    },
+    //选择 支付方式，回款计划
+    openSheet(key) {
+      this.sheetChecked = key;
+      this.sheetActions = this[key];
+      this.sheetShow = true;
+    },
+    onSheetSelect({ detail }) {
+      if (this.sheetChecked === "periodOptions") {
+        this.formData.plan_id = detail.value;
+        this.checkedPeriodName = detail.name;
+        return;
+      }
+      if (this.sheetChecked === "payTypeOptions") {
+        this.formData.pay_type = detail.name;
+      }
+    },
+    onDatePickerConfirm(date) {
+      this.formData.pay_date = date;
+      this.datePickerShow = false;
+    },
+    // 审批操作相关
     onReasonInputChange({ detail }) {
       this.rejectReason = detail;
     },
@@ -266,6 +438,24 @@ export default {
   }
   /deep/.reject-reason {
     min-height: 40rpx;
+  }
+  /deep/.drawer {
+    width: 90%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    overflow: hidden;
+    &-footer {
+      text-align: center;
+      padding: 40rpx 20rpx;
+      .btn {
+        width: 45%;
+        &.reset {
+          margin-right: 20rpx;
+        }
+      }
+    }
   }
 }
 </style>

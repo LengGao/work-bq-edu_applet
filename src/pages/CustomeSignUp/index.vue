@@ -163,7 +163,7 @@
         is-link
         title-width="200rpx"
         :value="formData.pay_type || '请选择'"
-        @click="openSheet('payOptions')"
+        @click="openSheet('payTypeOptions')"
       />
       <van-cell
         title="回款日期"
@@ -233,7 +233,6 @@
 
 <script>
 import {
-  getCustomfieldOptions,
   getCateProjectDetail,
   createCrmOrder,
   uploadImage,
@@ -278,7 +277,6 @@ export default {
       },
       // 选择支付方式
       sheetShow: false,
-      payOptions: [],
       sheetActions: [],
       sheetChecked: "",
       // 回款日期
@@ -300,10 +298,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["staffOptions"]),
+    ...mapGetters(["staffOptions", "payTypeOptions"]),
   },
   onLoad({ userId = "", userName = "", userMobile = "", userIdCard = "" }) {
-    this.getCustomfieldOptions();
     this.formData.id = userId;
     this.formData.surname = userName;
     this.formData.mobile = userMobile;
@@ -483,7 +480,7 @@ export default {
       this.sheetShow = true;
     },
     onSheetSelect({ detail }) {
-      if (this.sheetChecked === "payOptions") {
+      if (this.sheetChecked === "payTypeOptions") {
         this.formData.pay_type = detail.name;
         return;
       }
@@ -597,19 +594,6 @@ export default {
           this.saveLoading = false;
           uni.navigateBack();
         }, 800);
-      }
-    },
-
-    // 获取支付方式
-    async getCustomfieldOptions() {
-      const data = {
-        field_name: "payment_method",
-      };
-      const res = await getCustomfieldOptions(data);
-      if (res.code === 0) {
-        this.payOptions = res.data.field_content.map((item) => ({
-          name: item,
-        }));
       }
     },
   },

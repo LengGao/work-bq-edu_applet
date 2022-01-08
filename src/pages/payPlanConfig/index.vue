@@ -42,7 +42,13 @@
       </van-cell-group>
     </view>
     <view class="config-plan-footer">
-      <van-button round type="primary" @click="handleSave">保 存</van-button>
+      <van-button
+        round
+        type="primary"
+        :loading="saveLoading"
+        @click="handleSave"
+        >保 存</van-button
+      >
     </view>
     <DatePicker
       :show="datePickerShow"
@@ -74,7 +80,12 @@ export default {
           money: "",
         },
       ],
+      saveLoading: false,
+      orderId: "",
     };
+  },
+  onLoad({ orderId }) {
+    this.orderId = orderId;
   },
   methods: {
     handleSave() {
@@ -93,13 +104,20 @@ export default {
       const data = {
         data: JSON.stringify(this.planData),
       };
-      const res = await createOrderPayPlan(data);
-      const pages = getCurrentPages();
-      const prevPage = pages[pages.length - 2];
-      if (prevPage && prevPage.$vm.getPlanData) {
-        prevPage.$vm.getPlanData(res.data);
+      if (this.orderId) {
+        data.order_id = this.orderId;
       }
-      uni.navigateBack();
+      this.saveLoading = true;
+      const res = await createOrderPayPlan(data).catch(() => {});
+      this.saveLoading = false;
+      if (res.code === 0) {
+        const pages = getCurrentPages();
+        const prevPage = pages[pages.length - 2];
+        if (prevPage && prevPage.$vm.getPlanData) {
+          prevPage.$vm.getPlanData(res.data);
+        }
+        uni.navigateBack();
+      }
     },
     handleDelPlan(index) {
       this.planData.splice(index, 1);

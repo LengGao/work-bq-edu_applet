@@ -35,6 +35,12 @@ const getters = {
             store.dispatch('getCrmTags')
         }
         return state.options.tagOptions
+    },
+    payTypeOptions: state => {
+        if (!state.options.payTypeOptions.length) {
+            store.dispatch('getPayTypeOptions')
+        }
+        return state.options.payTypeOptions
     }
 }
 export default getters

@@ -1,6 +1,11 @@
 <template>
   <view class="pay-record">
-    <Title title="回款记录"> </Title>
+    <view class="pay-record-title">
+      <Title title="回款记录"> </Title>
+      <van-button type="primary" size="small" @click="$emit('add-click')"
+        >添加回款记录</van-button
+      >
+    </view>
     <van-cell-group
       custom-class="cell-group"
       inset
@@ -34,7 +39,12 @@
         </template>
       </van-cell>
     </van-cell-group>
-    <Title title="回款计划"> </Title>
+    <view class="pay-record-title">
+      <Title title="回款计划"> </Title>
+      <van-button type="primary" @click="toConfigPlan" size="small"
+        >配置回款计划</van-button
+      >
+    </view>
     <template v-if="data.pay_plan.length">
       <van-cell-group
         custom-class="cell-group"
@@ -81,6 +91,7 @@
 
 <script>
 import Title from "@/components/title/index.vue";
+
 export default {
   props: {
     data: {
@@ -101,6 +112,14 @@ export default {
       },
     };
   },
+
+  methods: {
+    toConfigPlan() {
+      uni.navigateTo({
+        url: `/pages/payPlanConfig/index?orderId=${this.data.order_id}`,
+      });
+    },
+  },
 };
 </script>
 
@@ -110,6 +129,10 @@ export default {
 .pay-record {
   padding: 20rpx 0;
   min-height: 65vh;
+  &-title {
+    .flex-c-b();
+    padding: 0 20rpx 10rpx;
+  }
   /deep/.cell-group {
     margin-bottom: 20rpx;
     border: @border;

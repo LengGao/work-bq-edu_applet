@@ -100,3 +100,12 @@ export function getStaffList(data) {
         data,
     })
 }
+// 添加回款记录
+export function payLogCreate(data) {
+    return request({
+        url: '/CrmOrder/payLogCreate',
+        method: 'post',
+        showToast: true,
+        data
+    })
+}

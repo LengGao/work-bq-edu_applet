@@ -79,6 +79,7 @@ const options = {
         ],
         fromOptions: [],
         tagOptions: [],
+        payTypeOptions: [],
     },
     mutations: {
         SET_PROJECT_OPTIONS(state, data) {
@@ -95,6 +96,9 @@ const options = {
         },
         SET_TAG_OPTIONS(state, data) {
             state.tagOptions = data
+        },
+        SET_PAY_TYPE_OPTIONS(state, data) {
+            state.payTypeOptions = data
         },
     },
     actions: {
@@ -133,6 +137,16 @@ const options = {
             };
             const res = await getCrmTags(data);
             commit('SET_TAG_OPTIONS', res.data.tags.map((item) => ({
+                name: item,
+            })))
+        },
+        // 获取支付方式
+        async getPayTypeOptions({ commit }) {
+            const data = {
+                field_name: "payment_method",
+            };
+            const res = await getCustomfieldOptions(data);
+            commit('SET_PAY_TYPE_OPTIONS', res.data.field_content.map((item) => ({
                 name: item,
             })))
         },
