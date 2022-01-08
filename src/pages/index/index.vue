@@ -2,7 +2,7 @@
   <view class="index">
     <view class="safe-area"></view>
     <view class="index-header">
-      <view class="index-header-avatar">
+      <view class="index-header-avatar" v-if="userInfo.staff_name">
         <template v-if="userInfo.head_photo">
           <image :src="userInfo.head_photo" >
         </template>

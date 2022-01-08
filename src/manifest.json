@@ -47,7 +47,7 @@
 	},
 	"quickapp": { /* 快应用特有相关 */},
 	"mp-weixin": { /* 微信小程序特有相关 */
-		"appid": "wxb8322f5e02dbbc3d",
+		"appid": "wxe4355f4b89de51c0",
 		"setting": {
 			"urlCheck": false,
 			"packNpmManually": true,
