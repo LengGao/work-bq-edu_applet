@@ -3,7 +3,8 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "首页",
+				"navigationBarTitleText": "工作台",
+				"navigationStyle": "custom",
 				"usingComponents": {
 					"van-grid": "/wxcomponents/vant/grid/index",
 					"van-grid-item": "/wxcomponents/vant/grid-item/index",
@@ -132,19 +133,13 @@
 				"pagePath": "pages/index/index",
 				"iconPath": "static/tabbar/shuati.png",
 				"selectedIconPath": "static/tabbar/shuati-active.png",
-				"text": "首页"
+				"text": "工作台"
 			},
 			{
 				"pagePath": "pages/dataBoard/index",
 				"iconPath": "static/tabbar/shuati.png",
 				"selectedIconPath": "static/tabbar/shuati-active.png",
 				"text": "数据看板"
-			},
-			{
-				"pagePath": "pages/user/index",
-				"iconPath": "static/tabbar/auth.png",
-				"selectedIconPath": "static/tabbar/auth-active.png",
-				"text": "个人中心"
 			}
 		]
 	},

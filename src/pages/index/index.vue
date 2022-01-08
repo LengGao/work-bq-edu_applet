@@ -1,5 +1,15 @@
 <template>
   <view class="index">
+    <view class="safe-area"></view>
+    <view class="index-header">
+      <view class="index-header-avatar">
+        <template v-if="userInfo.head_photo">
+          <image :src="userInfo.head_photo" alt="" srcset="">
+        </template>
+        <text v-else>{{userInfo.staff_name.substr(-2)}}</text>
+      </view>
+      <view class="index-header-title">工作台</view>
+    </view>
     <view class="index-grid">
       <van-grid column-num="4">
         <van-grid-item
@@ -99,6 +109,8 @@ import NoticeList from "./components/NoticeList.vue";
 import SystemNoticeList from "./components/SystemNoticeList.vue";
 import CollectionList from "./components/CollectionList.vue";
 import CustomerList from "./components/CustomerList.vue";
+import { mapGetters } from "vuex";
+
 export default {
   components: {
     NoticeList,
@@ -209,6 +221,9 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+    ...mapGetters(["userInfo"]),
   },
   onShow() {
     this.getStaffNotice();
@@ -393,6 +408,47 @@ export default {
 @import "@/styles/var";
 .index {
   height: 100%;
+  .safe-area {
+    box-sizing: content-box;
+    background-color: @primary;
+    padding-top: calc(constant(safe-area-inset-top) - 18px);
+    padding-top: calc(env(safe-area-inset-top) - 18px);
+  }
+  &-header {
+    height: 44px;
+    box-sizing: content-box;
+    position: relative;
+    padding-top: 18px;
+    background-color: @primary;
+
+    .flex-c();
+    &-avatar {
+      width: 60rpx;
+      height: 60rpx;
+      line-height: 60rpx;
+      .radius(50%);
+      background-color: #fff;
+      position: absolute;
+      left: 20rpx;
+      bottom: 14rpx;
+      text-align: center;
+      image {
+        width: 100%;
+        height: 100%;
+        .radius(50%);
+      }
+      text {
+        font-size: 24rpx;
+        color: @primary;
+      }
+    }
+    &-title {
+      margin: 0 auto;
+      font-weight: bold;
+      font-size: 32rpx;
+      color: #fff;
+    }
+  }
   &-grid {
     padding: 20rpx;
     border-bottom: 20rpx solid #f2f6fc;

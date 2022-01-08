@@ -87,7 +87,12 @@ export default {
 .customer-list {
   box-sizing: border-box;
   position: relative;
-  height: calc(100vh - 164px - 60rpx - 44px - 80rpx);
+  height: calc(
+    100vh - 164px - 44px - 44px - 60rpx - 80rpx - constant(safe-area-inset-top)
+  );
+  height: calc(
+    100vh - 164px - 44px - 44px - 80rpx - 60rpx - env(safe-area-inset-top)
+  );
   .load-more {
     text-align: center;
     color: @f-c-999;
