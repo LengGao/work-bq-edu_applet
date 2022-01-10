@@ -1,27 +1,6 @@
 <template>
   <view class="data-board">
-    <view class="data-board-header">
-      <view class="users">
-        <template v-if="users.length">
-          <view class="avatar" v-for="item in checkedUser" :key="item.id">
-                <text v-if="item.type === 'group'">{{item.title.substring(0,2)}}</text>
-                <text v-else>{{item.title.substr(-2)}}</text>
-          </view>
-          <view class="avatar" v-if="users.length>6">
-            <van-icon color="#199fff" name="ellipsis" />
-          </view>
-        </template>
-        <template v-else>
-          <view class="avatar" v-if="userInfo.staff_name">
-            <template v-if="userInfo.head_photo">
-              <image :src="userInfo.head_photo" >
-            </template>
-            <text v-else>{{userInfo.staff_name.substr(-2)}}</text>
-          </view>
-        </template>
-      </view>
-      <view class="btn" @click="selectUserShow = true">切换查看范围 <van-icon name="arrow" /></view>
-    </view>
+    <NavBar title="数据看板" />
     <view class="data-board-content">
       <Panel
         title="销售简报"
@@ -71,15 +50,6 @@
       >
         <InputRankBar :data="customerRankData" />
       </Panel>
-      <Select
-        :show="selectUserShow"
-        @close="selectUserShow = false"
-        @confirm="handleSelectTagChange"
-        :options="rangeOptions"
-        option-name="title"
-        option-value="id"
-        multiple
-      />
     </view>
   </view>
 </template>
@@ -92,15 +62,13 @@ import GaugeChart from "./components/GaugeChart.vue";
 import TrendBar from "./components/TrendBar.vue";
 import RankBar from "./components/RankBar.vue";
 import InputRankBar from "./components/InputRankBar.vue";
-import Select from "@/components/select/index.vue";
+import NavBar from "@/components/navBar/index.vue";
 import {
   getBriefing,
   performanceIndicators,
   getTrendData,
   getSalesRankData,
   getCustomerRankData,
-  getGroupWithUser,
-  getUserId,
 } from "@/api/dataBoard";
 import { mapGetters } from "vuex";
 export default {
@@ -111,14 +79,10 @@ export default {
     TrendBar,
     RankBar,
     InputRankBar,
-    Select,
+    NavBar,
   },
   data() {
     return {
-      rangeOptions: [],
-      selectUserShow: false,
-      userIds: [],
-      users: [],
       // 销售简报
       briefingType: 6,
       briefingData: {},
@@ -198,26 +162,26 @@ export default {
       // 录入客户排行榜
       customerRankData: [],
       customerRankMonth: new Date().getTime(),
+      pageIsShow: true,
     };
   },
   computed: {
-    ...mapGetters(["userInfo"]),
-    checkedUser() {
-      return this.users.filter((item, index) => index < 6);
-    },
+    ...mapGetters(["checkedStaffIds"]),
   },
   watch: {
-    userIds() {
-      this.initTrendYearOptions();
-      this.getBriefing();
-      this.performanceIndicators();
-      this.getTrendData();
-      this.getSalesRankData();
-      this.getCustomerRankData();
+    checkedStaffIds() {
+      if (this.pageIsShow) {
+        this.initTrendYearOptions();
+        this.getBriefing();
+        this.performanceIndicators();
+        this.getTrendData();
+        this.getSalesRankData();
+        this.getCustomerRankData();
+      }
     },
   },
   onShow() {
-    this.getGroupWithUser();
+    this.pageIsShow = true;
     this.initTrendYearOptions();
     this.getBriefing();
     this.performanceIndicators();
@@ -225,50 +189,15 @@ export default {
     this.getSalesRankData();
     this.getCustomerRankData();
   },
+  onHide() {
+    this.pageIsShow = false;
+  },
   methods: {
-    // 数据权限选项
-    async getGroupWithUser() {
-      const res = await getGroupWithUser();
-      this.rangeOptions = [
-        {
-          title: "全部数据",
-          id: 0,
-          type: "group",
-          group_tree: "-",
-        },
-      ].concat(res.data || []);
-    },
-    // 选择客户标签
-    handleSelectTagChange(checkedData) {
-      console.log(checkedData);
-      const groupId = [];
-      const userId = [];
-      checkedData.forEach((item) => {
-        if (item.type === "group") {
-          groupId.push(item.id);
-        } else {
-          userId.push(item.id);
-        }
-      });
-      this.getUserId(userId, groupId, checkedData);
-    },
-    async getUserId(arr_uid, arr_group, checkedData) {
-      const data = {
-        arr_uid,
-        arr_group,
-      };
-      const res = await getUserId(data);
-      if (res.code === 0) {
-        this.selectUserShow = false;
-        this.userIds = res.data;
-        this.users = checkedData;
-      }
-    },
     // 销售简报
     async getBriefing() {
       const data = {
         type: this.briefingType,
-        arr_uid: this.userIds,
+        arr_uid: this.checkedStaffIds,
       };
       const res = await getBriefing(data);
       if (res.code === 0) {
@@ -279,7 +208,7 @@ export default {
     async performanceIndicators() {
       const data = {
         type: this.performanceType,
-        arr_uid: this.userIds,
+        arr_uid: this.checkedStaffIds,
       };
       const res = await performanceIndicators(data);
       if (res.code === 0) {
@@ -303,7 +232,7 @@ export default {
       const data = {
         year: this.trendYear,
         type: this.trendType,
-        arr_uid: this.userIds,
+        arr_uid: this.checkedStaffIds,
       };
       const res = await getTrendData(data).catch(() => {});
       if (res.code === 0) {
@@ -325,7 +254,7 @@ export default {
       const date = new Date(this.salesRankMonth);
       const data = {
         month: `${date.getFullYear()}-${date.getMonth() + 1}`,
-        arr_uid: this.userIds,
+        arr_uid: this.checkedStaffIds,
       };
       const res = await getSalesRankData(data).catch(() => {});
       if (res.code === 0) {
@@ -345,7 +274,7 @@ export default {
       const date = new Date(this.customerRankMonth);
       const data = {
         month: `${date.getFullYear()}-${date.getMonth() + 1}`,
-        arr_uid: this.userIds,
+        arr_uid: this.checkedStaffIds,
       };
       const res = await getCustomerRankData(data).catch(() => {});
       if (res.code === 0) {
@@ -364,42 +293,12 @@ export default {
   .flex();
   flex-direction: column;
   background-color: #f2f6fc;
-  padding: 0 20rpx 20rpx;
   /deep/.panel {
     margin-bottom: 20rpx;
   }
-  &-header {
-    height: 100rpx;
-    flex-shrink: 0;
-    .flex-c-b();
-    .users {
-      .flex-c();
-      .avatar {
-        width: 60rpx;
-        height: 60rpx;
-        line-height: 60rpx;
-        margin-right: 10rpx;
-        .radius(50%);
-        background-color: #fff;
-        text-align: center;
-        image {
-          width: 100%;
-          height: 100%;
-          .radius(50%);
-        }
-        text {
-          font-size: @font-size-xs;
-          color: @primary;
-        }
-      }
-    }
 
-    .btn {
-      padding: 18rpx 0 18rpx 18rpx;
-      color: @f-c-999;
-    }
-  }
   &-content {
+    padding: 20rpx;
     overflow-y: auto;
   }
 }

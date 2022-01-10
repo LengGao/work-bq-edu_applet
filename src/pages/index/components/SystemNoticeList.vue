@@ -84,10 +84,7 @@ export default {
 .notice-list {
   box-sizing: border-box;
   position: relative;
-  height: calc(
-    100vh - 164px - 44px - 44px - 60rpx - constant(safe-area-inset-top)
-  );
-  height: calc(100vh - 164px - 44px - 44px - 60rpx - env(safe-area-inset-top));
+  height: 100%;
   .load-more {
     text-align: center;
     color: @f-c-999;
@@ -104,6 +101,7 @@ export default {
       .notice-time {
         color: @f-c-999;
         font-size: @font-size-xs;
+        flex-shrink: 0;
       }
       .notice-content {
         font-size: @font-size-md;

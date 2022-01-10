@@ -14,16 +14,17 @@
 			}
 		},
 		{
-			"path": "pages/orderList/index",
+			"path": "pages/dataBoard/index",
 			"style": {
-				"navigationBarTitleText": "订单管理",
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "数据看板",
 				"usingComponents": {}
 			}
 		},
 		{
-			"path": "pages/dataBoard/index",
+			"path": "pages/orderList/index",
 			"style": {
-				"navigationBarTitleText": "数据看板",
+				"navigationBarTitleText": "订单管理",
 				"usingComponents": {}
 			}
 		},

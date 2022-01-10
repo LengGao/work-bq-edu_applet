@@ -3,9 +3,10 @@
     <van-popup
       :show="show"
       position="right"
-      custom-style="width: 80%;height:100%;overflow: hidden;display: flex;flex-direction: column;"
+      custom-class="select-popup"
       @close="onCancel"
       safe-area-inset-bottom
+      safe-area-inset-top
       z-index="1000"
     >
       <van-search
@@ -77,6 +78,10 @@
 <script>
 export default {
   props: {
+    value: {
+      type: [Array, String],
+      default: "",
+    },
     show: {
       type: Boolean,
       default: false,
@@ -108,9 +113,22 @@ export default {
     };
   },
   watch: {
+    value: {
+      handler(val) {
+        // 多选回显
+        if (Array.isArray(val) && val.length) {
+          this.checkedValue = val.map((item) => item[this.optionValue] + "");
+          this.prevCheckedValue = val.map(
+            (item) => item[this.optionValue] + ""
+          );
+        }
+      },
+      immediate: true,
+    },
     options() {
       this.filterOptions();
     },
+    // 根据选中的id获取那一整条数据
     checkedValue(value) {
       if (this.multiple) {
         this.checkedArr = this.options.filter(
@@ -176,6 +194,13 @@ export default {
 
 <style lang="less" scoped>
 .select {
+  /deep/&-popup {
+    width: 80%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
   &-checked {
     padding: 0 20rpx;
     /deep/.tag {

@@ -1,15 +1,6 @@
 <template>
   <view class="index">
-    <view class="safe-area"></view>
-    <view class="index-header">
-      <view class="index-header-avatar" v-if="userInfo.staff_name">
-        <template v-if="userInfo.head_photo">
-          <image :src="userInfo.head_photo" >
-        </template>
-        <text v-else>{{userInfo.staff_name.substr(-2)}}</text>
-      </view>
-      <view class="index-header-title">工作台</view>
-    </view>
+    <NavBar title="工作台" />
     <view class="index-grid">
       <van-grid column-num="4">
         <van-grid-item
@@ -22,74 +13,76 @@
         />
       </van-grid>
     </view>
+    <view class="index-content">
+      <van-tabs
+        animated
+        color="#199fff"
+        title-active-color="#199fff"
+        @click="handleTabsChange"
+      >
+        <van-tab title="工作通知">
+          <NoticeList
+            :loading="workNoticeLoading"
+            :data="workNoticeData"
+            @more="handleNoticeMore"
+            @item-click="handleWorkNoticeClick"
+            :total="workNoticeTotal"
+            @refresherrefresh="onNoticeRefresh"
+            :refresh-loading="workNoticeRefreshLoading"
+            :load-more-loading="workNoticeLoadMoreLoading"
+          />
+        </van-tab>
+        <van-tab title="回款提醒">
+          <view class="btn-popup" @click="onSheetOpen(1)">
+            {{ collectionTypeName }}
+            <van-icon
+              :custom-class="sheetShow ? 'arrow-up' : 'arrow'"
+              name="arrow-down"
+            />
+          </view>
+          <CollectionList
+            :loading="collectionLoading"
+            :data="collectionData"
+            @more="handleCollectionMore"
+            :total="collectionTotal"
+            @refresherrefresh="onCollectionRefresh"
+            :refresh-loading="collectionRefreshLoading"
+            :load-more-loading="collectionLoadMoreLoading"
+          />
+        </van-tab>
+        <van-tab title="跟进客户">
+          <view class="btn-popup" @click="onSheetOpen(2)">
+            {{ staffFollowTypeName }}
+            <van-icon
+              :custom-class="sheetShow ? 'arrow-up' : 'arrow'"
+              name="arrow-down"
+            />
+          </view>
+          <CustomerList
+            :loading="staffFollowLoading"
+            :data="staffFollowData"
+            @more="loadMoreStaffFollow"
+            :total="staffFollowTotal"
+            @refresherrefresh="onStaffFollowRefresh"
+            :refresh-loading="staffFollowRefreshLoading"
+            :load-more-loading="staffFollowLoadMoreLoading"
+          />
+        </van-tab>
+        <van-tab title="系统通知">
+          <SystemNoticeList
+            :loading="msgLoading"
+            :data="msgData"
+            @more="handleMsgMore"
+            :total="msgTotal"
+            @item-click="handleNoticeClick"
+            @refresherrefresh="onMsgRefresh"
+            :refresh-loading="msgRefreshLoading"
+            :load-more-loading="msgLoadMoreLoading"
+          />
+        </van-tab>
+      </van-tabs>
+    </view>
 
-    <van-tabs
-      animated
-      color="#199fff"
-      title-active-color="#199fff"
-      @click="handleTabsChange"
-    >
-      <van-tab title="工作通知">
-        <NoticeList
-          :loading="workNoticeLoading"
-          :data="workNoticeData"
-          @more="handleNoticeMore"
-           @item-click="handleWorkNoticeClick"
-          :total="workNoticeTotal"
-          @refresherrefresh="onNoticeRefresh"
-          :refresh-loading="workNoticeRefreshLoading"
-          :load-more-loading="workNoticeLoadMoreLoading"
-        />
-      </van-tab>
-      <van-tab title="回款提醒">
-        <view class="btn-popup" @click="onSheetOpen(1)">
-          {{ collectionTypeName }}
-          <van-icon
-            :custom-class="sheetShow ? 'arrow-up' : 'arrow'"
-            name="arrow-down"
-          />
-        </view>
-        <CollectionList
-          :loading="collectionLoading"
-          :data="collectionData"
-          @more="handleCollectionMore"
-          :total="collectionTotal"
-          @refresherrefresh="onCollectionRefresh"
-          :refresh-loading="collectionRefreshLoading"
-          :load-more-loading="collectionLoadMoreLoading"
-        />
-      </van-tab>
-      <van-tab title="跟进客户">
-        <view class="btn-popup" @click="onSheetOpen(2)">
-          {{ staffFollowTypeName }}
-          <van-icon
-            :custom-class="sheetShow ? 'arrow-up' : 'arrow'"
-            name="arrow-down"
-          />
-        </view>
-        <CustomerList
-          :loading="staffFollowLoading"
-          :data="staffFollowData"
-          @more="loadMoreStaffFollow"
-          :total="staffFollowTotal"
-          @refresherrefresh="onStaffFollowRefresh"
-          :refresh-loading="staffFollowRefreshLoading"
-          :load-more-loading="staffFollowLoadMoreLoading"
-        />
-      </van-tab>
-      <van-tab title="系统通知">
-        <SystemNoticeList
-          :loading="msgLoading"
-          :data="msgData"
-          @more="handleMsgMore"
-          :total="msgTotal"
-          @item-click="handleNoticeClick"
-          @refresherrefresh="onMsgRefresh"
-          :refresh-loading="msgRefreshLoading"
-          :load-more-loading="msgLoadMoreLoading"
-        />
-      </van-tab>
-    </van-tabs>
     <van-action-sheet
       :show="sheetShow"
       :actions="sheetActions"
@@ -111,6 +104,7 @@ import NoticeList from "./components/NoticeList.vue";
 import SystemNoticeList from "./components/SystemNoticeList.vue";
 import CollectionList from "./components/CollectionList.vue";
 import CustomerList from "./components/CustomerList.vue";
+import NavBar from "@/components/navBar/index.vue";
 import { mapGetters } from "vuex";
 
 export default {
@@ -119,6 +113,7 @@ export default {
     SystemNoticeList,
     CollectionList,
     CustomerList,
+    NavBar,
   },
   data() {
     return {
@@ -149,6 +144,7 @@ export default {
           icon: "https://oss-file.beiqujy.com/default/crm_applet/2.png",
         },
       ],
+      tabIndex: 0,
       // 工作通知
       workNoticeData: [],
       workNoticePage: 1,
@@ -220,7 +216,20 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["userInfo"]),
+    ...mapGetters(["userInfo", "checkedStaffIds"]),
+  },
+  watch: {
+    checkedStaffIds() {
+      if (this.tabIndex === 2) {
+        this.staffFollowPage = 1;
+        this.staffFollow();
+        return;
+      }
+      if (this.tabIndex === 1) {
+        this.collectionPage = 1;
+        this.getReceivablePlan();
+      }
+    },
   },
   onShow() {
     this.getStaffNotice();
@@ -263,6 +272,7 @@ export default {
       const data = {
         state: this.staffFollowType,
         page: this.staffFollowPage,
+        arr_uid: this.checkedStaffIds,
       };
       const res = await staffFollow(data).catch(() => {});
       this.staffFollowLoading = false;
@@ -335,6 +345,7 @@ export default {
       const data = {
         type: this.collectionType,
         page: this.collectionPage,
+        arr_uid: this.checkedStaffIds,
       };
       const res = await getReceivablePlan(data).catch(() => {});
       this.collectionLoading = false;
@@ -396,18 +407,23 @@ export default {
     // tabs 切换
     handleTabsChange({ detail }) {
       const index = detail.index;
+      this.tabIndex = index;
       switch (index) {
         case 0:
-          !this.workNoticeData.length && this.getStaffNotice();
+          this.workNoticePage = 1;
+          this.getStaffNotice();
           break;
         case 1:
-          !this.collectionData.length && this.getReceivablePlan();
+          this.collectionPage = 1;
+          this.getReceivablePlan();
           break;
         case 2:
-          !this.staffFollowData.length && this.staffFollow();
+          this.staffFollowPage = 1;
+          this.staffFollow();
           break;
         case 3:
-          !this.msgData.length && this.getSystemMsgList();
+          this.msgPage = 1;
+          this.getSystemMsgList();
           break;
       }
     },
@@ -419,50 +435,25 @@ export default {
 @import "@/styles/var";
 .index {
   height: 100%;
-  .safe-area {
-    box-sizing: content-box;
-    background-color: @primary;
-    padding-top: calc(constant(safe-area-inset-top) - 18px);
-    padding-top: calc(env(safe-area-inset-top) - 18px);
-  }
-  &-header {
-    height: 44px;
-    box-sizing: content-box;
-    position: relative;
-    padding-top: 18px;
-    background-color: @primary;
-
-    .flex-c();
-    &-avatar {
-      width: 60rpx;
-      height: 60rpx;
-      line-height: 60rpx;
-      .radius(50%);
-      background-color: #fff;
-      position: absolute;
-      left: 20rpx;
-      bottom: 14rpx;
-      text-align: center;
-      image {
-        width: 100%;
-        height: 100%;
-        .radius(50%);
-      }
-      text {
-        font-size: @font-size-xs;
-        color: @primary;
-      }
-    }
-    &-title {
-      margin: 0 auto;
-      font-weight: bold;
-      font-size: @font-size-md;
-      color: #fff;
-    }
-  }
+  overflow: hidden;
+  .flex();
+  flex-direction: column;
   &-grid {
     padding: 20rpx;
     border-bottom: 20rpx solid #f2f6fc;
+  }
+  &-content {
+    overflow: hidden;
+    flex: 1;
+    /deep/.van-tabs {
+      height: 100%;
+      &__content {
+        height: calc(100% - 44px);
+        .van-tab__pane {
+          height: 100%;
+        }
+      }
+    }
   }
   .btn-popup {
     height: 80rpx;
@@ -470,6 +461,7 @@ export default {
     text-align: center;
   }
 }
+
 /deep/.arrow {
   transition: transform 0.3s;
 }
