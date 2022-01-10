@@ -25,6 +25,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import "@/styles/var";
 .title {
   padding: 0 20rpx 20rpx;
   display: flex;
@@ -32,12 +33,13 @@ export default {
   align-items: center;
   &-value {
     color: #333;
+    font-size: @font-size-md;
     &::before {
       display: inline-block;
       content: "";
       width: 8rpx;
       height: 28rpx;
-      background-color: #199fff;
+      background-color: @primary;
       margin-right: 6rpx;
       vertical-align: middle;
     }

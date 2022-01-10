@@ -35,7 +35,11 @@
         <ProjectInfo :data="detailData" />
       </van-tab>
       <van-tab title="回款记录">
-        <PayRecord :data="detailData" @add-click="popupShow = true" />
+        <PayRecord
+          :isApprove="isApprove"
+          :data="detailData"
+          @add-click="popupShow = true"
+        />
       </van-tab>
     </van-tabs>
     <template v-if="isApprove">
@@ -431,6 +435,7 @@ export default {
     }
     &-other {
       color: @f-c-999;
+      font-size: @font-size-md;
     }
   }
   &-steps {

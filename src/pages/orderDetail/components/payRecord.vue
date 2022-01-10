@@ -2,7 +2,11 @@
   <view class="pay-record">
     <view class="pay-record-title">
       <Title title="回款记录"> </Title>
-      <van-button type="primary" size="small" @click="$emit('add-click')"
+      <van-button
+        type="primary"
+        v-if="!isApprove"
+        size="small"
+        @click="$emit('add-click')"
         >添加回款记录</van-button
       >
     </view>
@@ -41,7 +45,11 @@
     </van-cell-group>
     <view class="pay-record-title">
       <Title title="回款计划"> </Title>
-      <van-button type="primary" @click="toConfigPlan" size="small"
+      <van-button
+        type="primary"
+        v-if="!isApprove"
+        @click="toConfigPlan"
+        size="small"
         >配置回款计划</van-button
       >
     </view>
@@ -97,6 +105,10 @@ export default {
     data: {
       type: Object,
       default: () => ({}),
+    },
+    isApprove: {
+      type: Boolean,
+      default: false,
     },
   },
   components: {
