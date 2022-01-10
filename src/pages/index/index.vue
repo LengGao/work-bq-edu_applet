@@ -2,7 +2,7 @@
   <view class="index">
     <NavBar title="工作台" />
     <view class="index-grid">
-      <van-grid column-num="4">
+      <van-grid column-num="4" :border="false">
         <van-grid-item
           :icon="item.icon"
           :text="item.title"
