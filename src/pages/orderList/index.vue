@@ -10,6 +10,7 @@
       :total="listTotal"
       :load-loading="listLoading"
       :refresh-loading="listRefreshLoading"
+      :skeleton-loading="skeletonLoading"
       @load-more="handleLoadMore"
       @refresh="handleRefresh"
       class="load-more"
@@ -60,6 +61,7 @@ export default {
       listData: [],
       listRefreshLoading: false,
       listLoading: false,
+      skeletonLoading: false,
       pageNum: 1,
       listTotal: 0,
       searchData: {},
@@ -67,7 +69,9 @@ export default {
       drawerShow: false,
     };
   },
-
+  onLoad() {
+    this.skeletonLoading = true;
+  },
   onShow() {
     this.pageNum = 1;
     this.getCrmOrderList();
@@ -111,15 +115,18 @@ export default {
         date: `${y}-${m}-${d} - ${y}-${m}-${d}`,
         ...this.searchData,
       };
-      const res = await getCrmOrderList(data);
+      const res = await getCrmOrderList(data).catch(() => {});
       this.listRefreshLoading = false;
       this.listLoading = false;
-      if (this.pageNum === 1) {
-        this.listData = res.data.list;
-      } else {
-        this.listData.push(...res.data.list);
+      this.skeletonLoading = false;
+      if (res.code === 0) {
+        if (this.pageNum === 1) {
+          this.listData = res.data.list;
+        } else {
+          this.listData.push(...res.data.list);
+        }
+        this.listTotal = res.data.total;
       }
-      this.listTotal = res.data.total;
     },
   },
 };

@@ -10,6 +10,7 @@
       :data="listData"
       :total="listTotal"
       :load-loading="listLoading"
+      :skeleton-loading="skeletonLoading"
       :refresh-loading="listRefreshLoading"
       @load-more="handleLoadMore"
       @refresh="handleRefresh"
@@ -61,6 +62,7 @@ export default {
       listData: [],
       listRefreshLoading: false,
       listLoading: false,
+      skeletonLoading: false,
       pageNum: 1,
       listTotal: 0,
       keyword: "",
@@ -68,6 +70,9 @@ export default {
   },
   computed: {
     ...mapGetters(["staffId"]),
+  },
+  onLoad() {
+    this.skeletonLoading = true;
   },
   onShow() {
     this.projectUser();
@@ -121,15 +126,18 @@ export default {
         staff_id: this.staffId,
         keyword: this.keyword,
       };
-      const res = await projectUser(data);
+      const res = await projectUser(data).catch(() => {});
       this.listRefreshLoading = false;
       this.listLoading = false;
-      if (this.pageNum === 1) {
-        this.listData = res.data.list;
-      } else {
-        this.listData.push(...res.data.list);
+      this.skeletonLoading = false;
+      if (res.code === 0) {
+        if (this.pageNum === 1) {
+          this.listData = res.data.list;
+        } else {
+          this.listData.push(...res.data.list);
+        }
+        this.listTotal = res.data.total;
       }
-      this.listTotal = res.data.total;
     },
   },
 };

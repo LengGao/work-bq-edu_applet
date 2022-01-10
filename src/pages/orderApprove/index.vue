@@ -10,6 +10,7 @@
       :total="listTotal"
       :load-loading="listLoading"
       :refresh-loading="listRefreshLoading"
+      :skeleton-loading="skeletonLoading"
       @load-more="handleLoadMore"
       @refresh="handleRefresh"
       class="load-more"
@@ -60,12 +61,16 @@ export default {
       listData: [],
       listRefreshLoading: false,
       listLoading: false,
+      skeletonLoading: false,
       pageNum: 1,
       listTotal: 0,
       searchData: {},
       keyword: "",
       drawerShow: false,
     };
+  },
+  onLoad() {
+    this.skeletonLoading = true;
   },
   onShow() {
     this.pageNum = 1;
@@ -105,15 +110,18 @@ export default {
         keyword: this.keyword,
         ...this.searchData,
       };
-      const res = await getCrmApproveOrder(data);
+      const res = await getCrmApproveOrder(data).catch(() => {});
       this.listRefreshLoading = false;
       this.listLoading = false;
-      if (this.pageNum === 1) {
-        this.listData = res.data.list;
-      } else {
-        this.listData.push(...res.data.list);
+      this.skeletonLoading = false;
+      if (res.code === 0) {
+        if (this.pageNum === 1) {
+          this.listData = res.data.list;
+        } else {
+          this.listData.push(...res.data.list);
+        }
+        this.listTotal = res.data.total;
       }
-      this.listTotal = res.data.total;
     },
   },
 };
@@ -166,7 +174,7 @@ export default {
       }
     }
     &-customer {
-      font-size:@font-size-md;
+      font-size: @font-size-md;
     }
   }
 }

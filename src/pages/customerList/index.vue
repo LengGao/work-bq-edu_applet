@@ -13,6 +13,7 @@
       :total="listTotal"
       :load-loading="listLoading"
       :refresh-loading="listRefreshLoading"
+      :skeleton-loading="skeletonLoading"
       @load-more="handleLoadMore"
       @refresh="handleRefresh"
       class="load-more"
@@ -82,12 +83,16 @@ export default {
       listData: [],
       listRefreshLoading: false,
       listLoading: false,
+      skeletonLoading: false,
       pageNum: 1,
       listTotal: 0,
       keyword: "",
       searchData: {},
       drawerShow: false,
     };
+  },
+  onLoad() {
+    this.skeletonLoading = true;
   },
   onShow() {
     this.pageNum = 1;
@@ -96,6 +101,7 @@ export default {
   methods: {
     handleListTypeChange() {
       this.pageNum = 1;
+      this.skeletonLoading = true;
       this.getCrmCustomerList();
     },
     handleDrawerSearch(data) {
@@ -143,15 +149,18 @@ export default {
       if (this.listType === 1) {
         data.staff_id = this.$store.getters.staffId;
       }
-      const res = await getCrmCustomerList(data);
+      const res = await getCrmCustomerList(data).catch(() => {});
       this.listRefreshLoading = false;
       this.listLoading = false;
-      if (this.pageNum === 1) {
-        this.listData = res.data.list;
-      } else {
-        this.listData.push(...res.data.list);
+      this.skeletonLoading = false;
+      if (res.code === 0) {
+        if (this.pageNum === 1) {
+          this.listData = res.data.list;
+        } else {
+          this.listData.push(...res.data.list);
+        }
+        this.listTotal = res.data.total;
       }
-      this.listTotal = res.data.total;
     },
     makePhoneCall(phoneNumber) {
       uni.makePhoneCall({

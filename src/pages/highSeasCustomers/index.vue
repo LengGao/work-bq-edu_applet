@@ -11,6 +11,7 @@
     <LoadMore
       :data="listData"
       :total="listTotal"
+      :skeleton-loading="skeletonLoading"
       :load-loading="listLoading"
       :refresh-loading="listRefreshLoading"
       @load-more="handleLoadMore"
@@ -79,12 +80,16 @@ export default {
       listData: [],
       listRefreshLoading: false,
       listLoading: false,
+      skeletonLoading: false,
       pageNum: 1,
       listTotal: 0,
       keyword: "",
       searchData: {},
       drawerShow: false,
     };
+  },
+  onLoad() {
+    this.skeletonLoading = true;
   },
   onShow() {
     this.getCrmList();
@@ -100,6 +105,7 @@ export default {
     },
     handleListTypeChange() {
       this.pageNum = 1;
+      this.skeletonLoading = true;
       this.getCrmList();
     },
     handleDrawerSearch(data) {
@@ -135,15 +141,20 @@ export default {
         2: getDpAppletList,
         3: getOrgAppletList,
       };
-      const res = await apiMap[this.listType](data);
+      const res = await apiMap[this.listType](data).catch(() => {
+        this.listData = [];
+      });
       this.listRefreshLoading = false;
       this.listLoading = false;
-      if (this.pageNum === 1) {
-        this.listData = res.data.list;
-      } else {
-        this.listData.push(...res.data.list);
+      this.skeletonLoading = false;
+      if (res.code === 0) {
+        if (this.pageNum === 1) {
+          this.listData = res.data.list;
+        } else {
+          this.listData.push(...res.data.list);
+        }
+        this.listTotal = res.data.total;
       }
-      this.listTotal = res.data.total;
     },
     makePhoneCall(phoneNumber) {
       uni.makePhoneCall({
