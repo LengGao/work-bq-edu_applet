@@ -94,7 +94,7 @@ export default {
   .load-more {
     text-align: center;
     color: @f-c-999;
-    font-size: 24rpx;
+    font-size: @font-size-sm;
     padding-bottom: 20rpx;
   }
   &-item {
@@ -108,14 +108,17 @@ export default {
         &-user {
           .flex-c-b();
           margin-bottom: 8rpx;
+          .user-name {
+            font-size: @font-size-md;
+          }
           .time {
             margin-left: auto;
-            font-size: 24rpx;
+            font-size: @font-size-sm;
             color: #fe7d00;
           }
         }
         &-tips {
-          font-size: 26rpx;
+          font-size: @font-size-sm;
           color: #888;
           text:first-child {
             margin-right: 40rpx;

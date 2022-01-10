@@ -45,7 +45,7 @@ export default {
     &-value {
       text-align: center;
       color: @primary;
-      font-size: 36rpx;
+      font-size: @font-size-sm;
     }
   }
 }

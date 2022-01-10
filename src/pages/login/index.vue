@@ -99,6 +99,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import "@/styles/var";
 .login {
   padding: 40rpx;
   &-img {
@@ -109,7 +110,7 @@ export default {
   /deep/.van-cell-group__title {
     padding: 20rpx 0;
     color: #333;
-    font-size: 32rpx;
+    font-size: @font-size-md;
   }
   &-btn {
     padding: 60rpx 0;

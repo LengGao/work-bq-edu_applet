@@ -40,16 +40,17 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import "@/styles/var";
 .notice-detail {
   padding: 20rpx;
   &-title {
-    font-size: 34rpx;
+    font-size: @font-size-md;
     font-weight: bold;
   }
   &-submit-info {
     margin-bottom: 40rpx;
     view {
-      font-size: 30rpx;
+      font-size: @font-size-sm;
     }
   }
 }

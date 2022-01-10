@@ -116,7 +116,7 @@ export default {
   .load-more {
     text-align: center;
     color: @f-c-999;
-    font-size: 24rpx;
+    font-size: @font-size-xs;
     padding-bottom: 20rpx;
   }
   &-item {
@@ -142,21 +142,21 @@ export default {
           margin-bottom: 8rpx;
           .user-name {
             color: @f-c-999;
-            font-size: 24rpx;
+            font-size: @font-size-sm;
             text {
               color: @primary;
               margin-right: 10rpx;
-              font-size: 26rpx;
+              font-size: @font-size-md;
             }
           }
           .time {
             color: @f-c-999;
             margin-left: auto;
-            font-size: 24rpx;
+            font-size: @font-size-xs;
           }
         }
         &-tips {
-          font-size: 26rpx;
+          font-size: @font-size-sm;
         }
         &-tips--unread {
           position: relative;

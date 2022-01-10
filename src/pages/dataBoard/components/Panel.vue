@@ -106,6 +106,7 @@ export default {
 <style lang="less" scoped>
 @import "@/styles/var";
 .panel {
+  font-size: @font-size-md;
   &-header {
     .flex-c-b();
     background-color: #fff;

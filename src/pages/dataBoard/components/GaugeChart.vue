@@ -166,7 +166,7 @@ export default {
         color: @primary;
         font-size: 36rpx;
         .unit {
-          font-size: 24rpx;
+          font-size: @font-size-xs;
         }
       }
     }

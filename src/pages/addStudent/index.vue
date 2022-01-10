@@ -53,7 +53,7 @@
       <van-cell
         required
         title="报名项目"
-        title-width="70px"
+        title-width="80px"
         is-link
         :value="checkedProjectName || '请选择'"
         @click="openSelceProjectSheet"

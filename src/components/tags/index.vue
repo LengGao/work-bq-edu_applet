@@ -67,7 +67,7 @@ export default {
   padding: 20rpx 16px;
   &-title {
     margin-bottom: 20rpx;
-    font-size: 14px;
+    font-size: @font-size-sm;
     color: @font-color;
   }
   &-container {

@@ -96,7 +96,7 @@ export default {
   .load-more {
     text-align: center;
     color: @f-c-999;
-    font-size: 24rpx;
+    font-size: @font-size-xs;
     padding-bottom: 20rpx;
   }
 
@@ -110,11 +110,12 @@ export default {
       .info {
         text {
           margin-right: 12rpx;
+          font-size: @font-size-md;
         }
       }
       .time {
         padding-top: 12rpx;
-        font-size: 24rpx;
+        font-size: @font-size-xs;
         color: @f-c-999;
       }
     }

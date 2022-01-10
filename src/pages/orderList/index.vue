@@ -139,7 +139,7 @@ export default {
         margin-bottom: 10rpx;
         min-width: 100rpx;
         margin-right: 10rpx;
-        font-size: 32rpx;
+        font-size: @font-size-md;
       }
       &-money {
         color: @f-c-999;

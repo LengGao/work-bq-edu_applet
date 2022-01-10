@@ -114,7 +114,7 @@ export default {
       margin-right: 32rpx;
     }
     .user-info {
-      font-size: 26rpx;
+      font-size: @font-size-sm;
       color: #fff;
       .name {
         font-size: 40rpx;
@@ -132,7 +132,7 @@ export default {
       box-sizing: border-box;
       color: #666;
       border-bottom: 1px solid #eee;
-      font-size: 30rpx;
+      font-size: @font-size-md;
       .flex-c();
       justify-content: space-between;
       background-color: #fff;
@@ -150,7 +150,7 @@ export default {
           margin-left: 13rpx;
         }
         .iconfont {
-          font-size: 36rpx;
+          font-size: @font-size-lg;
         }
       }
     }

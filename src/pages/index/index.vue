@@ -449,14 +449,14 @@ export default {
         .radius(50%);
       }
       text {
-        font-size: 24rpx;
+        font-size: @font-size-xs;
         color: @primary;
       }
     }
     &-title {
       margin: 0 auto;
       font-weight: bold;
-      font-size: 32rpx;
+      font-size: @font-size-md;
       color: #fff;
     }
   }

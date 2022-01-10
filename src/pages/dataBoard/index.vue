@@ -12,7 +12,7 @@
           </view>
         </template>
         <template v-else>
-          <view class="avatar">
+          <view class="avatar" v-if="userInfo.staff_name">
             <template v-if="userInfo.head_photo">
               <image :src="userInfo.head_photo" >
             </template>
@@ -388,7 +388,7 @@ export default {
           .radius(50%);
         }
         text {
-          font-size: 24rpx;
+          font-size: @font-size-xs;
           color: @primary;
         }
       }

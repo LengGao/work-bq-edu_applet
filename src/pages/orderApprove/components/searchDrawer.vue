@@ -10,21 +10,21 @@
         <van-cell-group>
           <van-cell
             title="所属分类"
-            title-width="70px"
+            title-width="80px"
             is-link
             :value="checkedCategorytName || '请选择'"
             @click="selectCategoryShow = true"
           />
           <van-cell
             title="所属项目"
-            title-width="70px"
+            title-width="80px"
             is-link
             :value="checkedProjectName || '请选择'"
             @click="selectProjectShow = true"
           />
           <van-cell
             title="业绩归属"
-            title-width="70px"
+            title-width="80px"
             is-link
             :value="checkedStaffName || '请选择'"
             @click="selectStaffShow = true"
@@ -36,14 +36,14 @@
             @click="openSheet('payStatusOptions')"
           />
           <van-cell
-            title-width="70px"
+            title-width="80px"
             title="审核状态"
             is-link
             :value="checkedApproveName || '请选择'"
             @click="openSheet('approveOptions')"
           />
           <van-cell
-            title-width="70px"
+            title-width="80px"
             title="处理状态"
             is-link
             :value="checkedFinishStatusName || '请选择'"

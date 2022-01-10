@@ -186,7 +186,7 @@ export default {
         .user-name {
           min-width: 100rpx;
           margin-right: 10rpx;
-          font-size: 32rpx;
+          font-size: @font-size-md;
         }
       }
       &-time {

@@ -132,8 +132,7 @@ export default {
   }
   &-sheet {
     color: @font-color;
-  }
-  &-actions {
+    font-size: @font-size-md;
   }
 }
 </style>

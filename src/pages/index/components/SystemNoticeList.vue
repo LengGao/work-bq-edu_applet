@@ -91,7 +91,7 @@ export default {
   .load-more {
     text-align: center;
     color: @f-c-999;
-    font-size: 24rpx;
+    font-size: @font-size-xs;
     padding-bottom: 20rpx;
   }
   &-item {
@@ -103,10 +103,10 @@ export default {
       .flex-c-b();
       .notice-time {
         color: @f-c-999;
-        font-size: 24rpx;
+        font-size: @font-size-xs;
       }
       .notice-content {
-        font-size: 26rpx;
+        font-size: @font-size-md;
       }
       .notice-content--unread {
         position: relative;

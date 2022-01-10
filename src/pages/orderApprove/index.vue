@@ -166,7 +166,7 @@ export default {
       }
     }
     &-customer {
-      font-size: 32rpx;
+      font-size:@font-size-md;
     }
   }
 }

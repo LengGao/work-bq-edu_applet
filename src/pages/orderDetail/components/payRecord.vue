@@ -151,7 +151,7 @@ export default {
   }
   .progress {
     color: #fd7b18;
-    font-size: 32rpx;
+    font-size: @font-size-md;
   }
   /deep/.center {
     text-align: center;

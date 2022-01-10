@@ -16,7 +16,7 @@
           />
           <van-cell
             title="所属老师"
-            title-width="70px"
+            title-width="80px"
             is-link
             :value="checkedStaffName || '请选择'"
             @click="selectStaffShow = true"

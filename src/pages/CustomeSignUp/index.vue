@@ -139,7 +139,7 @@
     <van-cell-group custom-class="group-cell">
       <van-cell
         is-link
-        title-width="100px"
+        title-width="130px"
         :value="planCheckedName || '请选择'"
         @click="openSheet('planOptions')"
       >

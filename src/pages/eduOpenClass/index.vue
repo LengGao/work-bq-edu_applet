@@ -155,7 +155,7 @@ export default {
         .flex();
         .user-name {
           margin-right: 10rpx;
-          font-size: 32rpx;
+          font-size: @font-size-md;
           flex: 1;
         }
       }
@@ -168,7 +168,7 @@ export default {
       text-align: center;
       color: @primary;
       .btn-name {
-        font-size: 24rpx;
+        font-size: @font-size-xs;
       }
     }
   }
