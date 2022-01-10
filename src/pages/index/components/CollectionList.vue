@@ -26,7 +26,7 @@
                 <view class="time">{{ item.day }}</view>
               </view>
               <view class="info-tips">
-                <text>计划金额￥{{ item.money || 0 }}</text>
+                <text class="plan-money">计划金额￥{{ item.money || 0 }}</text>
                 <text>实收金额￥{{ item.pay_money || 0 }}</text></view
               >
             </view>
@@ -115,7 +115,7 @@ export default {
         &-tips {
           font-size: @font-size-sm;
           color: #888;
-          text:first-child {
+          .plan-money {
             margin-right: 40rpx;
           }
         }

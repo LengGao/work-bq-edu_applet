@@ -19,7 +19,7 @@
         >
           <view class="customer-list-item-content">
             <view class="info">
-              <text>{{ item.name }}</text>
+              <text class="user-name">{{ item.name }}</text>
               <van-tag plain type="success" v-if="item.pay_state"
                 >已成交</van-tag
               >
@@ -103,7 +103,7 @@ export default {
     }
     &-content {
       .info {
-        text {
+        .user-name {
           margin-right: 12rpx;
           font-size: @font-size-md;
         }

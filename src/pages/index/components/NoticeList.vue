@@ -34,7 +34,8 @@
             <view class="info">
               <view class="info-user">
                 <view class="user-name"
-                  ><text>{{ item.staff_name }}</text> {{ item.keyword }}</view
+                  ><text class="text">{{ item.staff_name }}</text>
+                  {{ item.keyword }}</view
                 >
                 <view class="time">{{ item.create_time }}</view>
               </view>
@@ -140,7 +141,7 @@ export default {
           .user-name {
             color: @f-c-999;
             font-size: @font-size-sm;
-            text {
+            .text {
               color: @primary;
               margin-right: 10rpx;
               font-size: @font-size-md;

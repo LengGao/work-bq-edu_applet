@@ -33,6 +33,7 @@
       option-name="title"
       option-value="id"
       multiple
+      outer
     />
   </view>
 </template>
@@ -62,6 +63,11 @@ export default {
     ...mapGetters(["userInfo", "checkedStaffData"]),
     showUsers() {
       return this.checkedStaffData.filter((item, index) => index < 3);
+    },
+  },
+  watch: {
+    "userInfo.token"() {
+      this.getGroupWithUser();
     },
   },
   created() {

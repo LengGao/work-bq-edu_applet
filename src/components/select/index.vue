@@ -3,7 +3,7 @@
     <van-popup
       :show="show"
       position="right"
-      custom-class="select-popup"
+      :custom-class="`select-popup ${outer ? 'outer' : ''}`"
       @close="onCancel"
       safe-area-inset-bottom
       safe-area-inset-top
@@ -32,7 +32,7 @@
       <view class="select-container">
         <van-checkbox-group
           v-if="multiple"
-          :value="checkedValue"
+          :value="checkedValue || []"
           @change="onChange"
         >
           <block v-for="item in list" :key="key(item)">
@@ -45,7 +45,7 @@
             >
           </block>
         </van-checkbox-group>
-        <van-radio-group v-else :value="checkedValue" @change="onChange">
+        <van-radio-group v-else :value="checkedValue || ''" @change="onChange">
           <van-radio
             icon-size="28rpx"
             custom-class="checkbox"
@@ -81,6 +81,10 @@ export default {
     value: {
       type: [Array, String],
       default: "",
+    },
+    outer: {
+      type: Boolean,
+      default: false,
     },
     show: {
       type: Boolean,
@@ -200,6 +204,10 @@ export default {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    &.outer {
+      padding-top: calc(50px + constant(safe-area-inset-top));
+      padding-top: calc(50px + env(safe-area-inset-top));
+    }
   }
   &-checked {
     padding: 0 20rpx;
