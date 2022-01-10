@@ -205,16 +205,16 @@ export default {
             key: "surname",
             errmsg: "客户姓名不能为空",
           },
-          {
-            key: "id_card_number",
-            errmsg: "请输入正确的身份证号码",
-            minLength: 18,
-          },
-          {
-            key: "mobile",
-            errmsg: "请输入正确的手机号",
-            reg: /^1[3-9]\d{9}$/,
-          },
+          // {
+          //   key: "id_card_number",
+          //   errmsg: "请输入正确的身份证号码",
+          //   minLength: 18,
+          // },
+          // {
+          //   key: "mobile",
+          //   errmsg: "请输入正确的手机号",
+          //   reg: /^1[3-9]\d{9}$/,
+          // },
           {
             key: "from_organization_id",
             errmsg: "请选择机构",
