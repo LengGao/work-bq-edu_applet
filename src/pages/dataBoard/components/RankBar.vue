@@ -96,6 +96,7 @@ export default {
               name: "回款",
               type: "bar",
               color: "#FF6C59",
+              barWidth: 20,
               data: [],
               label: {
                 show: true,

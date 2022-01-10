@@ -101,9 +101,14 @@ export default {
     },
     async getCrmOrderList() {
       this.checkedIds = [];
+      const date = new Date();
+      const y = date.getFullYear();
+      const m = date.getMonth() + 1;
+      const d = date.getDate();
       const data = {
         page: this.pageNum,
         keyword: this.keyword,
+        date: `${y}-${m}-${d} - ${y}-${m}-${d}`,
         ...this.searchData,
       };
       const res = await getCrmOrderList(data);

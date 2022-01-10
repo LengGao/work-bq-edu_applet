@@ -395,6 +395,7 @@ export default {
     }
 
     .btn {
+      padding: 18rpx 0 18rpx 18rpx;
       color: @f-c-999;
     }
   }

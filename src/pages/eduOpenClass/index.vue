@@ -21,7 +21,7 @@
             <view class="user-name"
               >{{ item.surname }}-{{ item.project_name }}</view
             >
-            <van-tag plain type="success" v-if="row.open_course"
+            <van-tag plain type="success" v-if="item.open_course"
               >已开课</van-tag
             >
             <van-tag plain type="warning" v-else>未开课</van-tag>
@@ -32,7 +32,7 @@
         </view>
         <view
           class="item-actions"
-          v-if="!row.open_course"
+          v-if="!item.open_course"
           @click="openCourseConfirm(item.id)"
         >
           <van-icon name="orders-o" size="40rpx" />

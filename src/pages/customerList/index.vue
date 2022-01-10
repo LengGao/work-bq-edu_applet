@@ -21,7 +21,7 @@
         <view class="item-info">
           <view class="item-info-status">
             <view class="user-name">{{ item.name }}</view>
-            <van-tag plain type="success" v-if="row.deal_num">已成交</van-tag>
+            <van-tag plain type="success" v-if="item.deal_num">已成交</van-tag>
             <van-tag plain type="warning" v-else>未成交</van-tag>
           </view>
           <view class="item-info-time"

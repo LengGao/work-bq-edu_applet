@@ -1,6 +1,13 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/dataBoard/index",
+			"style": {
+				"navigationBarTitleText": "数据看板",
+				"usingComponents": {}
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "工作台",
@@ -98,13 +105,6 @@
 			"path": "pages/payPlanConfig/index",
 			"style": {
 				"navigationBarTitleText": "配置回款计划",
-				"usingComponents": {}
-			}
-		},
-		{
-			"path": "pages/dataBoard/index",
-			"style": {
-				"navigationBarTitleText": "数据看板",
 				"usingComponents": {}
 			}
 		},

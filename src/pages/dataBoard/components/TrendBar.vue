@@ -83,20 +83,20 @@ export default {
 
           series: [
             {
-              barWidth: 10,
+              barWidth: 20,
               data: [],
               name: "订单",
               type: "bar",
             },
             {
-              barWidth: 10,
+              barWidth: 20,
               barGap: "-100%",
               data: [],
               name: "回款",
               type: "bar",
             },
             {
-              barWidth: 10,
+              barWidth: 20,
               data: [],
               name: "退款",
               type: "bar",

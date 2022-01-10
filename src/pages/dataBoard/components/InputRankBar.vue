@@ -73,6 +73,7 @@ export default {
               type: "bar",
               color: "#24A3FF",
               data: [],
+              barWidth: 20,
               label: {
                 show: true,
                 precision: 1,

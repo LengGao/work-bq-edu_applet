@@ -20,7 +20,7 @@
           <view class="customer-list-item-content">
             <view class="info">
               <text>{{ item.name }}</text>
-              <van-tag plain type="success" v-if="row.pay_state"
+              <van-tag plain type="success" v-if="item.pay_state"
                 >已成交</van-tag
               >
               <van-tag plain type="warning" v-else>未成交</van-tag>

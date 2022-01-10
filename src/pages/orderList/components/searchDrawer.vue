@@ -207,6 +207,14 @@ export default {
       "payStatusOptions",
     ]),
   },
+  created() {
+    const date = new Date();
+    const y = date.getFullYear();
+    const m = date.getMonth() + 1;
+    const d = date.getDate();
+    this.searchData.dateStart = `${y}-${m}-${d}`;
+    this.searchData.dateEnd = `${y}-${m}-${d}`;
+  },
   methods: {
     handleDrawerReset() {
       for (const k in this.searchData) {
