@@ -42,39 +42,40 @@
         />
       </van-tab>
     </van-tabs>
-    <template v-if="isApprove">
-      <van-tabbar
-        v-if="detailData.is_my_review"
-        @change="handleTabbarChange"
-        active-color="#43d100"
-        inactive-color="#fd6500"
-        active="4"
-      >
-        <van-tabbar-item icon="clear" name="3">驳回</van-tabbar-item>
-        <van-tabbar-item icon="checked" name="4">通过</van-tabbar-item>
-      </van-tabbar>
-    </template>
-    <template v-else>
-      <van-tabbar
-        @change="handleTabbarChange"
-        v-if="
-          detailData.verify_status < 3 ||
-          (detailData.verify_status === 1 && !detailData.reshuffle)
-        "
-      >
-        <van-tabbar-item
-          icon="smile-o"
-          v-if="detailData.verify_status < 3"
-          name="1"
-          >催办</van-tabbar-item
+    <template v-if="detailData.is_my_review">
+      <template v-if="isApprove">
+        <van-tabbar
+          @change="handleTabbarChange"
+          active-color="#43d100"
+          inactive-color="#fd6500"
+          active="4"
         >
-        <van-tabbar-item
-          v-if="detailData.verify_status === 1 && !detailData.reshuffle"
-          icon="revoke"
-          name="2"
-          >撤回</van-tabbar-item
+          <van-tabbar-item icon="clear" name="3">驳回</van-tabbar-item>
+          <van-tabbar-item icon="checked" name="4">通过</van-tabbar-item>
+        </van-tabbar>
+      </template>
+      <template v-else>
+        <van-tabbar
+          @change="handleTabbarChange"
+          v-if="
+            detailData.verify_status < 3 ||
+            (detailData.verify_status === 1 && !detailData.reshuffle)
+          "
         >
-      </van-tabbar>
+          <van-tabbar-item
+            icon="smile-o"
+            v-if="detailData.verify_status < 3"
+            name="1"
+            >催办</van-tabbar-item
+          >
+          <van-tabbar-item
+            v-if="detailData.verify_status === 1 && !detailData.reshuffle"
+            icon="revoke"
+            name="2"
+            >撤回</van-tabbar-item
+          >
+        </van-tabbar>
+      </template>
     </template>
 
     <van-dialog id="van-dialog" />
@@ -239,7 +240,7 @@ export default {
     },
   },
   onLoad({ orderId, approve }) {
-    this.isApprove = !!approve;
+    this.isApprove = approve == 1;
     this.orderId = orderId;
   },
   onShow() {

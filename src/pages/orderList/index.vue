@@ -111,6 +111,7 @@ export default {
       const d = date.getDate();
       const data = {
         page: this.pageNum,
+        channel: 2,
         keyword: this.keyword,
         date: `${y}-${m}-${d} - ${y}-${m}-${d}`,
         ...this.searchData,
