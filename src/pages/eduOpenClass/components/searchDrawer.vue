@@ -9,6 +9,13 @@
       <view class="drawer-content">
         <van-cell-group>
           <van-cell
+            title="所属机构"
+            title-width="80px"
+            is-link
+            :value="checkedOrgName || '请选择'"
+            @click="selectOrgShow = true"
+          />
+          <van-cell
             title="所属分类"
             title-width="80px"
             is-link
@@ -23,24 +30,24 @@
             @click="selectProjectShow = true"
           />
           <van-cell
-            title="业绩归属"
+            title="所属老师"
             title-width="80px"
             is-link
             :value="checkedStaffName || '请选择'"
             @click="selectStaffShow = true"
           />
           <van-cell
-            title="支付状态"
+            title="客户性质"
             is-link
-            :value="checkedPayStatusName || '请选择'"
-            @click="openSheet('payStatusOptions')"
+            :value="typeName || '请选择'"
+            @click="openSheet('typeOptions')"
           />
           <van-cell
             title-width="80px"
-            title="审核状态"
+            title="开课状态"
             is-link
-            :value="checkedApproveName || '请选择'"
-            @click="openSheet('approveOptions')"
+            :value="checkedOpenName || '请选择'"
+            @click="openSheet('openOptions')"
           />
           <van-cell
             title-width="100px"
@@ -53,45 +60,9 @@
             title-width="100px"
             title="创建时间-止"
             is-link
+            :border="false"
             :value="searchData.dateEnd || '请选择'"
             @click="openDatePcker('dateEnd')"
-          />
-          <van-field
-            type="number"
-            :value="searchData.order_money[0]"
-            input-align="right"
-            clearable
-            label="订单金额-起"
-            placeholder="请输入"
-            @input="({ detail }) => (searchData.order_money[0] = detail)"
-          />
-          <van-field
-            type="number"
-            :value="searchData.order_money[1]"
-            input-align="right"
-            clearable
-            label="订单金额-止"
-            placeholder="请输入"
-            @input="({ detail }) => (searchData.order_money[1] = detail)"
-          />
-          <van-field
-            type="number"
-            input-align="right"
-            clearable
-            :value="searchData.pay_money[0]"
-            @input="({ detail }) => (searchData.pay_money[0] = detail)"
-            label="回款金额-起"
-            placeholder="请输入"
-          />
-          <van-field
-            type="number"
-            input-align="right"
-            clearable
-            :value="searchData.pay_money[1]"
-            @input="({ detail }) => (searchData.pay_money[1] = detail)"
-            label="回款金额-止"
-            :border="false"
-            placeholder="请输入"
           />
         </van-cell-group>
       </view>
@@ -117,6 +88,14 @@
       :show="datePickerShow"
       @close="datePickerShow = false"
       @confirm="onDatePickerConfirm"
+    />
+    <Select
+      :show="selectOrgShow"
+      @close="selectOrgShow = false"
+      @confirm="handleSelectOrgChange"
+      :options="orgOptions"
+      option-name="institution_name"
+      option-value="institution_id"
     />
     <Select
       :show="selectProjectShow"
@@ -172,16 +151,15 @@ export default {
   data() {
     return {
       searchData: {
+        from_org: "",
         category_id: "",
         project_id: "",
         staff_id: "",
-        pay_status: "",
-        verify_status: "",
+        type: "",
+        open_course: "",
         dateStart: "",
         dateEnd: "",
         date: "",
-        order_money: ["", ""],
-        pay_money: ["", ""],
       },
       datePickerShow: false,
       datePickerKey: "",
@@ -194,8 +172,30 @@ export default {
       sheetShow: false,
       sheetActions: [],
       sheetChecked: "",
-      checkedPayStatusName: "",
-      checkedApproveName: "",
+      typeName: "",
+      checkedOpenName: "",
+      checkedOrgName: "",
+      selectOrgShow: "",
+      typeOptions: [
+        {
+          name: "招生客户",
+          value: 1,
+        },
+        {
+          name: "渠道客户",
+          value: 2,
+        },
+      ],
+      openOptions: [
+        {
+          name: "已开课",
+          value: 1,
+        },
+        {
+          name: "未开课",
+          value: 2,
+        },
+      ],
     };
   },
   computed: {
@@ -203,34 +203,19 @@ export default {
       "projectOptions",
       "categoryOptions",
       "staffOptions",
-      "approveOptions",
-      "payStatusOptions",
+      "orgOptions",
     ]),
   },
-  created() {
-    this.setDefaultDate();
-  },
   methods: {
-    setDefaultDate() {
-      const date = new Date();
-      const y = date.getFullYear();
-      const m = date.getMonth() + 1;
-      const d = date.getDate();
-      this.searchData.dateStart = `${y}-${m}-${d}`;
-      this.searchData.dateEnd = `${y}-${m}-${d}`;
-    },
     handleDrawerReset() {
       for (const k in this.searchData) {
         this.searchData[k] = "";
       }
-      this.searchData.order_money = ["", ""];
-      this.searchData.pay_money = ["", ""];
       this.checkedProjectName = "";
       this.checkedCategorytName = "";
       this.checkedStaffName = "";
-      this.checkedPayStatusName = "";
-      this.checkedApproveName = "";
-      this.setDefaultDate();
+      this.typeName = "";
+      this.checkedOpenName = "";
       this.$emit("search", {});
     },
     handleDrawerConfirm() {
@@ -239,14 +224,6 @@ export default {
         rest.date = [dateStart, dateEnd].join(" - ");
       } else {
         rest.date = "";
-      }
-      rest.order_money = rest.order_money.join(" - ");
-      if (rest.order_money === " - ") {
-        rest.order_money = "";
-      }
-      rest.pay_money = rest.pay_money.join(" - ");
-      if (rest.pay_money === " - ") {
-        rest.pay_money = "";
       }
       this.$emit("search", rest);
     },
@@ -257,13 +234,13 @@ export default {
       this.sheetShow = true;
     },
     onSheetSelect({ detail }) {
-      if (this.sheetChecked === "approveOptions") {
-        this.searchData.verify_status = detail.value;
-        this.checkedApproveName = detail.name;
+      if (this.sheetChecked === "openOptions") {
+        this.searchData.open_course = detail.value;
+        this.checkedOpenName = detail.name;
       }
-      if (this.sheetChecked === "payStatusOptions") {
-        this.checkedPayStatusName = detail.name;
-        this.searchData.pay_status = detail.value;
+      if (this.sheetChecked === "typeOptions") {
+        this.typeName = detail.name;
+        this.searchData.type = detail.value;
       }
     },
     // 选择业绩归属人
@@ -281,6 +258,14 @@ export default {
       this.checkedCategorytName = checked
         .map((item) => item.category_name)
         .join("，");
+    },
+    // 选择机构
+    handleSelectOrgChange(checked) {
+      console.log(checked);
+      this.selectOrgShow = false;
+      this.searchData.from_org = checked.institution_id;
+
+      this.checkedOrgName = checked.institution_name;
     },
     // 选择项目
     handleSelectProjectChange(checked) {

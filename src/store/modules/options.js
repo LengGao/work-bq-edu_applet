@@ -1,11 +1,11 @@
 
-import { getStaffList, getProjectOptions, getCateList } from '@/api/order'
+import { getStaffList, getProjectOptions, getCateList, getOrganizationOptions } from '@/api/order'
 import { getCustomfieldOptions, getCrmTags } from "@/api/customer";
 const options = {
     state: {
-        projectOptions: [],
-        categoryOptions: [],
-        staffOptions: [],
+        projectOptions: null,
+        categoryOptions: null,
+        staffOptions: null,
         payStatusOptions: [
             {
                 value: 0,
@@ -77,9 +77,10 @@ const options = {
                 name: "研究生及以上",
             },
         ],
-        fromOptions: [],
-        tagOptions: [],
-        payTypeOptions: [],
+        fromOptions: null,
+        tagOptions: null,
+        payTypeOptions: null,
+        orgOptions: null,
     },
     mutations: {
         SET_PROJECT_OPTIONS(state, data) {
@@ -100,8 +101,16 @@ const options = {
         SET_PAY_TYPE_OPTIONS(state, data) {
             state.payTypeOptions = data
         },
+        SET_ORG_OPTIONS(state, data) {
+            state.orgOptions = data
+        },
     },
     actions: {
+        // 获取机构选项
+        async getOrganizationOptions({ commit }) {
+            const res = await getOrganizationOptions();
+            commit('SET_ORG_OPTIONS', res.data.list)
+        },
         // 获取项目选项
         async getProjectOptions({ commit }) {
             const res = await getProjectOptions()

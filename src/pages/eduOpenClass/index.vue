@@ -1,10 +1,9 @@
 <template>
   <view class="customer-list">
-    <van-search
-      :value="keyword"
-      @change="handleSearch"
-      shape="round"
+    <SearchBar
+      @search="handleSearch"
       placeholder="请输入客户姓名"
+      @filter-click="drawerShow = true"
     />
     <LoadMore
       :data="listData"
@@ -41,6 +40,11 @@
         </view>
       </view>
     </LoadMore>
+    <SearchDrawer
+      :show="drawerShow"
+      @close="drawerShow = false"
+      @search="handleDrawerSearch"
+    />
     <DragButton @tap="toAdd" />
     <van-dialog id="van-dialog" />
   </view>
@@ -50,12 +54,15 @@
 import Dialog from "@/wxcomponents/vant/dialog/dialog";
 import LoadMore from "@/components/loadMore/index.vue";
 import DragButton from "@/components/dragButton/index.vue";
+import SearchBar from "@/components/searchBar/index.vue";
+import SearchDrawer from "./components/searchDrawer.vue";
 import { projectUser, eduOpenCourse } from "@/api/customer";
-import { mapGetters } from "vuex";
 export default {
   components: {
     LoadMore,
     DragButton,
+    SearchBar,
+    SearchDrawer,
   },
   data() {
     return {
@@ -66,10 +73,9 @@ export default {
       pageNum: 1,
       listTotal: 0,
       keyword: "",
+      searchData: {},
+      drawerShow: false,
     };
-  },
-  computed: {
-    ...mapGetters(["staffId"]),
   },
   onLoad() {
     this.skeletonLoading = true;
@@ -101,12 +107,15 @@ export default {
         this.projectUser();
       }
     },
-    handleResetSearch() {
-      this.keyword && this.handleSearch({ detail: "" });
-    },
-    handleSearch({ detail }) {
+    handleDrawerSearch(data) {
+      this.searchData = data;
       this.pageNum = 1;
-      this.keyword = detail;
+      this.projectUser();
+      this.drawerShow = false;
+    },
+    handleSearch(value) {
+      this.pageNum = 1;
+      this.keyword = value;
       this.projectUser();
     },
     handleLoadMore() {
@@ -123,8 +132,8 @@ export default {
       this.checkedIds = [];
       const data = {
         page: this.pageNum,
-        staff_id: this.staffId,
         keyword: this.keyword,
+        ...this.searchData,
       };
       const res = await projectUser(data).catch(() => {});
       this.listRefreshLoading = false;

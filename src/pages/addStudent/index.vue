@@ -110,6 +110,7 @@ import { getOrganizationOptions, orderOpen } from "@/api/order";
 import Select from "@/components/select/index.vue";
 import SelectProject from "./components/selectProject.vue";
 import SelectEduProject from "./components/selectEduProject.vue";
+import { mapGetters } from "vuex";
 export default {
   components: {
     Select,
@@ -131,7 +132,6 @@ export default {
       },
       // 选择机构
       selectShow: false,
-      institutionOptions: [],
       //选择职称项目
       selectProjectShow: false,
       checkedProjectName: "",
@@ -139,8 +139,14 @@ export default {
       selectEduProjectShow: false,
     };
   },
-  onLoad() {
-    this.getOrganizationOptions();
+  computed: {
+    ...mapGetters(["orgOptions"]),
+    institutionOptions() {
+      return this.orgOptions.map((item) => ({
+        name: item.institution_name,
+        value: item.institution_id,
+      }));
+    },
   },
   methods: {
     // 选择机构
@@ -337,10 +343,6 @@ export default {
     // 获取机构
     async getOrganizationOptions() {
       const res = await getOrganizationOptions();
-      this.institutionOptions = res.data.list.map((item) => ({
-        name: item.institution_name,
-        value: item.institution_id,
-      }));
     },
   },
 };
