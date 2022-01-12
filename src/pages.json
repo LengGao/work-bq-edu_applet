@@ -1,6 +1,20 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/changeOrderApprove/index",
+			"style": {
+				"navigationBarTitleText": "异动审批",
+				"usingComponents": {}
+			}
+		},
+		{
+			"path": "pages/orderApprove/index",
+			"style": {
+				"navigationBarTitleText": "订单审批",
+				"usingComponents": {}
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "工作台",
@@ -52,13 +66,6 @@
 			"path": "pages/highSeasCustomers/index",
 			"style": {
 				"navigationBarTitleText": "公海客户",
-				"usingComponents": {}
-			}
-		},
-		{
-			"path": "pages/orderApprove/index",
-			"style": {
-				"navigationBarTitleText": "订单审批",
 				"usingComponents": {}
 			}
 		},
