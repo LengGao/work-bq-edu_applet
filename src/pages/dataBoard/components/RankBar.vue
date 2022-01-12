@@ -31,7 +31,7 @@
       canvas-id="rank-chart-canvas"
       :ec="ec"
       :style="{
-        height: (data.length < 5 ? 300 : data.length * 60) + 'px',
+        height: (data.length < 5 ? 300 : data.length * 35) + 'px',
       }"
       ref="echats"
     ></uni-ec-canvas>

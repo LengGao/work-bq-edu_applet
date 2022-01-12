@@ -2,7 +2,7 @@
   <view class="input-rank-chart">
     <uni-ec-canvas
       :style="{
-        height: (data.length < 5 ? 300 : data.length * 60) + 'px',
+        height: (data.length < 5 ? 300 : data.length * 35) + 'px',
       }"
       class="input-rank-chart-canvas"
       canvas-id="input-rank-chart-canvas"

@@ -171,7 +171,6 @@ export default {
   watch: {
     checkedStaffIds() {
       if (this.pageIsShow) {
-        this.initTrendYearOptions();
         this.getBriefing();
         this.performanceIndicators();
         this.getTrendData();
@@ -180,9 +179,11 @@ export default {
       }
     },
   },
+  onLoad() {
+    this.initTrendYearOptions();
+  },
   onShow() {
     this.pageIsShow = true;
-    this.initTrendYearOptions();
     this.getBriefing();
     this.performanceIndicators();
     this.getTrendData();
