@@ -51,7 +51,8 @@
 					"van-tabs": "/wxcomponents/vant/tabs/index",
 					"van-notice-bar": "/wxcomponents/vant/notice-bar/index",
 					"van-tabbar": "/wxcomponents/vant/tabbar/index",
-					"van-tabbar-item": "/wxcomponents/vant/tabbar-item/index"
+					"van-tabbar-item": "/wxcomponents/vant/tabbar-item/index",
+					"van-uploader": "/wxcomponents/vant/uploader/index"
 				}
 			}
 		},

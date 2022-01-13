@@ -38,6 +38,27 @@
       </van-cell>
       <van-cell :border="false">
         <template #title>
+          <text class="title">回款凭证</text>
+          <template v-if="item.receipt_file && item.receipt_file.length">
+            <image
+              :src="src"
+              @click="() => previewImage(item.receipt_file, index)"
+              style="
+                width: 80rpx;
+                height: 60rpx;
+                margin-left: 10rpx;
+                vertical-align: top;
+              "
+              v-for="(src, index) in item.receipt_file"
+              :key="index"
+              alt=""
+            />
+          </template>
+          <text v-else>无</text>
+        </template>
+      </van-cell>
+      <van-cell :border="false">
+        <template #title>
           <text class="title">备注信息</text>
           <text class="value">{{ item.tips || "无" }}</text>
         </template>
@@ -126,6 +147,12 @@ export default {
   },
 
   methods: {
+    previewImage(urls, index) {
+      uni.previewImage({
+        urls,
+        current: urls[index],
+      });
+    },
     toConfigPlan() {
       uni.navigateTo({
         url: `/pages/payPlanConfig/index?orderId=${this.data.order_id}`,

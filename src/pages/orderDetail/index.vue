@@ -208,6 +208,14 @@
             :value="formData.pay_date || '请选择'"
             @click="datePickerShow = true"
           />
+          <van-cell title="回款凭证" title-width="160rpx" :border="false">
+            <van-uploader
+              :file-list="fileList"
+              @after-read="handleAfterRead"
+              deletable
+              @delete="({ detail }) => fileList.splice(detail.index, 1)"
+            />
+          </van-cell>
         </van-cell-group>
       </view>
       <view class="drawer-footer">
@@ -258,6 +266,7 @@ import {
   payLogCreate,
   orderUnusualApprove,
 } from "@/api/order";
+import { uploadImage } from "@/api/customer";
 import Dialog from "@/wxcomponents/vant/dialog/dialog";
 export default {
   components: {
@@ -299,6 +308,8 @@ export default {
         pay_money: "",
       },
       addLoading: false,
+      // 上传
+      fileList: [],
       unusualIndex: 0,
     };
   },
@@ -325,10 +336,14 @@ export default {
     this.getCrmOrderDetail();
   },
   methods: {
+    // 上传凭证
+    async handleAfterRead({ detail }) {
+      const { file } = detail;
+      const { url } = await uploadImage(file);
+      this.fileList.push({ url, isImage: true });
+    },
     handleTabsChange({ detail }) {
-      console.log(detail);
       this.unusualIndex = detail.index > 2 ? detail.index - 3 : 0;
-      console.log(this.unusualIndex);
     },
     //添加回款记录
     async handleDrawerConfirm() {
@@ -355,6 +370,7 @@ export default {
       }
       const data = {
         ...this.formData,
+        receipt_file: this.fileList.map((item) => item.url),
         order_id: this.orderId,
       };
       this.addLoading = true;
@@ -408,7 +424,6 @@ export default {
       this.rejectReason = "";
     },
     handleTabbarChange({ detail }) {
-      console.log(detail);
       if (detail === "1") {
         this.hurryUp();
       }

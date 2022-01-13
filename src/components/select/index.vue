@@ -1,6 +1,7 @@
 <template>
   <view class="select">
     <van-popup
+      v-if="isShow"
       :show="show"
       position="right"
       :custom-class="`select-popup ${outer ? 'outer' : ''}`"
@@ -114,6 +115,7 @@ export default {
       checkedValue: null,
       prevCheckedValue: null,
       checkedArr: [],
+      isShow: false,
     };
   },
   watch: {
@@ -128,6 +130,10 @@ export default {
         }
       },
       immediate: true,
+    },
+    // 性能不好，需要显示的时候在渲染
+    show() {
+      !this.isShow && (this.isShow = true);
     },
     options() {
       this.filterOptions();
