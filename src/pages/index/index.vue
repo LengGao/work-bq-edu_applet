@@ -143,6 +143,11 @@ export default {
           path: "/pages/orderApprove/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/2.png",
         },
+        {
+          title: "异动审批",
+          path: "/pages/changeOrderApprove/index",
+          icon: "https://oss-file.beiqujy.com/default/crm_applet/3.png",
+        },
       ],
       tabIndex: 0,
       // 工作通知
@@ -370,6 +375,11 @@ export default {
       if (row.type === 1) {
         uni.navigateTo({
           url: `/pages/orderDetail/index?orderId=${row.order_id}&approve=1`,
+        });
+      }
+      if (row.type === 3) {
+        uni.navigateTo({
+          url: `/pages/orderDetail/index?orderId=${row.order_id}&approve=1&change=1`,
         });
       }
     },

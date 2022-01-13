@@ -1,9 +1,28 @@
 <template>
   <view class="order-detail">
+    <template
+      v-if="detailData.reshuffle_list && detailData.reshuffle_list.length"
+    >
+      <van-notice-bar
+        v-if="detailData.reshuffle_list[unusualIndex].status === 3"
+        wrapable
+        left-icon="volume-o"
+        :text="`驳回原因：${
+          detailData.reshuffle_list[unusualIndex].tips || '无'
+        }`"
+      />
+      <van-notice-bar
+        v-else
+        wrapable
+        left-icon="volume-o"
+        :text="`异动原因：${detailData.reshuffle_list[unusualIndex].reason};${detailData.reshuffle_list[unusualIndex].desc}`"
+      />
+    </template>
+
     <van-notice-bar
-      v-if="detailData.verify_status === 9"
+      v-if="detailData.verify_status === 9 && !isChange"
       wrapable
-      mode="closeable"
+      left-icon="volume-o"
       :text="`驳回原因：${detailData.verify_step[0].tips || '无'}`"
     />
     <view class="order-detail-header">
@@ -19,7 +38,7 @@
         }}</text></view
       >
     </view>
-    <view class="order-detail-steps">
+    <view class="order-detail-steps" v-if="!isChange">
       <van-steps
         :steps="steps"
         :active="stepActive"
@@ -27,7 +46,13 @@
       />
     </view>
 
-    <van-tabs color="#199fff" animated swipeable>
+    <van-tabs
+      color="#199fff"
+      animated
+      swipeable
+      :ellipsis="false"
+      @change="handleTabsChange"
+    >
       <van-tab title="订单信息">
         <OrderInfo :data="detailData" />
       </van-tab>
@@ -41,8 +66,33 @@
           @add-click="popupShow = true"
         />
       </van-tab>
+      <van-tab
+        :title="`异动记录${index + 1}`"
+        v-for="(item, index) in detailData.reshuffle_list"
+        :key="index"
+      >
+        <ChangeRecord :data="item.new_detail" />
+      </van-tab>
     </van-tabs>
-    <template v-if="detailData.is_my_review">
+    <!-- 异动相关操作 -->
+    <van-tabbar
+      v-if="
+        isApprove &&
+        isChange &&
+        detailData.reshuffle_list &&
+        detailData.reshuffle_list.length &&
+        detailData.reshuffle_list[0].my_reshuffle_review
+      "
+      @change="handleTabbarChange"
+      active-color="#43d100"
+      inactive-color="#fd6500"
+      active="6"
+    >
+      <van-tabbar-item icon="clear" name="5">驳回</van-tabbar-item>
+      <van-tabbar-item icon="checked" name="6">通过</van-tabbar-item>
+    </van-tabbar>
+    <!-- 订单相关操作 -->
+    <template v-if="detailData.is_my_review && !isChange">
       <template v-if="isApprove">
         <van-tabbar
           @change="handleTabbarChange"
@@ -77,7 +127,26 @@
         </van-tabbar>
       </template>
     </template>
-
+    <template
+      v-if="
+        isChange &&
+        detailData.reshuffle_list &&
+        detailData.reshuffle_list.length
+      "
+    >
+      <view
+        class="seal seal--warning"
+        v-if="detailData.reshuffle_list[0].status === 3"
+      >
+        <view class="seal-body"> 已驳回 </view>
+      </view>
+      <view
+        class="seal seal--success"
+        v-if="detailData.reshuffle_list[0].status === 2"
+      >
+        <view class="seal-body"> 已通过 </view>
+      </view>
+    </template>
     <van-dialog id="van-dialog" />
     <van-dialog
       use-slot
@@ -179,6 +248,7 @@
 import OrderInfo from "./components/orderInfo.vue";
 import ProjectInfo from "./components/projectInfo.vue";
 import PayRecord from "./components/payRecord.vue";
+import ChangeRecord from "./components/changeRecord.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
 import {
@@ -186,6 +256,7 @@ import {
   crmOrderApprove,
   hurryUp,
   payLogCreate,
+  orderUnusualApprove,
 } from "@/api/order";
 import Dialog from "@/wxcomponents/vant/dialog/dialog";
 export default {
@@ -194,6 +265,7 @@ export default {
     ProjectInfo,
     PayRecord,
     DatePicker,
+    ChangeRecord,
   },
   data() {
     return {
@@ -207,7 +279,8 @@ export default {
       stepActive: 0,
       stepActiveColor: "#199fff",
       steps: [],
-      isApprove: false,
+      isApprove: false, // 是否是审批
+      isChange: false, // 是否是异动
       rejectDialog: false,
       rejectReason: "",
       orderId: "",
@@ -226,6 +299,7 @@ export default {
         pay_money: "",
       },
       addLoading: false,
+      unusualIndex: 0,
     };
   },
   computed: {
@@ -239,14 +313,23 @@ export default {
       });
     },
   },
-  onLoad({ orderId, approve }) {
+  onLoad({ orderId, approve, change }) {
     this.isApprove = approve == 1;
+    this.isChange = change == 1;
     this.orderId = orderId;
+    if (this.isChange) {
+      uni.setNavigationBarTitle({ title: "异动详情" });
+    }
   },
   onShow() {
     this.getCrmOrderDetail();
   },
   methods: {
+    handleTabsChange({ detail }) {
+      console.log(detail);
+      this.unusualIndex = detail.index > 2 ? detail.index - 3 : 0;
+      console.log(this.unusualIndex);
+    },
     //添加回款记录
     async handleDrawerConfirm() {
       if (this.formData.pay_money === "") {
@@ -309,12 +392,16 @@ export default {
       this.formData.pay_date = date;
       this.datePickerShow = false;
     },
-    // 审批操作相关
+    // 订单审批操作相关
     onReasonInputChange({ detail }) {
       this.rejectReason = detail;
     },
     onRejectConfirm() {
-      this.crmOrderApprove(2, this.rejectReason);
+      if (this.isChange) {
+        this.orderUnusualApprove(2, this.rejectReason);
+      } else {
+        this.crmOrderApprove(2, this.rejectReason);
+      }
     },
     onRejectClose() {
       this.rejectDialog = false;
@@ -343,6 +430,12 @@ export default {
       if (detail === "4") {
         this.crmOrderApprove(1);
       }
+      if (detail === "5") {
+        this.rejectDialog = true;
+      }
+      if (detail === "6") {
+        this.orderUnusualApprove(1);
+      }
     },
     // 催办
     async hurryUp() {
@@ -359,6 +452,18 @@ export default {
         tips,
       };
       const res = await crmOrderApprove(data);
+      if (res.code === 0) {
+        this.getCrmOrderDetail();
+      }
+    },
+    // 订单异动审批
+    async orderUnusualApprove(action, tips = "") {
+      const data = {
+        id: this.detailData.reshuffle,
+        verify: action,
+        tips,
+      };
+      const res = await orderUnusualApprove(data);
       if (res.code === 0) {
         this.getCrmOrderDetail();
       }
@@ -441,6 +546,39 @@ export default {
   }
   &-steps {
     padding: 0 20rpx;
+  }
+  .seal {
+    width: 160rpx;
+    height: 160rpx;
+    padding: 4rpx;
+    position: absolute;
+    right: 40rpx;
+    top: 40rpx;
+    border: 4rpx solid #000;
+    border-radius: 50%;
+    &-body {
+      width: 100%;
+      height: 100%;
+      .flex-c-c();
+      border: 3rpx dashed #000;
+      border-radius: 50%;
+      transform: rotate(-30deg);
+      font-size: @font-size-md;
+    }
+    &--success {
+      color: @success;
+      border-color: @success;
+      .seal-body {
+        border-color: @success;
+      }
+    }
+    &--warning {
+      color: @warning;
+      border-color: @warning;
+      .seal-body {
+        border-color: @warning;
+      }
+    }
   }
   /deep/.reject-reason {
     min-height: 40rpx;

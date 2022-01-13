@@ -1,14 +1,40 @@
 <template>
-  <view class="pay-record">
-    <view class="pay-record-title">
+  <view class="change-record">
+    <van-cell-group custom-class="cell-group" :border="false">
+      <van-cell
+        title="异动后订单金额"
+        title-class="title"
+        value-class="value right"
+        :value="data.order_money | moneyFormat"
+      />
+      <van-cell
+        title="优惠金额"
+        title-class="title"
+        value-class="value right"
+        :value="data.reduction | moneyFormat"
+      />
+      <van-cell
+        title="已回款金额"
+        title-class="title"
+        value-class="value right"
+        :value="data.pay_money | moneyFormat"
+      />
+      <van-cell
+        title="未回款金额"
+        title-class="title"
+        value-class="value right"
+        :value="data.overdue_money | moneyFormat"
+      />
+      <van-cell
+        title="共享业绩"
+        title-class="title"
+        value-class="value right"
+        :value="data.union_staff_name"
+        :border="false"
+      />
+    </van-cell-group>
+    <view class="change-record-title">
       <Title title="回款记录"> </Title>
-      <van-button
-        type="primary"
-        v-if="!isApprove"
-        size="small"
-        @click="$emit('add-click')"
-        >添加回款记录</van-button
-      >
     </view>
     <van-cell-group
       custom-class="cell-group"
@@ -43,15 +69,8 @@
         </template>
       </van-cell>
     </van-cell-group>
-    <view class="pay-record-title">
+    <view class="change-record-title">
       <Title title="回款计划"> </Title>
-      <van-button
-        type="primary"
-        v-if="!isApprove"
-        @click="toConfigPlan"
-        size="small"
-        >配置回款计划</van-button
-      >
     </view>
     <template v-if="data.pay_plan.length">
       <van-cell-group
@@ -138,12 +157,10 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
-.pay-record {
-  padding: 20rpx 0;
+.change-record {
   border-top: 20rpx solid #f2f6fc;
   min-height: 65vh;
   &-title {
-    .flex-c-b();
     padding: 0 20rpx 10rpx;
   }
   /deep/.cell-group {
@@ -161,6 +178,9 @@ export default {
     display: inline-block;
     min-width: 100rpx;
     text-align: left;
+    &.right {
+      text-align: right;
+    }
   }
   .progress {
     color: #fd7b18;

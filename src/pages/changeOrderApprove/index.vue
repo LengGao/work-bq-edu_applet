@@ -23,7 +23,7 @@
         @click="toDetail(item.order_id)"
       >
         <view class="item-submit">
-          <view class="item-submit-name finish" v-if="item.status > 2">
+          <view class="item-submit-name finish" v-if="item.status > 1">
             <text>{{ item.staff_name || "--" }}</text>
             提交了异动审批
           </view>
@@ -89,7 +89,7 @@ export default {
   methods: {
     toDetail(orderId) {
       uni.navigateTo({
-        url: `/pages/orderDetail/index?orderId=${orderId}&approve=1`,
+        url: `/pages/orderDetail/index?orderId=${orderId}&approve=1&change=1`,
       });
     },
     handleDrawerSearch(data) {

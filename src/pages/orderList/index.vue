@@ -24,6 +24,7 @@
         <view class="item-info">
           <view class="item-info-user">
             {{ item.surname || "" }}-{{ item.project_name }}
+            <text class="tag" v-if="item.reshuffle">异</text>
           </view>
           <view class="item-info-money"
             >应收 {{ item.order_money | moneyFormat }} / 已收
@@ -161,6 +162,18 @@ export default {
     &-status {
       flex-shrink: 0;
     }
+  }
+  .tag {
+    display: inline-block;
+    border: 1rpx solid @warning;
+    font-size: 20rpx;
+    border-radius: 50%;
+    width: 30rpx;
+    height: 30rpx;
+    text-align: center;
+    line-height: 30rpx;
+    color: @warning;
+    vertical-align: top;
   }
 }
 </style>

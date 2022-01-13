@@ -21,6 +21,7 @@ export function crmOrderApprove(data) {
         url: '/CrmOrder/approve',
         method: 'post',
         showToast: true,
+        loading: true,
         data
     })
 }
@@ -30,6 +31,17 @@ export function hurryUp(data) {
         url: '/CrmOrder/hurryUp',
         method: 'post',
         showToast: true,
+        loading: true,
+        data
+    })
+}
+// 订单异动-审批
+export function orderUnusualApprove(data) {
+    return request({
+        url: '/CrmOrder/action',
+        method: 'post',
+        showToast: true,
+        loading: true,
         data
     })
 }
