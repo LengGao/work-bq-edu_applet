@@ -134,18 +134,12 @@
         detailData.reshuffle_list.length
       "
     >
-      <view
-        class="seal seal--warning"
-        v-if="detailData.reshuffle_list[0].status === 3"
+      <Seal type="warning" v-if="detailData.reshuffle_list[0].status === 3"
+        >已驳回</Seal
       >
-        <view class="seal-body"> 已驳回 </view>
-      </view>
-      <view
-        class="seal seal--success"
-        v-if="detailData.reshuffle_list[0].status === 2"
+      <Seal type="success" v-if="detailData.reshuffle_list[0].status === 2"
+        >已通过</Seal
       >
-        <view class="seal-body"> 已通过 </view>
-      </view>
     </template>
     <van-dialog id="van-dialog" />
     <van-dialog
@@ -258,6 +252,7 @@ import ProjectInfo from "./components/projectInfo.vue";
 import PayRecord from "./components/payRecord.vue";
 import ChangeRecord from "./components/changeRecord.vue";
 import DatePicker from "@/components/datePicker/index.vue";
+import Seal from "@/components/seal/index.vue";
 import { mapGetters } from "vuex";
 import {
   getCrmOrderDetail,
@@ -275,6 +270,7 @@ export default {
     PayRecord,
     DatePicker,
     ChangeRecord,
+    Seal,
   },
   data() {
     return {
@@ -562,39 +558,7 @@ export default {
   &-steps {
     padding: 0 20rpx;
   }
-  .seal {
-    width: 160rpx;
-    height: 160rpx;
-    padding: 4rpx;
-    position: absolute;
-    right: 40rpx;
-    top: 40rpx;
-    border: 4rpx solid #000;
-    border-radius: 50%;
-    &-body {
-      width: 100%;
-      height: 100%;
-      .flex-c-c();
-      border: 3rpx dashed #000;
-      border-radius: 50%;
-      transform: rotate(-30deg);
-      font-size: @font-size-md;
-    }
-    &--success {
-      color: @success;
-      border-color: @success;
-      .seal-body {
-        border-color: @success;
-      }
-    }
-    &--warning {
-      color: @warning;
-      border-color: @warning;
-      .seal-body {
-        border-color: @warning;
-      }
-    }
-  }
+
   /deep/.reject-reason {
     min-height: 40rpx;
   }

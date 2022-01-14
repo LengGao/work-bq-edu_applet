@@ -140,7 +140,6 @@ export default {
       this.getCrmCustomerList();
     },
     async getCrmCustomerList() {
-      this.checkedIds = [];
       const data = {
         page: this.pageNum,
         keyword: this.keyword,

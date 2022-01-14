@@ -129,3 +129,47 @@ export function getUnusualList(data) {
         data
     })
 }
+// 招生回款审批列表
+export function getReturnPaymentList(data) {
+    return request({
+        url: '/CrmOrder/log',
+        method: 'post',
+        data
+    })
+}
+// 渠道回款审批列表
+export function getOrgReceivableList(data) {
+    return request({
+        url: '/OrgReceivable/getList',
+        method: 'get',
+        data
+    })
+}
+// 渠道回款详情
+export function getReceivableInfo(data) {
+    return request({
+        url: '/OrgReceivable/getInfo',
+        method: 'get',
+        data
+    })
+}
+// 招生回款-入账、驳回
+export function entryLog(data) {
+    return request({
+        url: '/CrmOrder/entryLog',
+        method: 'post',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
+// 渠道回款审批
+export function reviewReceivableOrder(data) {
+    return request({
+        url: '/OrgReceivable/reviewReceivableOrder',
+        method: 'post',
+        showToast: true,
+        loading: true,
+        data
+    })
+}

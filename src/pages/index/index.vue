@@ -148,6 +148,11 @@ export default {
           path: "/pages/changeOrderApprove/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/3.png",
         },
+        {
+          title: "回款审批",
+          path: "/pages/collectionApproval/index",
+          icon: "https://oss-file.beiqujy.com/default/crm_applet/7.png",
+        },
       ],
       tabIndex: 0,
       // 工作通知
