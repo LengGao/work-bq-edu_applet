@@ -184,7 +184,7 @@ export default {
     margin-right: 20rpx;
   }
   /deep/.value {
-    color: @font-color;
+    color: @text-color;
     display: inline-block;
     min-width: 100rpx;
     text-align: left;

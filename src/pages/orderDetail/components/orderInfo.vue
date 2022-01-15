@@ -148,7 +148,7 @@ export default {
     color: #969799;
   }
   /deep/.value {
-    color: @font-color;
+    color: @text-color;
   }
 }
 </style>

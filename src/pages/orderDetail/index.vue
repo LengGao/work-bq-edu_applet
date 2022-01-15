@@ -551,7 +551,7 @@ export default {
       margin-bottom: 20rpx;
     }
     &-other {
-      color: @f-c-999;
+      color: @text-color-grey;
       font-size: @font-size-md;
     }
   }

@@ -194,7 +194,7 @@ export default {
     .flex-c-b();
     color: @primary;
     .back-level {
-      color: @f-c-999;
+      color: @text-color-grey;
     }
   }
   &-container {

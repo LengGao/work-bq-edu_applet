@@ -235,7 +235,7 @@ export default {
         margin-bottom: 4rpx;
       }
       &-staff {
-        color: @f-c-999;
+        color: @text-color-grey;
       }
     }
     &-status {

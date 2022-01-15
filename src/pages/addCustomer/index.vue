@@ -269,7 +269,7 @@ export default {
       margin-bottom: 16rpx;
       border-radius: 30rpx;
       background-color: #f7f8fa;
-      color: @font-color;
+      color: @text-color;
       &.active {
         background-color: #ecf5ff;
         color: @primary;

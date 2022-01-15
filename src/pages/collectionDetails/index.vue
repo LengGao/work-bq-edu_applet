@@ -192,7 +192,7 @@ export default {
     }
     .staff {
       font-size: @font-size-md;
-      color: @f-c-999;
+      color: @text-color-grey;
     }
   }
   /deep/.title {
@@ -201,7 +201,7 @@ export default {
     color: #969799;
   }
   /deep/.value {
-    color: @font-color;
+    color: @text-color;
   }
   /deep/.link {
     color: @primary;

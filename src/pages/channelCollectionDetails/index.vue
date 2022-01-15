@@ -196,7 +196,7 @@ export default {
     }
     .staff {
       font-size: @font-size-md;
-      color: @f-c-999;
+      color: @text-color-grey;
     }
   }
   /deep/.title {
@@ -205,7 +205,7 @@ export default {
     color: #969799;
   }
   /deep/.value {
-    color: @font-color;
+    color: @text-color;
   }
   .item {
     .flex-c-b();
@@ -218,7 +218,7 @@ export default {
         margin-bottom: 6rpx;
       }
       &-money {
-        color: @f-c-999;
+        color: @text-color-grey;
       }
     }
     &-status {

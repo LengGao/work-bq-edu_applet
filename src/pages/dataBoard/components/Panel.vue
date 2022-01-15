@@ -118,7 +118,7 @@ export default {
       background-color: #f2f3f5;
     }
     &-title {
-      color: @font-color;
+      color: @text-color;
     }
     &-btn {
       color: #999;

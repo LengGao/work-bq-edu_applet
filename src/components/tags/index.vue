@@ -68,7 +68,7 @@ export default {
   &-title {
     margin-bottom: 20rpx;
     font-size: @font-size-sm;
-    color: @font-color;
+    color: @text-color;
   }
   &-container {
     display: flex;
@@ -82,7 +82,7 @@ export default {
       margin-bottom: 16rpx;
       border-radius: 30rpx;
       background-color: #f7f8fa;
-      color: @font-color;
+      color: @text-color;
       &.active {
         background-color: #ecf5ff;
         color: @primary;

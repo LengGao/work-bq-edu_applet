@@ -131,7 +131,7 @@ export default {
     justify-content: space-between;
   }
   &-sheet {
-    color: @font-color;
+    color: @text-color;
     font-size: @font-size-md;
   }
 }

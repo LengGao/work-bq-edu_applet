@@ -88,7 +88,7 @@ export default {
   height: calc(100% - 80rpx);
   .load-more {
     text-align: center;
-    color: @f-c-999;
+    color: @text-color-grey;
     font-size: @font-size-sm;
     padding-bottom: 20rpx;
   }

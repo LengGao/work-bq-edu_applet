@@ -198,7 +198,7 @@ export default {
         }
       }
       &-time {
-        color: @f-c-999;
+        color: @text-color-grey;
       }
     }
     &-actions {

@@ -87,7 +87,7 @@ export default {
   height: 100%;
   .load-more {
     text-align: center;
-    color: @f-c-999;
+    color: @text-color-grey;
     font-size: @font-size-xs;
     padding-bottom: 20rpx;
   }
@@ -99,7 +99,7 @@ export default {
     &-content {
       .flex-c-b();
       .notice-time {
-        color: @f-c-999;
+        color: @text-color-grey;
         font-size: @font-size-xs;
         flex-shrink: 0;
       }

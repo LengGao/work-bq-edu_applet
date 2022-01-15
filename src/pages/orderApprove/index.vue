@@ -164,7 +164,7 @@ export default {
       .flex-c-b();
       margin-bottom: 10rpx;
       &-name {
-        color: @f-c-999;
+        color: @text-color-grey;
         text {
           display: inline-block;
           color: #fd6500;
@@ -190,7 +190,7 @@ export default {
         }
       }
       &-time {
-        color: @f-c-999;
+        color: @text-color-grey;
       }
     }
     &-customer {
@@ -198,7 +198,7 @@ export default {
       margin-bottom: 8rpx;
     }
     &-desc {
-      color: @f-c-999;
+      color: @text-color-grey;
     }
   }
 }

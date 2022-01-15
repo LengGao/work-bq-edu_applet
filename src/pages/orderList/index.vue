@@ -156,7 +156,7 @@ export default {
         font-size: @font-size-md;
       }
       &-money {
-        color: @f-c-999;
+        color: @text-color-grey;
       }
     }
     &-status {

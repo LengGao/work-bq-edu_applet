@@ -90,7 +90,7 @@ export default {
   height: calc(100% - 80rpx);
   .load-more {
     text-align: center;
-    color: @f-c-999;
+    color: @text-color-grey;
     font-size: @font-size-xs;
     padding-bottom: 20rpx;
   }
@@ -111,7 +111,7 @@ export default {
       .time {
         padding-top: 12rpx;
         font-size: @font-size-xs;
-        color: @f-c-999;
+        color: @text-color-grey;
       }
     }
     &-title {

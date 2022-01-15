@@ -113,7 +113,7 @@ export default {
   height: 100%;
   .load-more {
     text-align: center;
-    color: @f-c-999;
+    color: @text-color-grey;
     font-size: @font-size-xs;
     padding-bottom: 20rpx;
   }
@@ -139,7 +139,7 @@ export default {
           .flex-c-b();
           margin-bottom: 8rpx;
           .user-name {
-            color: @f-c-999;
+            color: @text-color-grey;
             font-size: @font-size-sm;
             .text {
               color: @primary;
@@ -148,7 +148,7 @@ export default {
             }
           }
           .time {
-            color: @f-c-999;
+            color: @text-color-grey;
             margin-left: auto;
             font-size: @font-size-xs;
           }
