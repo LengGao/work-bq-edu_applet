@@ -25,8 +25,35 @@ const filters = {
             5: "#ee0a24",
         }
         return tagTypeMap[status]
+    },
+    orderApplyStatus(status, isText) {
+        const applyStatusMap = {
+            1: {
+                text: "待审核",
+                color: "#fdc400",
+            },
+            2: {
+                text: "审核中",
+                color: "#199fff",
+            },
+            3: {
+                text: "已通过",
+                color: "#59D234",
+            },
+            8: {
+                text: "已撤销",
+                color: "#c0c4cc",
+            },
+            9: {
+                text: "已驳回",
+                color: "#fd6500",
+            },
+        }
+        if (isText) {
+            return applyStatusMap[status].text || '--'
+        }
+        return applyStatusMap[status].color || ''
     }
-
 }
 
 Object.keys(filters).forEach(key => {
