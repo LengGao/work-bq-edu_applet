@@ -35,7 +35,7 @@
           v-if="!item.open_course"
           @click="openCourseConfirm(item.id)"
         >
-          <van-icon name="orders-o" size="40rpx" />
+          <van-icon name="add" size="40rpx" />
           <view class="btn-name">开课</view>
         </view>
       </view>
@@ -181,6 +181,7 @@ export default {
       }
     }
     &-actions {
+      flex-shrink: 0;
       margin-left: 20rpx;
       text-align: center;
       color: @primary;
