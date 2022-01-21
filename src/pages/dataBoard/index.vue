@@ -43,25 +43,45 @@
         />
       </Panel>
       <Panel
-        title="录入客户排行榜"
+        title="客户分析"
         actionType="time"
         v-model="customerRankMonth"
         @sheet-change="getCustomerRankData"
       >
-        <InputRankBar :data="customerRankData" />
+        <view class="customer-actions">
+          <van-button
+            @click="customerActive = 1"
+            :type="customerActive === 1 ? 'warning' : 'default'"
+            size="small"
+            round
+            custom-style="padding:4rpx 0;width:200rpx;"
+            >客户来源</van-button
+          >
+          <van-button
+            @click="customerActive = 2"
+            :type="customerActive === 2 ? 'warning' : 'default'"
+            size="small"
+            round
+            custom-style="padding:4rpx 0;width:200rpx;"
+            >客户拥有量</van-button
+          >
+        </view>
+        <Pie :data="customerPieData" v-if="customerActive === 1" />
+        <InputRankBar v-else :data="customerRankData" />
       </Panel>
     </view>
   </view>
 </template>
 
 <script>
-//图表是定制过的： https://echarts.apache.org/zh/builder.html
+//图表是定制过的： https://echarts.apache.org/zh/builder.html      version: 4.8.0
 import Panel from "./components/Panel.vue";
 import SalesData from "./components/SalesData.vue";
 import GaugeChart from "./components/GaugeChart.vue";
 import TrendBar from "./components/TrendBar.vue";
 import RankBar from "./components/RankBar.vue";
 import InputRankBar from "./components/InputRankBar.vue";
+import Pie from "./components/Pie.vue";
 import NavBar from "@/components/navBar/index.vue";
 import {
   getBriefing,
@@ -80,6 +100,7 @@ export default {
     RankBar,
     InputRankBar,
     NavBar,
+    Pie,
   },
   data() {
     return {
@@ -159,10 +180,12 @@ export default {
       salesRankCheckedData: [],
       rankType: 1,
       salesRankMonth: new Date().getTime(),
-      // 录入客户排行榜
+      // 客户分析
       customerRankData: [],
+      customerPieData: [],
       customerRankMonth: new Date().getTime(),
       pageIsShow: true,
+      customerActive: 1,
     };
   },
   computed: {
@@ -270,7 +293,7 @@ export default {
         ].filter((item, index) => index < 10);
       }
     },
-    // 录入客户排行榜
+    // 客户分析
     async getCustomerRankData() {
       const date = new Date(this.customerRankMonth);
       const data = {
@@ -279,7 +302,10 @@ export default {
       };
       const res = await getCustomerRankData(data).catch(() => {});
       if (res.code === 0) {
-        this.customerRankData = res.data.filter((item, index) => index < 10);
+        this.customerPieData = res.data.cake;
+        this.customerRankData = res.data.chart.filter(
+          (item, index) => index < 10
+        );
       }
     },
   },
@@ -301,6 +327,9 @@ export default {
   &-content {
     padding: 20rpx;
     overflow-y: auto;
+  }
+  .customer-actions {
+    .flex-c-a();
   }
 }
 </style>

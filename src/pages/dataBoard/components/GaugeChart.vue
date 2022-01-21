@@ -9,37 +9,31 @@
       <view class="gauge-chart-data-item">
         <view class="gauge-chart-data-item-title">业绩目标</view>
         <view class="gauge-chart-data-item-value">
-          {{ unitFormat(data.totalPerformance)
+          {{ priceFormat(data.totalPerformance)
           }}<text class="unit">{{
-            data.totalPerformance >= 10000 ? "万元" : "元"
+            unitFormat(data.totalPerformance)
           }}</text></view
         >
       </view>
       <view class="gauge-chart-data-item">
         <view class="gauge-chart-data-item-title">订单金额</view>
         <view class="gauge-chart-data-item-value">
-          {{ unitFormat(data.orderMoney)
-          }}<text class="unit">{{
-            data.orderMoney >= 10000 ? "万元" : "元"
-          }}</text></view
+          {{ priceFormat(data.orderMoney)
+          }}<text class="unit">{{ unitFormat(data.orderMoney) }}</text></view
         >
       </view>
       <view class="gauge-chart-data-item">
         <view class="gauge-chart-data-item-title">回款金额</view>
         <view class="gauge-chart-data-item-value">
-          {{ unitFormat(data.payMoney)
-          }}<text class="unit">{{
-            data.payMoney >= 10000 ? "万元" : "元"
-          }}</text></view
+          {{ priceFormat(data.payMoney)
+          }}<text class="unit">{{ unitFormat(data.payMoney) }}</text></view
         >
       </view>
       <view class="gauge-chart-data-item">
         <view class="gauge-chart-data-item-title">退款金额</view>
         <view class="gauge-chart-data-item-value"
-          >{{ unitFormat(data.refundAmount)
-          }}<text class="unit">{{
-            Math.abs(data.refundAmount) >= 10000 ? "万元" : "元"
-          }}</text></view
+          >{{ priceFormat(data.refundMoney)
+          }}<text class="unit">{{ unitFormat(data.refundMoney) }}</text></view
         >
       </view>
     </view>
@@ -134,6 +128,9 @@ export default {
   },
   methods: {
     unitFormat(val) {
+      return val >= 10000 ? "万元" : "元";
+    },
+    priceFormat(val) {
       if (!val) {
         return `0.00`;
       }

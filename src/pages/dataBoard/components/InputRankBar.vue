@@ -31,8 +31,6 @@ export default {
   },
   data() {
     return {
-      show: false,
-      canvasH: "1600rpx",
       ec: {
         option: {
           tooltip: {
@@ -99,6 +97,9 @@ export default {
     "data.length"() {
       this.$refs.echats.init();
     },
+  },
+  mounted() {
+    this.updateChartData();
   },
   methods: {
     updateChartData() {
