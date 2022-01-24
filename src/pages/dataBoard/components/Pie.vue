@@ -73,7 +73,6 @@ export default {
   },
   methods: {
     updateChartData() {
-      console.log(666);
       this.ec.option.series[0].data = this.data.slice();
     },
   },
