@@ -76,11 +76,21 @@
     </van-cell-group>
 
     <view class="add-curtomer-submit">
+      <view class="agreement-checkbox">
+        <van-checkbox
+          :value="checked"
+          shape="square"
+          @change="({ detail }) => (checked = detail)"
+          >我已阅读并同意</van-checkbox
+        >
+        <view class="link" @click="toAgreement">《用户协议和隐私政策》</view>
+      </view>
       <van-button
         type="primary"
         custom-class="b-l"
         plain
         round
+        :disabled="!checked"
         @click="handleSave(1)"
         :loading="addLoading"
         >保存</van-button
@@ -89,6 +99,7 @@
         type="primary"
         :loading="addLoading"
         custom-class="b-r"
+        :disabled="!checked"
         round
         @click="handleSave(2)"
         >保存并报名</van-button
@@ -135,6 +146,7 @@ export default {
       areaList,
       area: "",
       addLoading: false,
+      checked: false,
       formData: {
         name: "",
         mobile: "",
@@ -163,6 +175,11 @@ export default {
     ...mapGetters(["fromOptions", "eduOptions"]),
   },
   methods: {
+    toAgreement() {
+      uni.navigateTo({
+        url: "/pages/agreement/index",
+      });
+    },
     // 保存
     handleSave(type) {
       const phoneReg = /^1[3-9]\d{9}$/;
@@ -291,6 +308,13 @@ export default {
     }
     /deep/.b-l {
       margin-right: 30rpx;
+    }
+  }
+  .agreement-checkbox {
+    padding: 20rpx 0;
+    .flex-c-c();
+    .link {
+      color: @primary;
     }
   }
 }

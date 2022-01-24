@@ -14,6 +14,22 @@
 			}
 		},
 		{
+			"path": "pages/eduOpenClass/index",
+			"style": {
+				"navigationBarTitleText": "教务开课",
+				"usingComponents": {}
+			}
+		},
+		{
+			"path": "pages/agreement/index",
+			"style": {
+				"navigationBarTitleText": "隐私协议",
+				"usingComponents": {
+					"van-button": "/wxcomponents/vant/button/index"
+				}
+			}
+		},
+		{
 			"path": "pages/collectionApproval/index",
 			"style": {
 				"navigationBarTitleText": "回款审批",
@@ -96,13 +112,6 @@
 			"path": "pages/highSeasCustomers/index",
 			"style": {
 				"navigationBarTitleText": "公海客户",
-				"usingComponents": {}
-			}
-		},
-		{
-			"path": "pages/eduOpenClass/index",
-			"style": {
-				"navigationBarTitleText": "教务开课",
 				"usingComponents": {}
 			}
 		},

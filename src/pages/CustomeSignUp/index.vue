@@ -183,8 +183,18 @@
     </van-cell-group>
 
     <view class="add-curtomer-submit">
+      <view class="agreement-checkbox">
+        <van-checkbox
+          :value="checked"
+          shape="square"
+          @change="({ detail }) => (checked = detail)"
+          >我已阅读并同意</van-checkbox
+        >
+        <view class="link" @click="toAgreement">《用户协议和隐私政策》</view>
+      </view>
       <van-button
         type="primary"
+        :disabled="!checked"
         :loading="saveLoading"
         round
         @click="handleSave"
@@ -251,6 +261,7 @@ export default {
   },
   data() {
     return {
+      checked: false,
       saveLoading: false,
       currentDate: new Date().getTime(),
       checkedStaffName: "",
@@ -307,6 +318,11 @@ export default {
     this.formData.id_card_number = userIdCard;
   },
   methods: {
+    toAgreement() {
+      uni.navigateTo({
+        url: "/pages/agreement/index",
+      });
+    },
     // 报名类型切换
     handleTypeChange({ detail }) {
       this.formData.type = detail;
@@ -631,6 +647,13 @@ page {
     z-index: 100;
     /deep/.van-button {
       width: 80%;
+    }
+  }
+  .agreement-checkbox {
+    padding: 20rpx 0;
+    .flex-c-c();
+    .link {
+      color: @primary;
     }
   }
 }
