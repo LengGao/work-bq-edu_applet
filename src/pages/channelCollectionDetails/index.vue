@@ -115,7 +115,12 @@ export default {
     return {
       rejectReason: "",
       rejectDialog: false,
-      data: {},
+      data: {
+        org_name: "",
+        receivable_money: "",
+        staff_name: "",
+        pay_date: "",
+      },
       logId: "",
       list: [],
     };

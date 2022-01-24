@@ -123,7 +123,13 @@ export default {
     return {
       rejectReason: "",
       rejectDialog: false,
-      data: {},
+      data: {
+        surname: "",
+        pay_money: "",
+        staff_name: "",
+        create_time: "",
+        surname: "",
+      },
     };
   },
   onLoad({ data }) {

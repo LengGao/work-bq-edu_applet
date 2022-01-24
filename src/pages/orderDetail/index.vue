@@ -275,6 +275,10 @@ export default {
   data() {
     return {
       detailData: {
+        surname: "",
+        project_name: "",
+        create_time: "",
+        order_money: "",
         pay_plan: [],
         pay_log: [],
         project: "[]",
