@@ -57,6 +57,9 @@
             <view class="item-info-money">
               应收{{ item.order_money | moneyFormat }}
               <text style="margin-left: 20rpx"
+                >本次{{ item.receivable_money | moneyFormat }}</text
+              >
+              <text style="margin-left: 20rpx"
                 >已收{{ item.pay_money | moneyFormat }}</text
               ></view
             >
