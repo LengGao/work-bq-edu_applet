@@ -230,6 +230,7 @@ export default {
       }
     }
     &-status {
+      flex-shrink: 0;
       align-self: flex-start;
     }
   }

@@ -26,11 +26,11 @@ export function createCrmCustomer(data) {
 }
 
 // 报名时选择项目
-export function getCateProjectOption(params) {
+export function getCateProjectOption(data) {
     return request({
         url: '/project/cate_project',
         method: 'get',
-        params,
+        data,
     })
 }
 // 报名时选择项目-查询已选项目的详情
