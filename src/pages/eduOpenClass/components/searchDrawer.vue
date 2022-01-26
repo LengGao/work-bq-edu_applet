@@ -261,10 +261,8 @@ export default {
     },
     // 选择机构
     handleSelectOrgChange(checked) {
-      console.log(checked);
       this.selectOrgShow = false;
       this.searchData.from_org = checked.institution_id;
-
       this.checkedOrgName = checked.institution_name;
     },
     // 选择项目

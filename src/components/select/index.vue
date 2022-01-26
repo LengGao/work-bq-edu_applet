@@ -31,38 +31,44 @@
         >
       </view>
       <view class="select-container">
-        <van-checkbox-group
-          v-if="multiple"
-          :value="checkedValue || []"
-          @change="onChange"
-        >
-          <block v-for="item in list" :key="key(item)">
-            <van-checkbox
+        <scroll-view class="scroll" scroll-y @scrolltolower="onScrolltolower">
+          <van-checkbox-group
+            v-if="multiple"
+            :value="checkedValue || []"
+            @change="onChange"
+          >
+            <block v-for="item in list" :key="key(item)">
+              <van-checkbox
+                icon-size="28rpx"
+                custom-class="checkbox"
+                label-class="title"
+                :name="item[optionValue]"
+                >{{ item[optionName] }}</van-checkbox
+              >
+            </block>
+          </van-checkbox-group>
+          <van-radio-group
+            v-else
+            :value="checkedValue || ''"
+            @change="onChange"
+          >
+            <van-radio
               icon-size="28rpx"
               custom-class="checkbox"
               label-class="title"
               :name="item[optionValue]"
-              >{{ item[optionName] }}</van-checkbox
+              v-for="item in list"
+              :key="key(item)"
+              >{{ item[optionName] }}
+            </van-radio>
+            <van-divider
+              v-if="!list.length"
+              custom-style="padding:0 100rpx"
+              contentPosition="center"
+              >无匹配选项</van-divider
             >
-          </block>
-        </van-checkbox-group>
-        <van-radio-group v-else :value="checkedValue || ''" @change="onChange">
-          <van-radio
-            icon-size="28rpx"
-            custom-class="checkbox"
-            label-class="title"
-            :name="item[optionValue]"
-            v-for="item in list"
-            :key="key(item)"
-            >{{ item[optionName] }}
-          </van-radio>
-          <van-divider
-            v-if="!list.length"
-            custom-style="padding:0 100rpx"
-            contentPosition="center"
-            >无匹配选项</van-divider
-          >
-        </van-radio-group>
+          </van-radio-group>
+        </scroll-view>
       </view>
       <view class="select-footer">
         <van-button @click="onCancel" custom-class="btn" round
@@ -116,6 +122,7 @@ export default {
       prevCheckedValue: null,
       checkedArr: [],
       isShow: false,
+      end: 15,
     };
   },
   watch: {
@@ -136,7 +143,7 @@ export default {
       !this.isShow && (this.isShow = true);
     },
     options() {
-      this.filterOptions();
+      this.updateOptions();
     },
     // 根据选中的id获取那一整条数据
     checkedValue(value) {
@@ -157,7 +164,7 @@ export default {
     },
   },
   created() {
-    this.options.length && this.filterOptions();
+    this.options.length && this.updateOptions();
   },
   methods: {
     handleTagDel(index) {
@@ -167,13 +174,29 @@ export default {
         this.checkedValue = "";
       }
     },
+    // 太多了会卡 上拉加载
+    onScrolltolower() {
+      if (this.options.length > this.end) {
+        this.end += 15;
+        this.updateOptions();
+      }
+    },
+    // 更新选项
+    updateOptions() {
+      this.list = this.options.slice(0, this.end);
+    },
+    // 搜索
     filterOptions(val) {
-      this.list = this.options.filter((item) => {
-        if (val) {
-          return item[this.optionName].includes(val);
-        }
-        return true;
-      });
+      if (val) {
+        this.list = this.options.filter((item) => {
+          if (val) {
+            return item[this.optionName].includes(val);
+          }
+          return true;
+        });
+      } else {
+        this.updateOptions();
+      }
     },
     onChange({ detail }) {
       this.checkedValue = detail;
@@ -186,7 +209,13 @@ export default {
       }
 
       this.prevCheckedValue = this.checkedValue;
-      this.$emit("confirm", this.checkedArr[0]);
+      this.$emit(
+        "confirm",
+        this.checkedArr[0] || {
+          [this.optionName]: "",
+          [this.optionValue]: "",
+        }
+      );
     },
     onCancel() {
       this.$emit("close");
@@ -223,7 +252,10 @@ export default {
   }
   &-container {
     flex: 1;
-    overflow-y: auto;
+    overflow: hidden;
+    .scroll {
+      height: 100%;
+    }
   }
   &-footer {
     padding: 12px 12px 20px 12px;
