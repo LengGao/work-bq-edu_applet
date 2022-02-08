@@ -163,8 +163,15 @@ export default {
       const res = await getInstitutionClassType(data);
       if (res.code === 0) {
         const { org_class_type = "[]", ...rest } = res.data[0] || {};
-        const classType = JSON.parse(org_class_type || "[]");
-        this.projectOptions = classType.map((item) => {
+        let classType = JSON.parse(org_class_type || "[]");
+        let arr = classType;
+        if (!Array.isArray(classType)) {
+          arr = [];
+          for (const k in classType) {
+            arr.push(classType[k]);
+          }
+        }
+        this.projectOptions = arr.map((item) => {
           return {
             class_type_id: item.id,
             class_type_price: item.price,
@@ -172,7 +179,6 @@ export default {
             ...rest,
           };
         });
-        console.log(this.projectOptions);
         this.optionsLevel++;
       }
     },
