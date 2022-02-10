@@ -81,9 +81,6 @@ export default {
   },
   onLoad() {
     this.skeletonLoading = true;
-  },
-  onShow() {
-    this.pageNum = 1;
     this.getUnusualList();
   },
   methods: {

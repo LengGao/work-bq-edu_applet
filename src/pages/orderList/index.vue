@@ -72,9 +72,6 @@ export default {
   },
   onLoad() {
     this.skeletonLoading = true;
-  },
-  onShow() {
-    this.pageNum = 1;
     this.getCrmOrderList();
   },
   methods: {
@@ -114,7 +111,7 @@ export default {
         page: this.pageNum,
         channel: 2,
         keyword: this.keyword,
-        date: `${y}-${m}-${d} - ${y}-${m}-${d}`,
+        // date: `${y}-${m}-${d} - ${y}-${m}-${d}`,
         ...this.searchData,
       };
       const res = await getCrmOrderList(data).catch(() => {});

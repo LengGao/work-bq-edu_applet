@@ -90,8 +90,6 @@ export default {
   },
   onLoad() {
     this.skeletonLoading = true;
-  },
-  onShow() {
     this.getCrmList();
   },
   methods: {

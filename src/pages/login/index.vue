@@ -59,7 +59,7 @@ export default {
           ...res.data.info,
           token: res.data.token,
         });
-        uni.navigateBack();
+        this.reloadPrevPage();
       }
     },
     // 通过code登录
@@ -78,8 +78,15 @@ export default {
           ...res.data.info,
           token: res.data.token,
         });
-        uni.navigateBack();
+        this.reloadPrevPage();
       }
+    },
+    // 登录成功后重新加载上一页
+    reloadPrevPage() {
+      const pages = getCurrentPages();
+      const prevPage = pages[pages.length - 2];
+      prevPage.onLoad(prevPage.options);
+      uni.navigateBack();
     },
     wxLogin() {
       uni.login({

@@ -79,8 +79,6 @@ export default {
   },
   onLoad() {
     this.skeletonLoading = true;
-  },
-  onShow() {
     this.projectUser();
   },
   methods: {

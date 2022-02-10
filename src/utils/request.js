@@ -42,13 +42,13 @@ const requset = (options) => new Promise(async (resolve, reject) => {
         url: process.env.VUE_APP_BASE_API + url,
         success: (response) => {
             const { data } = response
-            // console.log(`${url} >>success：`, data)
             if (data.code !== 0 && data.code !== 5) {
                 errorHandler[data.code] && errorHandler[data.code]()
                 uniToast({
                     icon: 'none',
                     title: data.message || '请求失败'
                 })
+                console.log(`${url} >>error：`, data)
                 return reject(data)
             }
             if (showToast) {
