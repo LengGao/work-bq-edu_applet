@@ -17,9 +17,9 @@
     >
       <view
         class="item"
-        v-for="item in listData"
+        v-for="(item, index) in listData"
         :key="item.order_id"
-        @click="toDetail(item.order_id)"
+        @click="toDetail(item.order_id, index)"
       >
         <view class="item-info">
           <view class="item-info-user">
@@ -68,6 +68,7 @@ export default {
       searchData: {},
       keyword: "",
       drawerShow: false,
+      checkedIndex: null,
     };
   },
   onLoad() {
@@ -81,7 +82,16 @@ export default {
       this.getCrmOrderList();
       this.drawerShow = false;
     },
-    toDetail(orderId) {
+    // 更新查看详情的那条数据（用于详情发生变化）
+    updateItem(data) {
+      if (data && this.checkedIndex !== null) {
+        this.listData[this.checkedIndex].verify_status = data.verify_status;
+        this.listData[this.checkedIndex].order_money = data.order_money;
+        this.listData[this.checkedIndex].pay_money = data.pay_money;
+      }
+    },
+    toDetail(orderId, index) {
+      this.checkedIndex = index;
       uni.navigateTo({
         url: `/subPackages/orderDetail/index?orderId=${orderId}`,
       });

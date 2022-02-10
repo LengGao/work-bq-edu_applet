@@ -331,9 +331,7 @@ export default {
     if (this.isChange) {
       uni.setNavigationBarTitle({ title: "异动详情" });
     }
-  },
-  onShow() {
-    this.getCrmOrderDetail();
+    this.getCrmOrderDetail(true);
   },
   methods: {
     // 上传凭证
@@ -483,13 +481,20 @@ export default {
         this.getCrmOrderDetail();
       }
     },
+    // 更新列表当前条数据(当前详情发生变化时)
+    updateListItem(data) {
+      const pages = getCurrentPages();
+      const prevPage = pages[pages.length - 2];
+      prevPage.$vm && prevPage.$vm.updateItem && prevPage.$vm.updateItem(data);
+    },
     // 获取详情
-    async getCrmOrderDetail() {
+    async getCrmOrderDetail(isOnload) {
       const data = {
         order_id: this.orderId,
       };
       const res = await getCrmOrderDetail(data);
       this.detailData = res.data;
+      !isOnload && this.updateListItem(res.data);
       const approveStatusMap = {
         1: "待审核",
         3: "已通过",
