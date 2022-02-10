@@ -349,7 +349,7 @@ export default {
     },
     toConfigPlan() {
       uni.navigateTo({
-        url: "/pages/payPlanConfig/index",
+        url: "/subPackages/payPlanConfig/index",
       });
     },
     // 保存

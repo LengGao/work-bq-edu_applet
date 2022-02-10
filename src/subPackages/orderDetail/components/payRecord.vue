@@ -155,7 +155,7 @@ export default {
     },
     toConfigPlan() {
       uni.navigateTo({
-        url: `/pages/payPlanConfig/index?orderId=${this.data.order_id}`,
+        url: `/subPackages/payPlanConfig/index?orderId=${this.data.order_id}`,
       });
     },
   },

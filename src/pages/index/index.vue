@@ -120,37 +120,37 @@ export default {
       items: [
         {
           title: "客户管理",
-          path: "/pages/customerList/index",
+          path: "/subPackages/customerList/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/9.png",
         },
         {
           title: "公海客户",
-          path: "/pages/highSeasCustomers/index",
+          path: "/subPackages/highSeasCustomers/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/10.png",
         },
         {
           title: "订单管理",
-          path: "/pages/orderList/index",
+          path: "/subPackages/orderList/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/13.png",
         },
         {
           title: "教务开课",
-          path: "/pages/eduOpenClass/index",
+          path: "/subPackages/eduOpenClass/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/11.png",
         },
         {
           title: "订单审批",
-          path: "/pages/orderApprove/index",
+          path: "/subPackages/orderApprove/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/2.png",
         },
         {
           title: "异动审批",
-          path: "/pages/changeOrderApprove/index",
+          path: "/subPackages/changeOrderApprove/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/3.png",
         },
         {
           title: "回款审批",
-          path: "/pages/collectionApproval/index",
+          path: "/subPackages/collectionApproval/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/7.png",
         },
       ],
@@ -309,7 +309,7 @@ export default {
     handleNoticeClick(index) {
       this.msgData[index].read = 2;
       uni.navigateTo({
-        url: `/pages/index/systemNoticeDetail?id=${this.msgData[index].id}`,
+        url: `/subPackages/index/systemNoticeDetail?id=${this.msgData[index].id}`,
       });
     },
     handleMsgMore() {
@@ -379,12 +379,12 @@ export default {
       row.is_read = 1;
       if (row.type === 1) {
         uni.navigateTo({
-          url: `/pages/orderDetail/index?orderId=${row.order_id}&approve=1`,
+          url: `/subPackages/orderDetail/index?orderId=${row.order_id}&approve=1`,
         });
       }
       if (row.type === 3) {
         uni.navigateTo({
-          url: `/pages/orderDetail/index?orderId=${row.order_id}&approve=1&change=1`,
+          url: `/subPackages/orderDetail/index?orderId=${row.order_id}&approve=1&change=1`,
         });
       }
     },

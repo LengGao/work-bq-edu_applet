@@ -1,10 +1,9 @@
 <template>
   <view class="order-approve-list">
-    <van-search
-      :value="keyword"
+    <SearchBar
+      @search="handleSearch"
       placeholder="请输入客户姓名"
-      shape="round"
-      @change="handleSearch"
+      @filter-click="drawerShow = true"
     />
     <LoadMore
       :data="listData"
@@ -23,31 +22,38 @@
         @click="toDetail(item.order_id)"
       >
         <view class="item-submit">
-          <view class="item-submit-name finish" v-if="item.status > 1">
-            <text>{{ item.staff_name || "--" }}</text>
-            提交了异动审批
+          <view
+            class="item-submit-name finish"
+            v-if="item.finish_staff_id || item.verify_status === 8"
+          >
+            <text>{{ item.submit_name || "--" }}</text>
+            提交了订单审批
           </view>
           <view class="item-submit-name" v-else>
-            <text>{{ item.staff_name || "--" }}</text>
-            提交了异动审批
+            <text>{{ item.submit_name || "--" }}</text>
+            提交了订单审批
           </view>
-          <view v-if="item.status < 2" class="item-submit-time"
-            >{{ item.create_time }}
-          </view>
-          <template v-else>
-            <van-tag type="success" plain v-if="item.status === 2"
+          <template v-if="[3, 8, 9].includes(item.verify_status)">
+            <van-tag type="success" plain v-if="item.verify_status === 3"
               >已通过</van-tag
             >
-            <van-tag type="warning" plain v-if="item.status === 3"
+            <van-tag color="#999" plain v-if="item.verify_status === 8"
+              >已撤销</van-tag
+            >
+            <van-tag type="warning" plain v-if="item.verify_status === 9"
               >已驳回</van-tag
             >
           </template>
+          <view class="item-submit-time" v-else>{{ item.create_time }} </view>
         </view>
         <view class="item-customer">
           {{ item.surname || "" }}-{{ item.project_name }}
         </view>
-        <view class="van-multi-ellipsis--l2 item-desc">
-          {{ item.reason }}
+        <view class="item-desc">
+          <text>应收金额{{ item.order_money | moneyFormat }}</text>
+          <text style="margin-left: 20rpx"
+            >已收金额{{ item.pay_money | moneyFormat }}</text
+          >
         </view>
       </view>
     </LoadMore>
@@ -60,11 +66,15 @@
 </template>
 
 <script>
+import SearchBar from "@/components/searchBar/index.vue";
 import LoadMore from "@/components/loadMore/index.vue";
-import { getUnusualList } from "@/api/order";
+import SearchDrawer from "./components/searchDrawer.vue";
+import { getCrmApproveOrder } from "@/api/order";
 export default {
   components: {
+    SearchBar,
     LoadMore,
+    SearchDrawer,
   },
   data() {
     return {
@@ -81,43 +91,43 @@ export default {
   },
   onLoad() {
     this.skeletonLoading = true;
-    this.getUnusualList();
+    this.getCrmApproveOrder();
   },
   methods: {
     toDetail(orderId) {
       uni.navigateTo({
-        url: `/pages/orderDetail/index?orderId=${orderId}&approve=1&change=1`,
+        url: `/subPackages/orderDetail/index?orderId=${orderId}&approve=1`,
       });
     },
     handleDrawerSearch(data) {
       this.searchData = data;
       this.pageNum = 1;
-      this.getUnusualList();
+      this.getCrmApproveOrder();
       this.drawerShow = false;
     },
-    handleSearch({ detail }) {
+    handleSearch(val) {
       this.pageNum = 1;
-      this.keyword = detail;
-      this.getUnusualList();
+      this.keyword = val;
+      this.getCrmApproveOrder();
     },
     handleLoadMore() {
       this.pageNum++;
       this.listLoading = true;
-      this.getUnusualList();
+      this.getCrmApproveOrder();
     },
     handleRefresh() {
       this.listRefreshLoading = true;
       this.pageNum = 1;
-      this.getUnusualList();
+      this.getCrmApproveOrder();
     },
-    async getUnusualList() {
+    async getCrmApproveOrder() {
       this.checkedIds = [];
       const data = {
         page: this.pageNum,
         keyword: this.keyword,
         ...this.searchData,
       };
-      const res = await getUnusualList(data).catch(() => {});
+      const res = await getCrmApproveOrder(data).catch(() => {});
       this.listRefreshLoading = false;
       this.listLoading = false;
       this.skeletonLoading = false;

@@ -109,12 +109,12 @@ export default {
     },
     toAdd() {
       uni.navigateTo({
-        url: "/pages/addCustomer/index",
+        url: "/subPackages/addCustomer/index",
       });
     },
     toSignUp(row) {
       uni.navigateTo({
-        url: `/pages/customeSignUp/index?userId=${row.id}&userName=${
+        url: `/subPackages/customeSignUp/index?userId=${row.id}&userName=${
           row.name || ""
         }&userMobile=${row.mobile || ""}&userIdCard=${
           row.id_card_number || ""

@@ -83,7 +83,7 @@ export default {
     },
     toDetail(orderId) {
       uni.navigateTo({
-        url: `/pages/orderDetail/index?orderId=${orderId}`,
+        url: `/subPackages/orderDetail/index?orderId=${orderId}`,
       });
     },
     handleSearch(val) {

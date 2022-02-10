@@ -153,11 +153,11 @@ export default {
       if (this.listType === 1) {
         const queryStr = JSON.stringify(row);
         uni.navigateTo({
-          url: `/pages/collectionDetails/index?data=${queryStr}`,
+          url: `/subPackages/collectionDetails/index?data=${queryStr}`,
         });
       } else {
         uni.navigateTo({
-          url: `/pages/channelCollectionDetails/index?logId=${row.log_id}`,
+          url: `/subPackages/channelCollectionDetails/index?logId=${row.log_id}`,
         });
       }
     },

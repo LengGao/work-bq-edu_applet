@@ -178,7 +178,7 @@ export default {
     },
     toOrderDetail() {
       uni.navigateTo({
-        url: `/pages/orderDetail/index?orderId=${this.data.order_id}`,
+        url: `/subPackages/orderDetail/index?orderId=${this.data.order_id}`,
       });
     },
     previewImage(urls, index) {

@@ -84,7 +84,7 @@ export default {
   methods: {
     toAdd() {
       uni.navigateTo({
-        url: "/pages/addStudent/index",
+        url: "/subPackages/addStudent/index",
       });
     },
     openCourseConfirm(id) {
