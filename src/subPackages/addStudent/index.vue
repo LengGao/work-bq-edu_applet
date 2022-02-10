@@ -352,9 +352,16 @@ export default {
       if (res.code === 0) {
         setTimeout(() => {
           this.saveLoading = false;
+          this.reloadList();
           uni.navigateBack();
         }, 800);
       }
+    },
+    // 更新列表
+    reloadList() {
+      const pages = getCurrentPages();
+      const prevPage = pages[pages.length - 2];
+      prevPage && prevPage.onLoad(prevPage.options);
     },
     // 获取机构
     async getOrganizationOptions() {

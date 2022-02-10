@@ -130,9 +130,8 @@ export default {
   },
   onLoad({ logId }) {
     this.logId = logId;
-  },
-  onShow() {
     this.getReceivableInfo();
+
   },
   methods: {
     async getReceivableInfo() {

@@ -136,7 +136,6 @@ export default {
     data = JSON.parse(data);
     this.data = data;
   },
-  onShow() {},
   methods: {
     handleTabbarChange({ detail }) {
       if (detail === "2") {

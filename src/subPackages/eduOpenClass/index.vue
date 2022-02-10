@@ -15,7 +15,7 @@
       @refresh="handleRefresh"
       class="load-more"
     >
-      <view class="item" v-for="item in listData" :key="item.id">
+      <view class="item" v-for="(item, index) in listData" :key="item.id">
         <view class="item-info">
           <view class="item-info-status">
             <view class="user-name"
@@ -33,7 +33,7 @@
         <view
           class="item-actions"
           v-if="!item.open_course"
-          @click="openCourseConfirm(item.id)"
+          @click="openCourseConfirm(item.id, index)"
         >
           <van-icon name="add" size="40rpx" />
           <view class="btn-name">开课</view>
@@ -75,6 +75,7 @@ export default {
       keyword: "",
       searchData: {},
       drawerShow: false,
+      checkedIndex: null,
     };
   },
   onLoad() {
@@ -87,11 +88,12 @@ export default {
         url: "/subPackages/addStudent/index",
       });
     },
-    openCourseConfirm(id) {
+    openCourseConfirm(id, index) {
       Dialog.confirm({
         message: "是否确定一键开通课程和题库？",
       })
         .then(() => {
+          this.checkedIndex = index;
           this.eduOpenCourse(id);
         })
         .catch(() => {
@@ -102,7 +104,7 @@ export default {
       const data = { id };
       const res = await eduOpenCourse(data);
       if (res.code === 0) {
-        this.projectUser();
+        this.listData[this.checkedIndex].open_course = 1;
       }
     },
     handleDrawerSearch(data) {

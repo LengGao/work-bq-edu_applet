@@ -255,6 +255,7 @@ export default {
         this.addLoading = false;
       });
       if (res.code === 0) {
+        this.reloadList();
         setTimeout(() => {
           if (type === 2) {
             uni.redirectTo({
@@ -266,6 +267,12 @@ export default {
           }
         }, 800);
       }
+    },
+    // 更新列表
+    reloadList() {
+      const pages = getCurrentPages();
+      const prevPage = pages[pages.length - 2];
+      prevPage && prevPage.onLoad(prevPage.options);
     },
   },
 };
