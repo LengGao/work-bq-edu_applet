@@ -309,7 +309,7 @@ export default {
     handleNoticeClick(index) {
       this.msgData[index].read = 2;
       uni.navigateTo({
-        url: `/subPackages/index/systemNoticeDetail?id=${this.msgData[index].id}`,
+        url: `/pages/index/systemNoticeDetail?id=${this.msgData[index].id}`,
       });
     },
     handleMsgMore() {
