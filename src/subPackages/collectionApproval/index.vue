@@ -20,9 +20,9 @@
     >
       <view
         class="item"
-        v-for="item in listData"
+        v-for="(item, index) in listData"
         :key="item.id"
-        @click="() => toDetail(item)"
+        @click="() => toDetail(item, index)"
       >
         <view class="item-info">
           <view class="item-info-user"
@@ -131,6 +131,7 @@ export default {
           type: "warning",
         },
       },
+      checkedIndex: null,
     };
   },
   onLoad() {
@@ -149,7 +150,18 @@ export default {
       this.getApproveList();
       this.drawerShow = false;
     },
-    toDetail(row) {
+    // 更新查看详情的那条数据（用于详情发生变化）
+    updateItem(staus) {
+      if (staus && this.checkedIndex !== null) {
+        if (this.listType === 1) {
+          this.listData[this.checkedIndex].verify_status = staus;
+        } else {
+          this.listData[this.checkedIndex].check_state = staus;
+        }
+      }
+    },
+    toDetail(row, index) {
+      this.checkedIndex = index;
       if (this.listType === 1) {
         const queryStr = JSON.stringify(row);
         uni.navigateTo({

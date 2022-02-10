@@ -171,10 +171,17 @@ export default {
       };
       const res = await reviewReceivableOrder(data);
       if (res.code === 0) {
+        this.updateListItem(check_state);
         setTimeout(() => {
           uni.navigateBack();
         }, 700);
       }
+    },
+    // 更新列表当前条数据(当前详情发生变化时)
+    updateListItem(data) {
+      const pages = getCurrentPages();
+      const prevPage = pages[pages.length - 2];
+      prevPage.$vm && prevPage.$vm.updateItem && prevPage.$vm.updateItem(data);
     },
     toOrderDetail() {
       uni.navigateTo({
