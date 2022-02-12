@@ -84,6 +84,11 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      colorCache: {},
+    };
+  },
   methods: {
     onScrolltolower() {
       if (this.total > this.data.length && !this.loadMoreLoading) {
@@ -92,7 +97,13 @@ export default {
     },
     randomColor(id) {
       if (id) {
-        return `#${Math.random().toString(16).substr(2, 6).toUpperCase()}`;
+        return (
+          this.colorCache[id] ||
+          (this.colorCache[id] = `#${Math.random()
+            .toString(16)
+            .substr(2, 6)
+            .toUpperCase()}`)
+        );
       }
     },
   },
