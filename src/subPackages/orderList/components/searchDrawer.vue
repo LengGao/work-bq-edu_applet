@@ -207,18 +207,7 @@ export default {
       "payStatusOptions",
     ]),
   },
-  created() {
-    this.setDefaultDate();
-  },
   methods: {
-    setDefaultDate() {
-      const date = new Date();
-      const y = date.getFullYear();
-      const m = date.getMonth() + 1;
-      const d = date.getDate();
-      this.searchData.dateStart = `${y}-${m}-${d}`;
-      this.searchData.dateEnd = `${y}-${m}-${d}`;
-    },
     handleDrawerReset() {
       for (const k in this.searchData) {
         this.searchData[k] = "";
@@ -230,7 +219,8 @@ export default {
       this.checkedStaffName = "";
       this.checkedPayStatusName = "";
       this.checkedApproveName = "";
-      this.setDefaultDate();
+      this.searchData.dateStart = "";
+      this.searchData.dateEnd = "";
       this.$emit("search", {});
     },
     handleDrawerConfirm() {

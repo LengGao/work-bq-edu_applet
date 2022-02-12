@@ -17,7 +17,7 @@
       v-for="(item, index) in data.pay_log"
       :key="index"
     >
-      <van-cell :title="`${item.pay_date} 回款`" title-class="title" />
+      <van-cell :title="`${item.pay_date || '--'} 回款`" title-class="title" />
       <van-cell :border="false">
         <template #title>
           <text class="title">回款金额</text>

@@ -23,7 +23,10 @@
       >
         <view class="item-info">
           <view class="item-info-user">
-            {{ item.surname || "" }}-{{ item.project_name }}
+            {{ item.surname || ""
+            }}<span v-if="item.jiebie_name">-{{ item.jiebie_name }}</span
+            >-{{ item.project_name }}
+
             <text class="tag" v-if="item.reshuffle">异</text>
           </view>
           <view class="item-info-money"
@@ -113,15 +116,10 @@ export default {
     },
     async getCrmOrderList() {
       this.checkedIds = [];
-      const date = new Date();
-      const y = date.getFullYear();
-      const m = date.getMonth() + 1;
-      const d = date.getDate();
       const data = {
         page: this.pageNum,
         channel: 2,
         keyword: this.keyword,
-        // date: `${y}-${m}-${d} - ${y}-${m}-${d}`,
         ...this.searchData,
       };
       const res = await getCrmOrderList(data).catch(() => {});

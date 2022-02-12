@@ -47,7 +47,9 @@
           <view class="item-submit-time" v-else>{{ item.create_time }} </view>
         </view>
         <view class="item-customer">
-          {{ item.surname || "" }}-{{ item.project_name }}
+          {{ item.surname || ""
+          }}<span v-if="item.jiebie_name">-{{ item.jiebie_name }}</span
+          >-{{ item.project_name }}
         </view>
         <view class="item-desc">
           <text>应收金额{{ item.order_money | moneyFormat }}</text>

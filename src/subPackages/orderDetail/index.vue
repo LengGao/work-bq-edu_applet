@@ -67,6 +67,13 @@
         />
       </van-tab>
       <van-tab
+        :title="`学籍异动${index + 1}`"
+        v-for="(item, index) in orderTransactionData"
+        :key="item.id"
+      >
+        <StudentStatusChangeRecord :data="item" />
+      </van-tab>
+      <van-tab
         :title="`异动记录${index + 1}`"
         v-for="(item, index) in detailData.reshuffle_list"
         :key="index"
@@ -247,6 +254,7 @@
 </template>
 
 <script>
+import StudentStatusChangeRecord from "./components/studentStatusChangeRecord.vue";
 import OrderInfo from "./components/orderInfo.vue";
 import ProjectInfo from "./components/projectInfo.vue";
 import PayRecord from "./components/payRecord.vue";
@@ -260,6 +268,7 @@ import {
   hurryUp,
   payLogCreate,
   orderUnusualApprove,
+  getOrderTransactionList,
 } from "@/api/order";
 import { uploadImage } from "@/api/customer";
 import Dialog from "@/wxcomponents/vant/dialog/dialog";
@@ -271,6 +280,7 @@ export default {
     DatePicker,
     ChangeRecord,
     Seal,
+    StudentStatusChangeRecord,
   },
   data() {
     return {
@@ -311,6 +321,8 @@ export default {
       // 上传
       fileList: [],
       unusualIndex: 0,
+      // 学籍异动
+      orderTransactionData: [],
     };
   },
   computed: {
@@ -332,8 +344,16 @@ export default {
       uni.setNavigationBarTitle({ title: "异动详情" });
     }
     this.getCrmOrderDetail(true);
+    this.getOrderTransactionList();
   },
   methods: {
+    async getOrderTransactionList() {
+      const data = { order_id: this.orderId };
+      const res = await getOrderTransactionList(data);
+      if (res.code === 0) {
+        this.orderTransactionData = res.data;
+      }
+    },
     // 上传凭证
     async handleAfterRead({ detail }) {
       const { file } = detail;

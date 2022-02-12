@@ -37,6 +37,12 @@
       :value="data.project_name"
     />
     <van-cell
+      title="届别名称"
+      title-class="title"
+      value-class="value"
+      :value="data.jiebie_name"
+    />
+    <van-cell
       title="订单金额"
       title-class="title"
       value-class="value"

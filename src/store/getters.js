@@ -49,6 +49,12 @@ const getters = {
             store.dispatch('getOrganizationOptions')
         }
         return state.options.orgOptions || []
+    },
+    gradeOptions: state => {
+        if (!state.options.gradeOptions) {
+            store.dispatch('getGradeOptions')
+        }
+        return state.options.gradeOptions || []
     }
 }
 export default getters

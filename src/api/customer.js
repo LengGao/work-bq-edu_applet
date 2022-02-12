@@ -33,6 +33,14 @@ export function getCateProjectOption(data) {
         data,
     })
 }
+// 获取届别下拉选项
+export function getGradeOptions(data) {
+    return request({
+        url: '/Crm/jieBieXiaLaLieBiao',
+        method: 'get',
+        data,
+    })
+}
 // 报名时选择项目-查询已选项目的详情
 export function getCateProjectDetail(data) {
     return request({

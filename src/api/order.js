@@ -173,3 +173,11 @@ export function reviewReceivableOrder(data) {
         data
     })
 }
+// 根据订单id获取学籍异动详情
+export function getOrderTransactionList(data) {
+    return request({
+        url: '/Crm/getOrderTransactionList',
+        method: 'get',
+        data
+    })
+}

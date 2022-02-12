@@ -58,7 +58,7 @@
         :value="checkedProjectName || '请选择'"
         @click="openSelceProjectSheet"
       />
-      <van-cell required title="开通网课" :border="false">
+      <van-cell required title="开通网课">
         <template #right-icon>
           <van-radio-group
             :value="formData.open_course"
@@ -70,6 +70,13 @@
           </van-radio-group>
         </template>
       </van-cell>
+      <van-cell
+        :border="false"
+        title="届别名称"
+        is-link
+        :value="gradeCheckedName || '请选择'"
+        @click="sheetShow = true"
+      />
     </van-cell-group>
 
     <view class="add-curtomer-submit">
@@ -112,6 +119,12 @@
       @close="selectEduProjectShow = false"
       @confirm="handleSelectEduProjectChange"
     />
+    <van-action-sheet
+      :show="sheetShow"
+      :actions="gradeOptions"
+      @close="sheetShow = false"
+      @select="onSheetSelect"
+    />
   </view>
 </template>
 
@@ -140,6 +153,7 @@ export default {
         from_organization_id: "",
         open_course: "",
         projectData: [],
+        jiebie_id: "",
       },
       // 选择机构
       selectShow: false,
@@ -148,10 +162,13 @@ export default {
       checkedProjectName: "",
       // 选择学历项目
       selectEduProjectShow: false,
+      // 选择届别
+      sheetShow: false,
+      gradeCheckedName: "",
     };
   },
   computed: {
-    ...mapGetters(["orgOptions"]),
+    ...mapGetters(["orgOptions", "gradeOptions"]),
     institutionOptions() {
       return this.orgOptions.map((item) => ({
         name: item.institution_name,
@@ -164,6 +181,11 @@ export default {
       uni.navigateTo({
         url: "/pages/agreement/index",
       });
+    },
+    //选择届别
+    onSheetSelect({ detail }) {
+      this.gradeCheckedName = detail.name;
+      this.formData.jiebie_id = detail.value;
     },
     // 选择机构
     handleSelectChange(checked) {
@@ -297,6 +319,7 @@ export default {
           },
         ]),
         type: this.formData.type,
+        jiebie_id: this.formData.jiebie_id,
         open_course: this.formData.open_course,
         from_organization_id: this.formData.from_organization_id,
       };

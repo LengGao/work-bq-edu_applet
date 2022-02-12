@@ -50,6 +50,13 @@
         :value="checkedProjectName || '请选择'"
         @click="openSelceProjectSheet"
       />
+      <van-cell
+        title="届别名称"
+        is-link
+        title-width="200rpx"
+        :value="gradeCheckedName || '请选择'"
+        @click="openSheet('gradeOptions')"
+      />
       <van-field
         :value="formData.order_money"
         required
@@ -284,6 +291,7 @@ export default {
         pay_day: "",
         pay_type: "",
         id: "",
+        jiebie_id: "",
         projectData: [],
       },
       // 选择支付方式
@@ -306,10 +314,12 @@ export default {
       planOptions: [],
       planCheckedName: "",
       planCheckedIndex: 0,
+      // 届别
+      gradeCheckedName: "",
     };
   },
   computed: {
-    ...mapGetters(["staffOptions", "payTypeOptions"]),
+    ...mapGetters(["staffOptions", "payTypeOptions", "gradeOptions"]),
   },
   onLoad({ userId = "", userName = "", userMobile = "", userIdCard = "" }) {
     this.formData.id = userId;
@@ -505,6 +515,11 @@ export default {
         this.planCheckedIndex = detail.value;
         return;
       }
+      if (this.sheetChecked === "gradeOptions") {
+        this.gradeCheckedName = detail.name;
+        this.formData.jiebie_id = detail.value;
+        return;
+      }
     },
     // 报名缴费
     async createCrmOrder() {
@@ -518,6 +533,7 @@ export default {
         tips: this.formData.tips,
         union_staff_id: this.formData.union_staff_id,
         type: this.formData.type,
+        jiebie_id: this.formData.jiebie_id,
         receipt_file: this.fileList.map((item) => item.url),
       };
       // 学历报名参数
@@ -625,7 +641,7 @@ page {
 .add-curtomer {
   height: 100%;
   overflow-y: scroll;
-  padding-bottom: 200rpx;
+  padding-bottom: 240rpx;
   /deep/.group-cell {
     border-top: 20rpx solid #f2f6fc;
   }
