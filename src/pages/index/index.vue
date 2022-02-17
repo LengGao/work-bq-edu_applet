@@ -44,6 +44,7 @@
             :loading="collectionLoading"
             :data="collectionData"
             @more="handleCollectionMore"
+            @item-click="handleCollectClick"
             :total="collectionTotal"
             @refresherrefresh="onCollectionRefresh"
             :refresh-loading="collectionRefreshLoading"
@@ -337,6 +338,12 @@ export default {
       }
     },
     // 回款提醒
+    handleCollectClick(row) {
+      console.log(row);
+      uni.navigateTo({
+        url: `/subPackages/orderDetail/index?orderId=${row.order_id}`,
+      });
+    },
     onCollectionRefresh() {
       this.collectionRefreshLoading = true;
       this.collectionPage = 1;
@@ -374,7 +381,6 @@ export default {
     },
     // 工作通知
     handleWorkNoticeClick(row) {
-      console.log(row);
       this.readStaffNotice(row.id);
       row.is_read = 1;
       if (row.type === 1) {

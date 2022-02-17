@@ -14,7 +14,7 @@
         <view
           class="collection-list-item"
           v-for="item in data"
-          :key="item.id"
+          :key="item.plan_id"
           @click="$emit('item-click', item)"
         >
           <view class="collection-list-item-content">
