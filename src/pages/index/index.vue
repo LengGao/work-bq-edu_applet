@@ -339,7 +339,6 @@ export default {
     },
     // 回款提醒
     handleCollectClick(row) {
-      console.log(row);
       uni.navigateTo({
         url: `/subPackages/orderDetail/index?orderId=${row.order_id}`,
       });
