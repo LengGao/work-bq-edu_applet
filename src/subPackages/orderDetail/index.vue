@@ -99,8 +99,8 @@
       <van-tabbar-item icon="checked" name="6">通过</van-tabbar-item>
     </van-tabbar>
     <!-- 订单相关操作 -->
-    <template v-if="detailData.is_my_review && !isChange">
-      <template v-if="isApprove">
+    <template v-if="!isChange">
+      <template v-if="detailData.is_my_review && isApprove">
         <van-tabbar
           @change="handleTabbarChange"
           active-color="#43d100"
@@ -116,20 +116,29 @@
           @change="handleTabbarChange"
           v-if="
             detailData.verify_status < 3 ||
-            (detailData.verify_status === 1 && !detailData.reshuffle)
+            (detailData.verify_status === 1 && !detailData.reshuffle) ||
+            detailData.pay_status < 4
           "
         >
+          <template v-if="detailData.is_my_review">
+            <van-tabbar-item
+              icon="smile-o"
+              v-if="detailData.verify_status < 3"
+              name="1"
+              >催办</van-tabbar-item
+            >
+            <van-tabbar-item
+              v-if="detailData.verify_status === 1 && !detailData.reshuffle"
+              icon="revoke"
+              name="2"
+              >撤回</van-tabbar-item
+            >
+          </template>
           <van-tabbar-item
-            icon="smile-o"
-            v-if="detailData.verify_status < 3"
-            name="1"
-            >催办</van-tabbar-item
-          >
-          <van-tabbar-item
-            v-if="detailData.verify_status === 1 && !detailData.reshuffle"
-            icon="revoke"
-            name="2"
-            >撤回</van-tabbar-item
+            icon="failure"
+            v-if="detailData.pay_status < 4"
+            name="7"
+            >作废</van-tabbar-item
           >
         </van-tabbar>
       </template>
@@ -151,7 +160,7 @@
     <van-dialog id="van-dialog" />
     <van-dialog
       use-slot
-      title="驳回"
+      :title="dialogType === 1 ? '驳回' : '作废'"
       :show="rejectDialog"
       show-cancel-button
       @close="onRejectClose"
@@ -161,7 +170,7 @@
       <van-field
         :value="rejectReason"
         type="textarea"
-        placeholder="请输入驳回原因"
+        :placeholder="`请输入${dialogType === 1 ? '驳回' : '作废'}原因`"
         autosize
         :border="false"
         @input="onReasonInputChange"
@@ -169,6 +178,7 @@
         input-class="reject-reason"
       />
     </van-dialog>
+
     <van-popup
       :show="popupShow"
       position="right"
@@ -269,6 +279,7 @@ import {
   payLogCreate,
   orderUnusualApprove,
   getOrderTransactionList,
+  orderCancel,
 } from "@/api/order";
 import { uploadImage } from "@/api/customer";
 import Dialog from "@/wxcomponents/vant/dialog/dialog";
@@ -301,6 +312,7 @@ export default {
       isApprove: false, // 是否是审批
       isChange: false, // 是否是异动
       rejectDialog: false,
+      dialogType: 1, // 1：驳回 2：作废
       rejectReason: "",
       orderId: "",
       //添加回款记录
@@ -323,6 +335,7 @@ export default {
       unusualIndex: 0,
       // 学籍异动
       orderTransactionData: [],
+      // 订单作废
     };
   },
   computed: {
@@ -431,10 +444,16 @@ export default {
       this.rejectReason = detail;
     },
     onRejectConfirm() {
-      if (this.isChange) {
-        this.orderUnusualApprove(2, this.rejectReason);
+      if (this.dialogType === 1) {
+        // 异动驳回
+        if (this.isChange) {
+          this.orderUnusualApprove(2, this.rejectReason);
+        } else {
+          // 订单驳回
+          this.crmOrderApprove(2, this.rejectReason);
+        }
       } else {
-        this.crmOrderApprove(2, this.rejectReason);
+        this.orderCancel();
       }
     },
     onRejectClose() {
@@ -442,32 +461,52 @@ export default {
       this.rejectReason = "";
     },
     handleTabbarChange({ detail }) {
-      if (detail === "1") {
-        this.hurryUp();
-      }
-      if (detail === "2") {
-        Dialog.confirm({
-          title: "提醒",
-          message: "确定要撤回此订单吗？",
-        })
-          .then(() => {
-            this.crmOrderApprove(3);
+      switch (detail) {
+        case "1":
+          this.hurryUp();
+          break;
+        case "2":
+          Dialog.confirm({
+            title: "提醒",
+            message: "确定要撤回此订单吗？",
           })
-          .catch(() => {
-            // on cancel
-          });
+            .then(() => {
+              this.crmOrderApprove(3);
+            })
+            .catch(() => {
+              // on cancel
+            });
+          break;
+        case "3":
+          this.dialogType = 1;
+          this.rejectDialog = true;
+          break;
+        case "4":
+          this.crmOrderApprove(1);
+          break;
+        case "5":
+          this.dialogType = 1;
+          this.rejectDialog = true;
+          break;
+        case "6":
+          this.orderUnusualApprove(1);
+          break;
+        case "7":
+          this.dialogType = 2;
+          this.rejectDialog = true;
+          break;
       }
-      if (detail === "3") {
-        this.rejectDialog = true;
-      }
-      if (detail === "4") {
-        this.crmOrderApprove(1);
-      }
-      if (detail === "5") {
-        this.rejectDialog = true;
-      }
-      if (detail === "6") {
-        this.orderUnusualApprove(1);
+    },
+    // 订单作废
+    async orderCancel() {
+      const data = {
+        status: 4, //订单状态 5：退费，4： 作废
+        order_id: this.orderId,
+        tips: this.rejectReason,
+      };
+      const res = await orderCancel(data);
+      if (res.code === 0) {
+        this.getCrmOrderDetail();
       }
     },
     // 催办

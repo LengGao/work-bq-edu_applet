@@ -15,6 +15,14 @@ export function getCrmOrderDetail(data) {
         data
     })
 }
+export function orderCancel(data) {
+    return request({
+        url: '/order/cancel',
+        method: 'get',
+        showToast: true,
+        data
+    })
+}
 // 订单操作 1、通过，2：拒绝 , 3:撤销/作废订单，4、删除订单
 export function crmOrderApprove(data) {
     return request({
