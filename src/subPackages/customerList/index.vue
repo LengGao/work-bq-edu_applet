@@ -200,6 +200,7 @@ export default {
     }
     &-actions {
       .flex-c();
+      flex-shrink: 0;
       .btn {
         text-align: center;
         color: @primary;
