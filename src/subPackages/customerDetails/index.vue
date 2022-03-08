@@ -15,7 +15,13 @@
             </view>
         </view>
         <view class="main">
-            <van-tabs type="line" animated :active="active" @click="handleTabClick">
+            <van-tabs
+                type="line" 
+                title-active-color="#199fff" 
+                color="#199fff"
+                animated
+                :active="active"
+                @click="handleTabClick">
                 <van-tab title="基本信息">
                     <UserInfo :data="userInfo"></UserInfo>
                 </van-tab>
@@ -53,7 +59,7 @@ export default {
             studentClass: [],
             userProject: [],
             studyProgress: {},
-            active: 1,
+            active: 0,
         }
     },
     methods: {
@@ -61,7 +67,9 @@ export default {
             console.log("event",event);
         },
         handleSignUp() {
-
+            const {uid,surname,mobile,id_card_number} = this.userInfo
+            const url = `?userId=${uid}&userName=${surname}&userMobile=${mobile}&userIdCard=${id_card_number}`
+            uni.navigateTo({url})
         },
         async getData(data) {
             const reqs = [

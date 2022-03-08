@@ -15,7 +15,7 @@
         </template>
         <template>
             <text class="title left">订单金额</text>
-            <text class="value left">{{ data.order_money }}</text>
+            <text class="value">{{ data.order_money }}</text>
         </template>
     </van-cell>
 
@@ -25,8 +25,8 @@
             <text class="value">{{ data.jiebie_name }}</text>
         </template>
         <template>
-            <text class="titl lefte">订单时间</text>
-            <text class="value left">{{ data.create_time }}</text>
+            <text class="titl left">订单时间</text>
+            <text class="value">{{ data.create_time }}</text>
         </template>
     </van-cell>
 
@@ -37,14 +37,14 @@
         </template>
         <template>
             <text class="title left">未回款金额</text>
-            <text class="value left">{{ data.reduction }}</text>
+            <text class="value">{{ data.reduction }}</text>
         </template>
     </van-cell>
 
     <van-cell :border="false">
         <template #title>
             <text class="title left">备注信息</text>
-            <text class="value left">{{ data.tips }}</text>
+            <text class="value">{{ data.tips }}</text>
         </template>
     </van-cell>
 
@@ -128,4 +128,3 @@ export default {
   }
 }
 </style>
-
