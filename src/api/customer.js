@@ -133,10 +133,89 @@ export function getDpAppletList(data) {
         data
     })
 }
+
 // 领取公海客户
 export function receiveHighSeas(data) {
     return request({
         url: '/HighSeas/receive',
+        method: 'post',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
+
+// 客户基本信息
+export function getUserInfo(data) {
+    return request({
+        url: '/UserArchives/detail',
+        method: 'get',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
+
+// 客户订单记录
+export function getOrderRecond(data) {
+    return request({
+        url: '/CrmOrder/index',
+        method: 'post',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
+
+// 报读班级
+export function getStudendclass(data) {
+    return request({
+        url: '/classstudents/getstudendclass',
+        method: 'get',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
+
+// 报读项目
+export function getUserProject(data) {
+    return request({
+        url: '/classstudents/getuserproject',
+        method: 'get',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
+
+// 学生课程
+export function getUserCourseList(data) {
+    return request({
+        url: '/Crm/userCourseList',
+        method: 'get',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
+
+// 客户学习进度
+export function getStudyProgress(data) {
+    return request({
+        url: '/CourseVideo/userCourseVideoStatisticsList',
+        method: 'get',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
+
+
+// 修改用户信息
+export function postNodify(data) {
+    return request({
+        url: '/UserArchives/modify',
         method: 'post',
         showToast: true,
         loading: true,

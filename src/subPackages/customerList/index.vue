@@ -19,7 +19,7 @@
       class="load-more"
     >
       <view class="item" v-for="item in listData" :key="item.id">
-        <view class="item-info">
+        <view class="item-info" @click="toDetails(item)">
           <view class="item-info-status">
             <view class="user-name">{{ item.name }}</view>
             <van-tag plain type="success" v-if="item.deal_num">已成交</van-tag>
@@ -120,6 +120,12 @@ export default {
           row.id_card_number || ""
         }`,
       });
+    },
+    toDetails(row) {
+      console.log("执行", row);
+      uni.navigateTo({
+        url: `/subPackages/customerDetails/index?userId=${row.id}`
+      })
     },
     handleSearch(val) {
       this.pageNum = 1;

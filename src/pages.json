@@ -68,6 +68,16 @@
 					}
 				},
 				{
+					"path": "customerDetails/index",
+					"style": {
+						"navigationBarTitleText": "客户详情",
+						"usingComponents": {
+							"van-tab": "/wxcomponents/vant/tab/index",
+							"van-tabs": "/wxcomponents/vant/tabs/index"
+						}
+					}
+				},
+				{
 					"path": "highSeasCustomers/index",
 					"style": {
 						"navigationBarTitleText": "公海客户",
