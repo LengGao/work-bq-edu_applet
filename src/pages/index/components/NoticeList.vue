@@ -20,7 +20,7 @@
           <view class="notice-list-item-content">
             <view
               class="avatar"
-              :style="{ 'background-color': randomColor(item.id) }"
+              :style="{ 'background-color': randomColor(item.from_staff_id) }"
             >
               <image
                 v-if="item.head_photo"
