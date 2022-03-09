@@ -144,7 +144,6 @@ export function receiveHighSeas(data) {
         data
     })
 }
-
 // 客户基本信息
 export function getUserInfo(data) {
     return request({
@@ -155,7 +154,6 @@ export function getUserInfo(data) {
         data
     })
 }
-
 // 客户订单记录
 export function getOrderRecond(data) {
     return request({
@@ -166,7 +164,6 @@ export function getOrderRecond(data) {
         data
     })
 }
-
 // 报读班级
 export function getStudendclass(data) {
     return request({
@@ -177,7 +174,6 @@ export function getStudendclass(data) {
         data
     })
 }
-
 // 报读项目
 export function getUserProject(data) {
     return request({
@@ -188,7 +184,6 @@ export function getUserProject(data) {
         data
     })
 }
-
 // 学生课程
 export function getUserCourseList(data) {
     return request({
@@ -199,7 +194,6 @@ export function getUserCourseList(data) {
         data
     })
 }
-
 // 客户学习进度
 export function getStudyProgress(data) {
     return request({
@@ -210,13 +204,42 @@ export function getStudyProgress(data) {
         data
     })
 }
-
-
 // 修改用户信息
 export function postNodify(data) {
     return request({
         url: '/UserArchives/modify',
         method: 'post',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
+// 获取客户来源数据
+export function getCustomerSource(data) {
+    return request({
+        url: '/Customfield/getInfo?field_name=customer_source',
+        method: 'get',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
+// 获取机构数据
+export function getInstitutionSelectData(data) {
+    return request({
+        url: '/staff/getInstitutionSelectData',
+        method: 'get',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
+
+// 获取题库进度
+export function getBuyQuestionBank(data) {
+    return request({
+        url: '/questionBank/getBuyQuestionBank',
+        method: 'get',
         showToast: true,
         loading: true,
         data

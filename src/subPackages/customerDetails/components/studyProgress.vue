@@ -1,43 +1,84 @@
 <template>
   <view class="study-progress">
-    <view class=""> </view>
+    <view v-for="(item) in studyProgress.list" :key="item.id">
+      <Title title="学习进度"></Title>
+      <van-cell
+        title="课程名称"
+        title-class="title"
+        value-class="value"
+        :value="item.course_name"
+      />
+      <van-cell
+        title="总课时"
+        title-class="title"
+        value-class="value"
+        :value="item.total_lesson_count"
+      />
+      <van-cell
+        title="学习时长"
+        title-class="title"
+        value-class="value"
+        :value="item.finish_lesson_count"
+      />
+      <van-cell
+        title="课程进度"
+        title-class="title"
+        value-class="value"
+        :value="item.progress + '%'"
+      />
+      </view>
+
+  <view v-for="(item) in questionBank.list" :key="item.id">
+    <Title title="题库进度"></Title>
     <van-cell
-      title="项目名称"
+      title="题库名称"
       title-class="title"
       value-class="value"
-      :value="data.course_name"
+      :value="item.question_bank_name"
     />
     <van-cell
-      title="总课时"
+      title="打卡天数"
       title-class="title"
       value-class="value"
-      :value="data.total_lesson_count"
+      :value="item.punch_in_days"
     />
     <van-cell
-      title="学习时长"
+      title="章节练习进度"
       title-class="title"
       value-class="value"
-      :value="data.finish_lesson_count"
+      :value="item.practice_progress"
     />
     <van-cell
       title="课程进度"
       title-class="title"
       value-class="value"
-      :value="data.progress + '%'"
+      :value="item.progress + '%'"
     />
+    </view>
   </view>
 </template>
 
 <script>
+import Title from "@/components/title/index.vue";
+import { getStudyProgress, getBuyQuestionBank } from "@/api/customer";
 export default {
+  components: { Title },
   props: {
-    data: {
-      type: Object,
-      default: () => ({})
+    uid: { type: Number }
+  },
+  data() {
+    return {
+      studyProgress: {},
+      questionBank: {},
+      page: 1,
     }
   },
   mounted() {
-    console.log("props",this.data);
+    const params = {uid: this.uid}, params2 = {uid: this.uid, page: this.page}
+    Promise.all([getStudyProgress(params), getBuyQuestionBank(params2)]).then(res => {
+      this.studyProgress = res[0].data
+      this.questionBank = res[1].data
+    }) 
   }
 }
 </script>

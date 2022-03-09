@@ -7,7 +7,7 @@
                 </view>
                 <view class="header-info-text">
                     <text class="infor-text__name">{{userInfo.surname}}</text>
-                    <text class="info-text__phone">{{user.mobile || 156763646846498}}</text>
+                    <text class="info-text__phone">{{userInfo.mobile || 156763646846498}}</text>
                 </view>
             </view>
             <view class="header-btn">
@@ -23,20 +23,16 @@
                 :active="active"
                 @click="handleTabClick">
                 <van-tab title="基本信息">
-                    <UserInfo :data="userInfo"></UserInfo>
+                    <UserInfo :datas="userInfo"></UserInfo>
                 </van-tab>
                 <van-tab title="订单记录">
-                    <template v-for="(item) in orderRecond.list">
-                        <UserOrderRecond :key="item.aid" :data="item"></UserOrderRecond>
-                    </template>
+                    <UserOrderRecond :uid="UserInfo.uid"></UserOrderRecond>
                 </van-tab>
                 <van-tab title="项目班级">
-                    <StudentClass :dataClass="studentClass" :dataProject="userProject"></StudentClass>
+                    <StudentClass :uid="userInfo.uid"></StudentClass>
                 </van-tab>
                 <van-tab title="学习进度">
-                    <template v-for="(item) in studyProgress.list">
-                        <StudyProgress :key="item.id" :data="item"></StudyProgress>
-                    </template>
+                    <StudyProgress :uid="userInfo.uid"></StudyProgress>
                 </van-tab>
             </van-tabs>
         </view>
@@ -49,7 +45,7 @@ import { UserOrderRecond } from './components/userOrderRecond.vue';
 import { StudentClass } from './components/studentClass.vue';
 import { StudyProgress } from './components/studyProgress.vue';
 
-import { getUserInfo, getOrderRecond, getStudendclass, getUserProject, getStudyProgress } from "@/api/customer";
+import { getUserInfo } from "@/api/customer";
 export default {
     components: { UserInfo, UserOrderRecond, StudentClass, StudyProgress },
     data() {
@@ -71,25 +67,16 @@ export default {
             const url = `?userId=${uid}&userName=${surname}&userMobile=${mobile}&userIdCard=${id_card_number}`
             uni.navigateTo({url})
         },
-        async getData(data) {
-            const reqs = [
-                getUserInfo(data),
-                getOrderRecond(data),
-                getStudendclass(data),
-                getUserProject(data),
-                getStudyProgress(data)
-            ]
-            const res = await Promise.all(reqs).catch(() => {})
-            const files = ['userInfo', 'orderRecond', 'studentClass', 'userProject', 'studyProgress']
-            files.forEach((item,index) => this[item] = res[index].data)
-            console.log("res",res, this.$data);
+        getData(data) {
+            getUserInfo(data).then(res => {
+                this.userInfo = res.data
+            })
         }
     },
     onLoad(query) {
-        const uid = 110705 // query.userId
+        const uid = query.userId || 110705
         this.getData({uid})
     }
-
 }
 </script>
 <style lang="less" scoped>

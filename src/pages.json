@@ -244,7 +244,9 @@
 			"van-cell-group": "/wxcomponents/vant/cell-group/index",
 			"van-field": "/wxcomponents/vant/field/index",
 			"van-area": "/wxcomponents/vant/area/index",
-			"van-dialog": "/wxcomponents/vant/dialog/index"
+			"van-dialog": "/wxcomponents/vant/dialog/index",
+			"van-picker": "/wxcomponents/vant/picker/index",
+			"van-notify": "/wxcomponents/vant/notify/index"
 		}
 	}
 }
