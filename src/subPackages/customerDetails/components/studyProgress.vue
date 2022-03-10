@@ -1,7 +1,7 @@
 <template>
   <view class="study-progress">
-    <view v-for="(item) in studyProgress.list" :key="item.id">
-      <Title title="学习进度"></Title>
+    <view v-for="(item) in studyProgress.list" :key="item.id" class="study-progress-block">
+      <Title class="study-progress-title" title="学习进度"></Title>
       <van-cell
         title="课程名称"
         title-class="title"
@@ -28,8 +28,8 @@
       />
       </view>
 
-  <view v-for="(item) in questionBank.list" :key="item.id">
-    <Title title="题库进度"></Title>
+  <view v-for="(item) in questionBank.list" :key="item.id" class="study-progress-block">
+    <Title class="study-progress-title" title="题库进度"></Title>
     <van-cell
       title="题库名称"
       title-class="title"
@@ -89,6 +89,12 @@ export default {
     display: flex;
     flex-direction: column;
     border-top: 20rpx solid #f2f6fc;
+    .study-progress-block {
+      padding: 20rpx 0;
+    }
+    .study-progress-title {
+      margin: 20rpx 0 20rpx;
+    }
     /deep/.title {
         flex: inherit;
         flex-shrink: 0;
