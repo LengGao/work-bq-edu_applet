@@ -53,18 +53,20 @@
         <van-cell :border="false" custom-class="custom-class">
           <template #title>
             <text class="title">回款凭证</text>
-            <template v-if="item.receipt_file && item.receipt_file.length">
+
+            <template v-if="data.receipt_file && data.receipt_file.length">
               <image
-                v-for="(src, index) in item.receipt_file"
+                v-for="(src, index) in data.receipt_file"
                 :key="index"
                 style="width: 80rpx; height: 60rpx; margin-left: 10rpx; vertical-align: top;"
                 :src="src"
-                @click="() => previewImage(item.receipt_file, index)"
+                @click="() => previewImage(data.receipt_file, index)"
               />
             </template>
             <text v-else>无</text>
           </template>
         </van-cell>
+   
       </view>
     </view>
   </view>
@@ -86,7 +88,12 @@ export default {
         datas: {},
         total: 0,
         page: 1,
-        titleWidth: '300rpx'
+        titleWidth: '300rpx',
+        test: [
+          'http://rongcloud-web.qiniudn.com/docs_demo_rongcloud_logo.png',
+          'http://rongcloud-web.qiniudn.com/docs_demo_rongcloud_logo.png',
+          'http://rongcloud-web.qiniudn.com/docs_demo_rongcloud_logo.png'
+        ]
     };
   },
   methods: {
