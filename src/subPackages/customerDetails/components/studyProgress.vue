@@ -1,65 +1,65 @@
 <template>
   <view class="study-progress">
-    <view v-for="(item) in studyProgress.list" :key="item.id" class="study-progress-block">
       <Title class="study-progress-title" title="学习进度"></Title>
+      <view v-for="(item) in studyProgress.list" :key="item.id" class="study-progress-block">
+        <van-cell
+          title="课程名称"
+          title-class="title"
+          value-class="value"
+          :value="item.course_name || ''"
+        />
+        <van-cell
+          title="总课时"
+          title-class="title"
+          value-class="value"
+          :value="item.total_lesson_count || ''"
+        />
+        <van-cell
+          title="学习时长"
+          title-class="title"
+          value-class="value"
+          :value="item.finish_lesson_count || ''"
+        />
+        <van-cell
+          title="课程进度"
+          title-class="title"
+          value-class="value"
+          :value="(item.progress || 0) + '%'"
+        />
+      </view>
+
+    <Title class="study-progress-title" title="题库进度" style="margin-top: 20px;"></Title>
+    <view v-for="(item) in questionBank.list" :key="item.id" class="study-progress-block">
       <van-cell
-        title="课程名称"
+        title="题库名称"
         title-class="title"
         value-class="value"
-        :value="item.course_name"
+        :value="item.question_bank_name || ''"
       />
       <van-cell
-        title="总课时"
+        title="打卡天数"
         title-class="title"
         value-class="value"
-        :value="item.total_lesson_count"
+        :value="item.punch_in_days || ''"
       />
       <van-cell
-        title="学习时长"
+        title="章节练习进度"
         title-class="title"
         value-class="value"
-        :value="item.finish_lesson_count"
+        :value="item.practice_progress || ''"
       />
       <van-cell
         title="课程进度"
         title-class="title"
         value-class="value"
-        :value="item.progress + '%'"
+        :value="(item.progress || 0)+ '%'"
       />
       </view>
-
-  <view v-for="(item) in questionBank.list" :key="item.id" class="study-progress-block">
-    <Title class="study-progress-title" title="题库进度"></Title>
-    <van-cell
-      title="题库名称"
-      title-class="title"
-      value-class="value"
-      :value="item.question_bank_name"
-    />
-    <van-cell
-      title="打卡天数"
-      title-class="title"
-      value-class="value"
-      :value="item.punch_in_days"
-    />
-    <van-cell
-      title="章节练习进度"
-      title-class="title"
-      value-class="value"
-      :value="item.practice_progress"
-    />
-    <van-cell
-      title="课程进度"
-      title-class="title"
-      value-class="value"
-      :value="item.progress + '%'"
-    />
-    </view>
   </view>
 </template>
 
 <script>
-import Title from "@/components/title/index.vue";
+import Title from "@/components/title/index2.vue";
 import { getStudyProgress, getBuyQuestionBank } from "@/api/customer";
 export default {
   components: { Title },
@@ -74,7 +74,7 @@ export default {
     }
   },
   mounted() {
-    const params = {uid: this.uid}, params2 = {uid: this.uid, page: this.page}
+    const params = {uid: this.uid}, params2 = {uid: this.uid}
     Promise.all([getStudyProgress(params), getBuyQuestionBank(params2)]).then(res => {
       this.studyProgress = res[0].data
       this.questionBank = res[1].data
@@ -89,11 +89,15 @@ export default {
     display: flex;
     flex-direction: column;
     border-top: 20rpx solid #f2f6fc;
+    background-color: #f2f6fc;
     .study-progress-block {
-      padding: 20rpx 0;
+      padding: 0;
+      border-top: 1rpx solid @border-color;
+      background-color: #FFFFFF;
     }
     .study-progress-title {
-      margin: 20rpx 0 20rpx;
+      padding: 20rpx 0 20rpx 10rpx;
+      background-color: #FFFFFF;
     }
     /deep/.title {
         flex: inherit;

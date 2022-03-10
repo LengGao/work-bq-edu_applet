@@ -3,11 +3,12 @@
         <view class="header">
             <view class="header-info">
                 <view class="header-info-avator">
-                    <image class="info-avator-img" :src="userInfo.user_img" ></image>
+                    <image v-if="userInfo.user_img" class="info-avator-img" :src="userInfo.user_img" ></image>
+                    <image v-else class="info-avator-img" :src="defaultAvator" ></image>
                 </view>
                 <view class="header-info-text">
                     <text class="infor-text__name">{{userInfo.surname}}</text>
-                    <text class="info-text__phone">{{userInfo.mobile || 156763646846498}}</text>
+                    <text class="info-text__phone">{{userInfo.mobile}}</text>
                 </view>
             </view>
             <view class="header-btn">
@@ -55,7 +56,8 @@ export default {
             studentClass: [],
             userProject: [],
             studyProgress: {},
-            active: 0,
+            active: 3,
+            defaultAvator: '../../static/avator.png'
         }
     },
     methods: {
@@ -64,7 +66,7 @@ export default {
         },
         handleSignUp() {
             const {uid,surname,mobile,id_card_number} = this.userInfo
-            const url = `?userId=${uid}&userName=${surname}&userMobile=${mobile}&userIdCard=${id_card_number}`
+            const url = `/subPackages/customeSignUp/index?userId=${uid}&userName=${surname}&userMobile=${mobile}&userIdCard=${id_card_number}`
             uni.navigateTo({url})
         },
         getData(data) {
@@ -75,7 +77,7 @@ export default {
     },
     onLoad(query) {
         const uid = query.userId || 110705
-        this.getData({uid})
+        this.getData({uid: +uid})
     }
 }
 </script>
@@ -110,7 +112,11 @@ export default {
             height: @avator-height;
             .infor-text__name {
                 display: inline-block;
+                max-width: 240rpx;
                 height: 54rpx;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
                 font-size: @font-size-lg;
                 color: @text-color;
             }

@@ -27,7 +27,7 @@ export default {
 <style lang="less" scoped>
 @import "@/styles/var";
 .title {
-  padding: 0 20rpx 20rpx;
+  padding: 0 20rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -38,7 +38,7 @@ export default {
       display: inline-block;
       content: "";
       width: 8rpx;
-      height: 28rpx;
+      height: 30rpx;
       background-color: @primary;
       margin-right: 6rpx;
       margin-bottom: 6rpx;

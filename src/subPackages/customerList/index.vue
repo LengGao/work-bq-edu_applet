@@ -122,9 +122,9 @@ export default {
       });
     },
     toDetails(row) {
-      console.log("执行", row);
+      console.log("执行",row);
       uni.navigateTo({
-        url: `/subPackages/customerDetails/index?userId=${row.id}`
+        url: `/subPackages/customerDetails/index?userId=${row.uid}`
       })
     },
     handleSearch(val) {
