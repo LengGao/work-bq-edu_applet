@@ -144,12 +144,13 @@ export function receiveHighSeas(data) {
         data
     })
 }
+
 // 客户基本信息
 export function getUserInfo(data) {
     return request({
         url: '/UserArchives/detail',
         method: 'get',
-        showToast: true,
+        showToast: false,
         loading: true,
         data
     })
@@ -159,7 +160,7 @@ export function getOrderRecond(data) {
     return request({
         url: '/CrmOrder/index',
         method: 'post',
-        showToast: true,
+        showToast: false,
         loading: true,
         data
     })
@@ -169,7 +170,7 @@ export function getStudendclass(data) {
     return request({
         url: '/classstudents/getstudendclass',
         method: 'get',
-        showToast: true,
+        showToast: false,
         loading: true,
         data
     })
@@ -179,7 +180,7 @@ export function getUserProject(data) {
     return request({
         url: '/classstudents/getuserproject',
         method: 'get',
-        showToast: true,
+        showToast: false,
         loading: true,
         data
     })
@@ -189,7 +190,7 @@ export function getUserCourseList(data) {
     return request({
         url: '/Crm/userCourseList',
         method: 'get',
-        showToast: true,
+        showToast: false,
         loading: true,
         data
     })
@@ -199,7 +200,7 @@ export function getStudyProgress(data) {
     return request({
         url: '/CourseVideo/userCourseVideoStatisticsList',
         method: 'get',
-        showToast: true,
+        showToast: false,
         loading: true,
         data
     })
@@ -219,7 +220,7 @@ export function getCustomerSource(data) {
     return request({
         url: '/Customfield/getInfo?field_name=customer_source',
         method: 'get',
-        showToast: true,
+        showToast: false,
         loading: true,
         data
     })
@@ -229,7 +230,7 @@ export function getInstitutionSelectData(data) {
     return request({
         url: '/staff/getInstitutionSelectData',
         method: 'get',
-        showToast: true,
+        showToast: false,
         loading: true,
         data
     })
@@ -240,7 +241,7 @@ export function getBuyQuestionBank(data) {
     return request({
         url: '/questionBank/getBuyQuestionBank',
         method: 'get',
-        showToast: true,
+        showToast: false,
         loading: true,
         data
     })

@@ -11,7 +11,7 @@
                 </view>
             </view>
             <view class="header-btn">
-                <button @click="handleSignUp">保存</button>
+                <button @click="handleSignUp">报名</button>
             </view>
         </view>
         <view class="main">
