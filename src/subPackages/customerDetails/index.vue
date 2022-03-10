@@ -56,7 +56,7 @@ export default {
             studentClass: [],
             userProject: [],
             studyProgress: {},
-            active: 3,
+            active: 0,
             defaultAvator: '../../static/avator.png'
         }
     },
