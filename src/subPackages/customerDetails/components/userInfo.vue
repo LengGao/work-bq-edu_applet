@@ -77,6 +77,27 @@
         :value="userInfo.from_organization_name || '--'"
         @click="$emit('open-select', 'org')"
       />
+      <van-cell
+        title-class="title"
+        title="客户性质"
+        title-width="200rpx"
+        :value="userInfo.customer_type || '--'"
+      />
+      <van-field
+        is-link
+        title-class="title"
+        value-class="value"
+        :value="userInfo.tips"
+        input-align="right"
+        label="备注信息"
+        autosize
+        type="textarea"
+        @blur="
+          ({ detail }) =>
+            detail.value !== userInfo.tips &&
+            $emit('input-blur', { tips: detail.value })
+        "
+      />
     </van-cell-group>
   </view>
 </template>
