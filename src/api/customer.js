@@ -150,7 +150,6 @@ export function getUserInfo(data) {
     return request({
         url: '/UserArchives/detail',
         method: 'get',
-        loading: true,
         data
     })
 }
@@ -204,6 +203,7 @@ export function modifyUserInfo(data) {
     return request({
         url: '/UserArchives/modify',
         method: 'post',
+        showToast: true,
         data
     })
 }
@@ -223,6 +223,7 @@ export function updateUserFromOrgId(data) {
     return request({
         url: '/classroom/updateUserFromOrgId',
         method: 'post',
+        showToast: true,
         data
     })
 }
@@ -231,6 +232,7 @@ export function changeStaffId(data) {
     return request({
         url: '/CrmCustomer/changeStaffId',
         method: 'post',
+        showToast: true,
         data,
     })
 }

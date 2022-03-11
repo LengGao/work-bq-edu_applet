@@ -53,7 +53,7 @@ const requset = (options) => new Promise(async (resolve, reject) => {
             }
             if (showToast) {
                 uniToast({
-                    icon: 'success',
+                    icon: 'none',
                     title: data.message
                 })
             }
