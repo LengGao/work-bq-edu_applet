@@ -121,11 +121,10 @@ export default {
         }`,
       });
     },
-    toDetails(row) {
-      console.log("执行",row);
+    toDetails({ uid, id: cid }) {
       uni.navigateTo({
-        url: `/subPackages/customerDetails/index?userId=${row.uid}`
-      })
+        url: `/subPackages/customerDetails/index?uid=${uid}&cid=${cid}`,
+      });
     },
     handleSearch(val) {
       this.pageNum = 1;

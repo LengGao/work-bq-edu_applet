@@ -1,112 +1,135 @@
 <template >
   <view class="order-recond">
-    <view v-for="(data, index) in datas.list" :key="data.order_id" class="order-recond-card">
-      <Title :title="'订单记录 ' + (index + 1)" > </Title>
-      <view class="order-recond-item">
-        <van-cell :border="false" custom-class="custom-class">
+    <template v-if="orderList.length">
+      <view
+        v-for="(data, index) in orderList"
+        :key="data.order_id"
+        class="order-recond-card"
+      >
+        <Title :title="'订单记录 ' + (index + 1)"> </Title>
+        <view class="order-recond-item">
+          <van-cell custom-class="project-name">
             <template #title>
-                <text class="title">项目名称</text>
-                <text class="value strong">{{ data.project_name || ''}}</text>
+              <text class="title">项目名称</text>
+              <text class="value">{{ data.project_name || "" }}</text>
             </template>
-        </van-cell>
+          </van-cell>
 
-        <van-cell :border="false" :title-width="titleWidth" custom-class="custom-class">
+          <van-cell
+            :border="false"
+            :title-width="titleWidth"
+            custom-class="custom-class"
+          >
             <template #title>
-                <text class="title">客户姓名</text>
-                <text class="value">{{ data.surname || '' }}</text>
+              <text class="title">客户姓名</text>
+              <text class="value">{{ data.surname || "" }}</text>
             </template>
             <view class="cell-item-value">
-                <text class="title">订单金额</text>
-                <text class="value price">￥{{ data.order_money || 0.0 }}</text>
+              <text class="title">订单金额</text>
+              <text class="value price">￥{{ data.order_money || 0.0 }}</text>
             </view>
-        </van-cell>
+          </van-cell>
 
-        <van-cell :border="false" :title-width="titleWidth" custom-class="custom-class">
+          <van-cell
+            :border="false"
+            :title-width="titleWidth"
+            custom-class="custom-class"
+          >
             <template #title>
-                <text class="title">业绩归属</text>
-                <text class="value">{{ data.jiebie_name || '' }}</text>
+              <text class="title">业绩归属</text>
+              <text class="value">{{ data.jiebie_name || "" }}</text>
             </template>
-            <view class="cell-item-value" style="overflow: hidden;">
-                <text class="title">订单时间</text>
-                <text class="value-time">{{ data.create_time || '' }}</text>
+            <view class="cell-item-value" style="overflow: hidden">
+              <text class="title">订单时间</text>
+              <text class="value-time">{{ data.create_time || "" }}</text>
             </view>
-        </van-cell>
+          </van-cell>
 
-        <van-cell :border="false" :title-width="titleWidth" custom-class="custom-class">
+          <van-cell
+            :border="false"
+            :title-width="titleWidth"
+            custom-class="custom-class"
+          >
             <template #title>
-                <text class="title">已回款金额</text>
-                <text class="value">￥{{ data.pay_money || 0.0 }}</text>
+              <text class="title">已回款金额</text>
+              <text class="value">￥{{ data.pay_money || 0.0 }}</text>
             </template>
             <view class="cell-item-value">
-                <text class="title">未回款金额</text>
-                <text class="value">￥{{ data.reduction || 0.0 }}</text>
+              <text class="title">未回款金额</text>
+              <text class="value">￥{{ data.reduction || 0.0 }}</text>
             </view>
-        </van-cell>
+          </van-cell>
 
-        <van-cell :border="false" custom-class="custom-class">
+          <van-cell :border="false" custom-class="custom-class">
             <template #title>
-                <text class="title">备注信息</text>
-                <text class="value">{{ data.tips || '' }}</text>
+              <text class="title">备注信息</text>
+              <text class="value">{{ data.tips || "" }}</text>
             </template>
-        </van-cell>
+          </van-cell>
 
-        <van-cell :border="false" custom-class="custom-class">
-          <template #title>
-            <text class="title">回款凭证</text>
+          <van-cell :border="false" custom-class="custom-class">
+            <template #title>
+              <text class="title">回款凭证</text>
 
-            <template v-if="data.receipt_file && data.receipt_file.length">
-              <image
-                v-for="(src, index) in data.receipt_file"
-                :key="index"
-                style="width: 80rpx; height: 60rpx; margin-left: 10rpx; vertical-align: top;"
-                :src="src"
-                @click="() => previewImage(data.receipt_file, index)"
-              />
+              <template v-if="data.receipt_file">
+                <image
+                  v-for="(src, index) in getImgs(data.receipt_file)"
+                  :key="index"
+                  style="
+                    width: 80rpx;
+                    height: 60rpx;
+                    margin-left: 10rpx;
+                    vertical-align: top;
+                  "
+                  :src="src"
+                  @click="() => previewImage(getImgs(data.receipt_file), index)"
+                />
+              </template>
+              <text v-else>无</text>
             </template>
-            <text v-else>无</text>
-          </template>
-        </van-cell>
-   
+          </van-cell>
+        </view>
       </view>
-    </view>
+    </template>
+    <NoData v-else />
   </view>
 </template>
 
 <script>
 import Title from "@/components/title/index.vue";
 import { getOrderRecond } from "@/api/customer";
+import NoData from "@/components/noData/index.vue";
 
 export default {
   components: {
     Title,
+    NoData,
   },
   props: {
-    uid: { type: Number }
+    uid: { type: Number },
   },
   data() {
     return {
-        datas: {},
-        total: 0,
-        page: 1,
-        titleWidth: '300rpx',
-        test: [
-          'http://rongcloud-web.qiniudn.com/docs_demo_rongcloud_logo.png',
-          'http://rongcloud-web.qiniudn.com/docs_demo_rongcloud_logo.png',
-          'http://rongcloud-web.qiniudn.com/docs_demo_rongcloud_logo.png'
-        ]
+      orderList: [],
+      titleWidth: "300rpx",
     };
   },
+  mounted() {
+    this.getOrderRecond();
+  },
   methods: {
+    getImgs(str) {
+      return str.split(",");
+    },
+    async getOrderRecond() {
+      const data = { uid: this.uid, person: 1 };
+      const res = await getOrderRecond(data);
+      this.orderList = res.data.list;
+    },
     previewImage(urls, index) {
-      uni.previewImage({urls, current: urls[index]});
+      uni.previewImage({ urls, current: urls[index] });
     },
   },
-  mounted() {
-    const params = { uid: this.uid, person: 1 }
-    getOrderRecond(params).then(res => {
-      this.datas = res.data 
-    })
-  }
 };
 </script>
 
@@ -114,15 +137,24 @@ export default {
 @import "@/styles/var";
 .order-recond {
   border-top: 20rpx solid #f2f6fc;
+  min-height: 60vh;
+  position: relative;
   .order-recond-card {
     padding: 20rpx 10rpx;
   }
   .order-recond-item {
     margin: 0 10rpx;
-    padding: 20rpx 0;
+    padding-bottom: 20rpx;
     border: @border;
+    border-radius: 8rpx;
     background-color: #ffffff;
-  } 
+  }
+  /deep/.project-name {
+    padding: 14rpx 20rpx;
+    .value {
+      font-weight: bold;
+    }
+  }
   &-title {
     display: flex;
     align-items: center;
@@ -138,8 +170,8 @@ export default {
     display: inline-block;
     font-size: @font-size-sm;
     color: @text-color;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    // white-space: nowrap;
+    // text-overflow: ellipsis;
   }
   .cell-item-value {
     display: flex;
@@ -158,7 +190,7 @@ export default {
     color: @text-color;
   }
   .price {
-    color: #FD6500;
+    color: #fd6500;
   }
   .left {
     float: left;

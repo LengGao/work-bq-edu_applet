@@ -150,7 +150,6 @@ export function getUserInfo(data) {
     return request({
         url: '/UserArchives/detail',
         method: 'get',
-        showToast: false,
         loading: true,
         data
     })
@@ -160,7 +159,6 @@ export function getOrderRecond(data) {
     return request({
         url: '/CrmOrder/index',
         method: 'post',
-        showToast: false,
         loading: true,
         data
     })
@@ -170,7 +168,6 @@ export function getStudendclass(data) {
     return request({
         url: '/classstudents/getstudendclass',
         method: 'get',
-        showToast: false,
         loading: true,
         data
     })
@@ -180,7 +177,6 @@ export function getUserProject(data) {
     return request({
         url: '/classstudents/getuserproject',
         method: 'get',
-        showToast: false,
         loading: true,
         data
     })
@@ -190,7 +186,6 @@ export function getUserCourseList(data) {
     return request({
         url: '/Crm/userCourseList',
         method: 'get',
-        showToast: false,
         loading: true,
         data
     })
@@ -200,38 +195,15 @@ export function getStudyProgress(data) {
     return request({
         url: '/CourseVideo/userCourseVideoStatisticsList',
         method: 'get',
-        showToast: false,
         loading: true,
         data
     })
 }
 // 修改用户信息
-export function postNodify(data) {
+export function modifyUserInfo(data) {
     return request({
         url: '/UserArchives/modify',
         method: 'post',
-        showToast: true,
-        loading: true,
-        data
-    })
-}
-// 获取客户来源数据
-export function getCustomerSource(data) {
-    return request({
-        url: '/Customfield/getInfo?field_name=customer_source',
-        method: 'get',
-        showToast: false,
-        loading: true,
-        data
-    })
-}
-// 获取机构数据
-export function getInstitutionSelectData(data) {
-    return request({
-        url: '/staff/getInstitutionSelectData',
-        method: 'get',
-        showToast: false,
-        loading: true,
         data
     })
 }
@@ -241,8 +213,24 @@ export function getBuyQuestionBank(data) {
     return request({
         url: '/questionBank/getBuyQuestionBank',
         method: 'get',
-        showToast: false,
         loading: true,
         data
+    })
+}
+
+// 修改所属机构
+export function updateUserFromOrgId(data) {
+    return request({
+        url: '/classroom/updateUserFromOrgId',
+        method: 'post',
+        data
+    })
+}
+// 更换所属老师
+export function changeStaffId(data) {
+    return request({
+        url: '/CrmCustomer/changeStaffId',
+        method: 'post',
+        data,
     })
 }
