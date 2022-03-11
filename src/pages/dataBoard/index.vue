@@ -91,7 +91,9 @@ import {
   getCustomerRankData,
 } from "@/api/dataBoard";
 import { mapGetters } from "vuex";
+import subscribeMessage from "@/mixins/subscribeMessage";
 export default {
+  mixins: [subscribeMessage],
   components: {
     Panel,
     SalesData,
