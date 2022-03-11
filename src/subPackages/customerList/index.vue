@@ -18,8 +18,13 @@
       @refresh="handleRefresh"
       class="load-more"
     >
-      <view class="item" v-for="item in listData" :key="item.id">
-        <view class="item-info" @click="toDetails(item)">
+      <view
+        class="item"
+        v-for="item in listData"
+        :key="item.id"
+        @click="toDetails(item)"
+      >
+        <view class="item-info">
           <view class="item-info-status">
             <view class="user-name">{{ item.name }}</view>
             <van-tag plain type="success" v-if="item.deal_num">已成交</van-tag>
@@ -29,7 +34,7 @@
             >{{ item.create_time }} | {{ item.from || "--" }}
           </view>
         </view>
-        <view class="item-actions">
+        <view class="item-actions" @click.stop="() => false">
           <view class="btn">
             <van-icon
               name="phone"
