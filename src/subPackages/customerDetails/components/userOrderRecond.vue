@@ -11,7 +11,7 @@
           <van-cell custom-class="project-name">
             <template #title>
               <text class="title">项目名称</text>
-              <text class="value">{{ data.project_name || "" }}</text>
+              <text class="value">{{ data.project_name || '--' }}</text>
             </template>
           </van-cell>
 
@@ -22,7 +22,7 @@
           >
             <template #title>
               <text class="title">客户姓名</text>
-              <text class="value">{{ data.surname || "" }}</text>
+              <text class="value">{{ data.surname || '--' }}</text>
             </template>
             <view class="cell-item-value">
               <text class="title">订单金额</text>
@@ -37,11 +37,11 @@
           >
             <template #title>
               <text class="title">业绩归属</text>
-              <text class="value">{{ data.jiebie_name || "" }}</text>
+              <text class="value">{{ data.jiebie_name || '--' }}</text>
             </template>
             <view class="cell-item-value" style="overflow: hidden">
               <text class="title">订单时间</text>
-              <text class="value-time">{{ data.create_time || "" }}</text>
+              <text class="value-time">{{ data.create_time || '--' }}</text>
             </view>
           </van-cell>
 
@@ -63,7 +63,7 @@
           <van-cell :border="false" custom-class="custom-class">
             <template #title>
               <text class="title">备注信息</text>
-              <text class="value">{{ data.tips || "" }}</text>
+              <text class="value">{{ data.tips || '--' }}</text>
             </template>
           </van-cell>
 
@@ -97,8 +97,8 @@
 
 <script>
 import Title from "@/components/title/index.vue";
-import { getOrderRecond } from "@/api/customer";
 import NoData from "@/components/noData/index.vue";
+import { getOrderRecond } from "@/api/customer";
 
 export default {
   components: {
@@ -160,18 +160,17 @@ export default {
     align-items: center;
   }
   /deep/.title {
+    overflow: hidden;
+    margin-right: 8rpx;
     color: #969799;
     font-size: @font-size-sm;
-    text-align: left;
-    margin-right: 8rpx;
     white-space: nowrap;
   }
   /deep/.value {
     display: inline-block;
     font-size: @font-size-sm;
     color: @text-color;
-    // white-space: nowrap;
-    // text-overflow: ellipsis;
+    text-align: left;
   }
   .cell-item-value {
     display: flex;
