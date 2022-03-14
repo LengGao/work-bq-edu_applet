@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { appletLogin, appletBindPhone } from "@/api/user";
+import { appletBindPhone } from "@/api/user";
 export default {
   data() {
     return {
@@ -40,8 +40,8 @@ export default {
       openid: "",
     };
   },
-  onShow() {
-    this.wxLogin();
+  onLoad({ openid }) {
+    this.openid = openid;
   },
   methods: {
     // 通过账号登录
@@ -59,47 +59,8 @@ export default {
           ...res.data.info,
           token: res.data.token,
         });
-        this.reloadPrevPage();
+        uni.navigateBack();
       }
-    },
-    // 通过code登录
-    async appletLogin(code) {
-      const data = {
-        code,
-      };
-      const res = await appletLogin(data).catch(() => {
-        uni.hideLoading();
-      });
-      if (res.code === 5) {
-        this.openid = res.data.applet_openid;
-      }
-      if (res.code === 0) {
-        this.$store.dispatch("setUserInfo", {
-          ...res.data.info,
-          token: res.data.token,
-        });
-        this.reloadPrevPage();
-      }
-    },
-    // 登录成功后重新加载上一页
-    reloadPrevPage() {
-      const pages = getCurrentPages();
-      const prevPage = pages[pages.length - 2];
-      prevPage.onLoad(prevPage.options);
-      uni.navigateBack();
-    },
-    wxLogin() {
-      uni.login({
-        success: (res) => {
-          this.appletLogin(res.code);
-        },
-        fail: () => {
-          uni.showToast({
-            icon: "error",
-            title: "登录失败",
-          });
-        },
-      });
     },
   },
 };

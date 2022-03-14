@@ -1,5 +1,73 @@
 <template>
   <view class="order-info">
+    <van-cell title="审批类型" title-class="title" v-if="data.verify_type">
+      <template>
+        <van-tag :type="verifyTypeMap[data.verify_type || 0].type">
+          {{ verifyTypeMap[data.verify_type || 0].text }}</van-tag
+        >
+      </template>
+    </van-cell>
+    <block v-if="data.verify_type === 2">
+      <van-cell
+        title="作废原因"
+        title-class="title"
+        value-class="value"
+        :value="data.refund_invalid_reason"
+      />
+      <van-cell title="作废凭证" title-class="title" value-class="value">
+        <template
+          v-if="
+            data.refund_invalid_voucher && data.refund_invalid_voucher.length
+          "
+        >
+          <image
+            @click="previewImage(data.refund_invalid_voucher, index)"
+            style="width: 80rpx; height: 60rpx; margin-left: 10rpx"
+            :src="item"
+            v-for="(item, index) in data.refund_invalid_voucher"
+            :key="index"
+          />
+        </template>
+        <text v-else>--</text>
+      </van-cell>
+    </block>
+    <block v-if="[1, 3].includes(data.verify_type)">
+      <van-cell
+        title="退款金额"
+        title-class="title"
+        value-class="value"
+        :value="data.refund_invalid_refund_money | moneyFormat"
+      />
+      <van-cell
+        title="退款方式"
+        title-class="title"
+        value-class="value"
+        :value="data.refund_invalid_refund_type || '--'"
+      />
+      <van-cell
+        title="退款原因"
+        title-width="200rpx"
+        title-class="title"
+        value-class="value"
+        :value="data.refund_invalid_reason || '--'"
+      />
+      <van-cell title="退款凭证" title-class="title" value-class="value">
+        <template
+          v-if="
+            data.refund_invalid_voucher && data.refund_invalid_voucher.length
+          "
+        >
+          <image
+            @click="previewImage(data.refund_invalid_voucher, index)"
+            style="width: 80rpx; height: 60rpx; margin-left: 10rpx"
+            :src="item"
+            v-for="(item, index) in data.refund_invalid_voucher"
+            :key="index"
+          />
+        </template>
+        <text v-else>--</text>
+      </van-cell>
+    </block>
     <van-cell
       title="订单编号"
       title-class="title"
@@ -70,7 +138,7 @@
           :key="index"
         />
       </template>
-      <text v-else>无</text>
+      <text v-else>--</text>
     </van-cell>
     <template v-if="data.type === 1">
       <van-cell
@@ -120,7 +188,7 @@
       title="备注信息"
       title-class="title"
       value-class="value"
-      :value="data.tips || '无'"
+      :value="data.tips || '--'"
     />
   </view>
 </template>
@@ -132,6 +200,28 @@ export default {
       type: Object,
       default: () => ({}),
     },
+  },
+  data() {
+    return {
+      verifyTypeMap: {
+        0: {
+          text: "新订单",
+          type: "success",
+        },
+        1: {
+          text: "申请退款",
+          type: "warning",
+        },
+        2: {
+          text: "申请作废",
+          type: "danger",
+        },
+        3: {
+          text: "申请退差价",
+          type: "warning",
+        },
+      },
+    };
   },
   methods: {
     previewImage(urls, index) {

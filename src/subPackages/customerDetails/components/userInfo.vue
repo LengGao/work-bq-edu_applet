@@ -18,13 +18,13 @@
         title-class="title"
         title="手机号码"
         title-width="200rpx"
-        :value="userInfo.mobile || '--'"
+        :value="userInfo.mobile | phoneFormat"
       />
       <van-cell
         title-class="title"
         title="身份证号"
         title-width="200rpx"
-        :value="userInfo.id_card_number || '--'"
+        :value="userInfo.id_card_number | idCardFormat"
       />
       <van-cell
         title="客户性别"

@@ -315,6 +315,7 @@ export default {
       dialogType: 1, // 1：驳回 2：作废
       rejectReason: "",
       orderId: "",
+      verifyId: "",
       //添加回款记录
       currentDate: new Date().getTime(),
       popupShow: false,
@@ -349,10 +350,11 @@ export default {
       });
     },
   },
-  onLoad({ orderId, approve, change }) {
+  onLoad({ orderId, approve, change, verifyId }) {
     this.isApprove = approve == 1;
     this.isChange = change == 1;
     this.orderId = orderId;
+    this.verifyId = verifyId;
     if (this.isChange) {
       uni.setNavigationBarTitle({ title: "异动详情" });
     }
@@ -551,6 +553,9 @@ export default {
       const data = {
         order_id: this.orderId,
       };
+      if (this.verifyId) {
+        data.verify_id = this.verifyId;
+      }
       const res = await getCrmOrderDetail(data);
       this.detailData = res.data;
       !isOnload && this.updateListItem(res.data);

@@ -1,7 +1,7 @@
-import request from '@/utils/request'
+import http from '@/utils/request'
 // crm客户列表
 export function getCrmCustomerList(data) {
-    return request({
+    return http.request({
         url: '/CrmCustomer/index',
         method: 'post',
         data
@@ -9,7 +9,7 @@ export function getCrmCustomerList(data) {
 }
 // crm获取自定义字段的选项
 export function getCustomfieldOptions(data) {
-    return request({
+    return http.request({
         url: '/Customfield/getInfo',
         method: 'get',
         data
@@ -17,7 +17,7 @@ export function getCustomfieldOptions(data) {
 }
 // crm添加客户
 export function createCrmCustomer(data) {
-    return request({
+    return http.request({
         url: '/CrmCustomer/create',
         method: 'post',
         showToast: true,
@@ -27,7 +27,7 @@ export function createCrmCustomer(data) {
 
 // 报名时选择项目
 export function getCateProjectOption(data) {
-    return request({
+    return http.request({
         url: '/project/cate_project',
         method: 'get',
         data,
@@ -35,7 +35,7 @@ export function getCateProjectOption(data) {
 }
 // 获取届别下拉选项
 export function getGradeOptions(data) {
-    return request({
+    return http.request({
         url: '/Crm/jieBieXiaLaLieBiao',
         method: 'get',
         data,
@@ -43,7 +43,7 @@ export function getGradeOptions(data) {
 }
 // 报名时选择项目-查询已选项目的详情
 export function getCateProjectDetail(data) {
-    return request({
+    return http.request({
         url: '/project/mult_detail',
         method: 'post',
         data,
@@ -51,7 +51,7 @@ export function getCateProjectDetail(data) {
 }
 // 院校专业列表
 export function getUniversityMajorDetailList(data) {
-    return request({
+    return http.request({
         url: '/UniversityMajorDetail/page',
         method: 'get',
         loading: true,
@@ -60,7 +60,7 @@ export function getUniversityMajorDetailList(data) {
 }
 // crm报名 
 export function createCrmOrder(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/create',
         method: 'post',
         showToast: true,
@@ -87,7 +87,7 @@ export function uploadImage(file) {
 }
 // 教务开课列表
 export function projectUser(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/projectUser',
         method: 'post',
         data
@@ -113,7 +113,7 @@ export function studentUsersClear(data) {
 }
 // 一键开课
 export function eduOpenCourse(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/eduOpenCourse',
         method: 'get',
         data
@@ -121,7 +121,7 @@ export function eduOpenCourse(data) {
 }
 // 获取客户标签
 export function getCrmTags(data) {
-    return request({
+    return http.request({
         url: '/CrmTags/index',
         method: 'get',
         data
@@ -129,7 +129,7 @@ export function getCrmTags(data) {
 }
 // 获取招生公海客户列表
 export function getCrmList(data) {
-    return request({
+    return http.request({
         url: '/HighSeas/getCrmList',
         method: 'get',
         data
@@ -137,7 +137,7 @@ export function getCrmList(data) {
 }
 // 获取机构公海客户列表
 export function getOrgAppletList(data) {
-    return request({
+    return http.request({
         url: '/HighSeas/orgApplet',
         method: 'get',
         data
@@ -145,7 +145,7 @@ export function getOrgAppletList(data) {
 }
 // 获取东培公海客户列表
 export function getDpAppletList(data) {
-    return request({
+    return http.request({
         url: '/HighSeas/dpApplet',
         method: 'get',
         data
@@ -154,7 +154,7 @@ export function getDpAppletList(data) {
 
 // 领取公海客户
 export function receiveHighSeas(data) {
-    return request({
+    return http.request({
         url: '/HighSeas/receive',
         method: 'post',
         showToast: true,
@@ -165,7 +165,7 @@ export function receiveHighSeas(data) {
 
 // 客户基本信息
 export function getUserInfo(data) {
-    return request({
+    return http.request({
         url: '/UserArchives/detail',
         method: 'get',
         data
@@ -173,7 +173,7 @@ export function getUserInfo(data) {
 }
 // 客户订单记录
 export function getOrderRecond(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/index',
         method: 'post',
         loading: true,
@@ -182,7 +182,7 @@ export function getOrderRecond(data) {
 }
 // 报读班级
 export function getStudendclass(data) {
-    return request({
+    return http.request({
         url: '/classstudents/getstudendclass',
         method: 'get',
         loading: true,
@@ -191,7 +191,7 @@ export function getStudendclass(data) {
 }
 // 报读项目
 export function getUserProject(data) {
-    return request({
+    return http.request({
         url: '/classstudents/getuserproject',
         method: 'get',
         loading: true,
@@ -200,7 +200,7 @@ export function getUserProject(data) {
 }
 // 学生课程
 export function getUserCourseList(data) {
-    return request({
+    return http.request({
         url: '/Crm/userCourseList',
         method: 'get',
         loading: true,
@@ -209,7 +209,7 @@ export function getUserCourseList(data) {
 }
 // 客户学习进度
 export function getStudyProgress(data) {
-    return request({
+    return http.request({
         url: '/CourseVideo/userCourseVideoStatisticsList',
         method: 'get',
         loading: true,
@@ -218,7 +218,7 @@ export function getStudyProgress(data) {
 }
 // 修改用户信息
 export function modifyUserInfo(data) {
-    return request({
+    return http.request({
         url: '/UserArchives/modify',
         method: 'post',
         showToast: true,
@@ -228,7 +228,7 @@ export function modifyUserInfo(data) {
 
 // 获取题库进度
 export function getBuyQuestionBank(data) {
-    return request({
+    return http.request({
         url: '/questionBank/getBuyQuestionBank',
         method: 'get',
         loading: true,
@@ -238,7 +238,7 @@ export function getBuyQuestionBank(data) {
 
 // 修改所属机构
 export function updateUserFromOrgId(data) {
-    return request({
+    return http.request({
         url: '/classroom/updateUserFromOrgId',
         method: 'post',
         showToast: true,
@@ -247,7 +247,7 @@ export function updateUserFromOrgId(data) {
 }
 // 更换所属老师
 export function changeStaffId(data) {
-    return request({
+    return http.request({
         url: '/CrmCustomer/changeStaffId',
         method: 'post',
         showToast: true,

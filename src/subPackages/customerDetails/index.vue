@@ -12,7 +12,9 @@
         </view>
         <view class="header-info-text">
           <text class="infor-text__name">{{ userInfo.surname }}</text>
-          <text class="info-text__phone">{{ userInfo.mobile }}</text>
+          <text class="info-text__phone">{{
+            userInfo.mobile | phoneFormat
+          }}</text>
         </view>
       </view>
       <view class="header-btn">
