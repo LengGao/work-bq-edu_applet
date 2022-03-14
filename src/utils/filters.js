@@ -1,5 +1,15 @@
 import Vue from 'vue'
 const filters = {
+    phoneFormat(val) {
+        const res = (val + '').replace(/(\d{3})\d{4}(\d{4})/, `$1****$2`)
+        console.log(res)
+        return res
+    },
+    idCardFormat(val) {
+        const res = (val + '').replace(/(\d{2})\d+(\d{3})/, `$1**************$2`)
+        console.log(res)
+        return res
+    },
     moneyFormat(number) {
         number = (number * 1 || 0).toFixed(3).slice(0, -1)
         return `￥${number}`
