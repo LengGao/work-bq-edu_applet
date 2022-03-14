@@ -46,12 +46,18 @@
 
     <template v-else>
       <view class="item" v-for="(item) in listData" :key="item.uid">
-        <view class="item-info" @click.native="toUserDetail(item)">
-          <view class="item-info-status">
-            <view class="user-name">{{ item.user_nicename }}-{{ item.telphone || '--' }}</view>
-          </view>
-          <view class="item-info-time">
-            {{ item.staff_name || '--' }}
+        <view class="item-header"  @click.native="toUserDetail(item)">
+          <image class="item-avator" :src="item.user_img || defaultAvator"></image>
+          <view class="item-info" >
+            <view class="item-info-status">
+              <view class="user-name">
+                <text class="noWrap">{{ item.user_nicename }} </text>
+                <text class="user-phone">{{ item.telphone | phoneFormat }} </text>
+              </view>
+            </view>
+            <view class="item-info-time">
+              {{ item.staff_name || '--' }}
+            </view>
           </view>
         </view>
         <view class="item-actions">
@@ -113,7 +119,8 @@ export default {
       listTypes: [{ name: '教务开课', value: 1 }, { name: '用户中心', value: 2 }],
       checkedState: [false, true, false],
       statusText: { 1: '启用', 2: '禁用' },
-      onlySearch: false
+      onlySearch: false,
+      defaultAvator: "../../static/avator.png"
     };
   },
   onLoad() {
@@ -140,9 +147,10 @@ export default {
       this.getList();
     },
     toUserDetail(data) {
-      let info = JSON.stringify(data)
+      let info = Object.create(null)
+      Object.keys(data).forEach(key => info[key] = data[key])
       uni.navigateTo({
-        url: `/subPackages/userDetail/index?info=${info}`
+        url: `/subPackages/userDetail/index?info=${JSON.stringify(info)}`
       })
     },
     toAdd() {
@@ -234,14 +242,35 @@ export default {
     &:active {
       background-color: #f2f6fc;
     }
+    .item-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    &-avator {
+      width: 60rpx;
+      height: 60rpx;
+      margin-right: 16rpx;
+      border-radius: 50%;
+    }
     &-info {
       &-status {
         margin-bottom: 10rpx;
         .flex();
         .user-name {
+          flex: 1;
           margin-right: 10rpx;
           font-size: @font-size-md;
-          flex: 1;
+        }
+        .noWrap {
+          width: 280rpx;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .user-phone {
+          margin-left: 8rpx;
+          color: @text-color-grey;
         }
       }
       &-time {
@@ -264,4 +293,5 @@ export default {
     }
   }
 }
+
 </style>

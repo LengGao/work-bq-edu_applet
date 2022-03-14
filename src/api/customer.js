@@ -95,7 +95,7 @@ export function projectUser(data) {
 }
 // 用户中心列表
 export function studentUsers(data) {
-    return request({
+    return http.request({
         url: '/StudentUsers/index',
         method: 'get',
         data
@@ -103,7 +103,7 @@ export function studentUsers(data) {
 }
 // 启用/金庸用户 1 为启用状态 0 为禁用状态
 export function studentUsersClear(data) {
-    return request({
+    return http.request({
         url: '/StudentUsers/clear',
         method: 'post',
         showToast: true,
