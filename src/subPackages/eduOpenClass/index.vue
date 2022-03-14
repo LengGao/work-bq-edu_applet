@@ -1,10 +1,16 @@
 <template>
   <view class="customer-list">
-    <SearchBar
+    <PureSearch
+      :sheetActions="listTypes"
+      v-model="listType"
+      searchText="搜索信息"
+      :onlySearch="onlySearch"
       @search="handleSearch"
-      placeholder="请输入客户姓名"
+      @sheet-change="handleListTypeChange"  
+      placeholder="请输入客户姓名/手机号码"
       @filter-click="drawerShow = true"
     />
+    <!-- 开课数据 -->
     <LoadMore
       :data="listData"
       :total="listTotal"
@@ -15,15 +21,12 @@
       @refresh="handleRefresh"
       class="load-more"
     >
+    <template v-if="listType === 1">
       <view class="item" v-for="(item, index) in listData" :key="item.id">
         <view class="item-info">
           <view class="item-info-status">
-            <view class="user-name"
-              >{{ item.surname }}-{{ item.project_name }}</view
-            >
-            <van-tag plain type="success" v-if="item.open_course"
-              >已开课</van-tag
-            >
+            <view class="user-name">{{ item.surname }}-{{ item.project_name }}</view>
+            <van-tag plain type="success" v-if="item.open_course">已开课</van-tag>
             <van-tag plain type="warning" v-else>未开课</van-tag>
           </view>
           <view class="item-info-time"
@@ -39,7 +42,34 @@
           <view class="btn-name">开课</view>
         </view>
       </view>
+    </template>
+
+    <template v-else>
+      <view class="item" v-for="(item) in listData" :key="item.uid">
+        <view class="item-info" @click.native="toUserDetail(item)">
+          <view class="item-info-status">
+            <view class="user-name">{{ item.user_nicename }}-{{ item.telphone || '--' }}</view>
+          </view>
+          <view class="item-info-time">
+            {{ item.staff_name || '--' }}
+          </view>
+        </view>
+        <view class="item-actions">
+          <view class="btn-switch">
+            <van-switch
+              size="32rpx" 
+              inactive-color="#D7D7D7"
+              :checked="checkedState[item.state]"
+              @change.native.self="handleSwitch(item)" />
+            <view class="btn-switch-text" :style="item.state === 1 ? '' : 'color: #D7D7D7;' ">
+              {{statusText[item.state]}}
+            </view>
+          </view>
+        </view>
+      </view>
+    </template>
     </LoadMore>
+
     <SearchDrawer
       :show="drawerShow"
       @close="drawerShow = false"
@@ -55,13 +85,15 @@ import Dialog from "@/wxcomponents/vant/dialog/dialog";
 import LoadMore from "@/components/loadMore/index.vue";
 import DragButton from "@/components/dragButton/index.vue";
 import SearchBar from "@/components/searchBar/index.vue";
+import PureSearch from "@/components/pureSearch/index.vue";
 import SearchDrawer from "./components/searchDrawer.vue";
-import { projectUser, eduOpenCourse } from "@/api/customer";
+import { projectUser, eduOpenCourse, studentUsers, studentUsersClear } from "@/api/customer";
 export default {
   components: {
     LoadMore,
     DragButton,
     SearchBar,
+    PureSearch,
     SearchDrawer,
   },
   data() {
@@ -76,13 +108,43 @@ export default {
       searchData: {},
       drawerShow: false,
       checkedIndex: null,
+      inputShow: false,
+      listType: 1,
+      listTypes: [{ name: '教务开课', value: 1 }, { name: '用户中心', value: 2 }],
+      checkedState: [false, true, false],
+      statusText: { 1: '启用', 2: '禁用' },
+      onlySearch: false
     };
   },
   onLoad() {
     this.skeletonLoading = true;
-    this.projectUser();
+    this.getList();
   },
   methods: {
+    async handleSwitch(item) {
+      const status = { 1: 'close', 2: 'open' },
+            data = { type: status[item.state], uid: item.uid }
+
+      const res = await studentUsersClear(data).catch(() => {})
+      if (res.code === 0) {
+        item.state = item.state === 1 ? 2 : 1
+      }
+    },
+    handleListTypeChange(val) {
+      console.log(val);
+      this.listType = val
+      this.pageNum = 1;
+      this.keyword = ''
+      this.skeletonLoading = true;
+      this.onlySearch = (val === 2 ? true : false);
+      this.getList();
+    },
+    toUserDetail(data) {
+      let info = JSON.stringify(data)
+      uni.navigateTo({
+        url: `/subPackages/userDetail/index?info=${info}`
+      })
+    },
     toAdd() {
       uni.navigateTo({
         url: "/subPackages/addStudent/index",
@@ -110,44 +172,50 @@ export default {
     handleDrawerSearch(data) {
       this.searchData = data;
       this.pageNum = 1;
-      this.projectUser();
       this.drawerShow = false;
+      this.getList();
     },
     handleSearch(value) {
       this.pageNum = 1;
       this.keyword = value;
-      this.projectUser();
+      this.getList();
     },
     handleLoadMore() {
       this.pageNum++;
       this.listLoading = true;
-      this.projectUser();
+      this.getList();
     },
     handleRefresh() {
       this.listRefreshLoading = true;
       this.pageNum = 1;
-      this.projectUser();
+      this.getList();
     },
-    async projectUser() {
-      this.checkedIds = [];
-      const data = {
-        page: this.pageNum,
-        keyword: this.keyword,
-        ...this.searchData,
-      };
-      const res = await projectUser(data).catch(() => {});
-      this.listRefreshLoading = false;
-      this.listLoading = false;
-      this.skeletonLoading = false;
-      if (res.code === 0) {
-        if (this.pageNum === 1) {
-          this.listData = res.data.list;
-        } else {
-          this.listData.push(...res.data.list);
-        }
-        this.listTotal = res.data.total;
+    async getList() {
+      let api = undefined, data = {}
+      // 初始化状态
+      this.checkedIds = []
+      this.listRefreshLoading = false
+      this.listLoading = false
+      this.skeletonLoading = false
+
+      if (this.listType === 1) {
+        data = { page: this.pageNum, keyword: this.keyword, ...this.searchData }
+        api = projectUser
+      } else {
+        data = { page: this.pageNum, keyword: this.keyword }
+        api = studentUsers
       }
-    },
+
+      const res = await api(data).catch(() => {})
+      if (res.code == 0) {
+        if (this.pageNum === 1) {
+          this.listData = res.data.list
+        } else {
+          this.listData.push(...res.data.list)
+        }
+        this.listTotal = res.data.total
+      }
+    }
   },
 };
 </script>
@@ -187,6 +255,11 @@ export default {
       color: @primary;
       .btn-name {
         font-size: @font-size-xs;
+      }
+      .btn-switch {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
     }
   }

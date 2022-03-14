@@ -92,6 +92,13 @@
 					}
 				},
 				{
+					"path": "userDetail/index",
+					"style": {
+						"navigationBarTitleText": "用户详情",
+						"usingComponents": {}
+					}
+				},
+				{
 					"path": "collectionApproval/index",
 					"style": {
 						"navigationBarTitleText": "回款审批",
@@ -246,7 +253,8 @@
 			"van-area": "/wxcomponents/vant/area/index",
 			"van-dialog": "/wxcomponents/vant/dialog/index",
 			"van-picker": "/wxcomponents/vant/picker/index",
-			"van-notify": "/wxcomponents/vant/notify/index"
+			"van-notify": "/wxcomponents/vant/notify/index",
+			"van-switch": "/wxcomponents/vant/switch/index"
 		}
 	}
 }

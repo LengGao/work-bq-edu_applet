@@ -93,6 +93,24 @@ export function projectUser(data) {
         data
     })
 }
+// 用户中心列表
+export function studentUsers(data) {
+    return request({
+        url: '/StudentUsers/index',
+        method: 'get',
+        data
+    })
+}
+// 启用/金庸用户 1 为启用状态 0 为禁用状态
+export function studentUsersClear(data) {
+    return request({
+        url: '/StudentUsers/clear',
+        method: 'post',
+        showToast: true,
+        loading: true,
+        data
+    })
+}
 // 一键开课
 export function eduOpenCourse(data) {
     return request({
