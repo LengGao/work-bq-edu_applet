@@ -18,29 +18,29 @@
       <view
         class="item"
         v-for="(item, index) in listData"
-        :key="item.order_id"
-        @click="toDetail(item.order_id, index)"
+        :key="item.id"
+        @click="toDetail(item.order_id, item.id, index)"
       >
         <view class="item-submit">
           <view
             class="item-submit-name finish"
-            v-if="item.finish_staff_id || item.verify_status === 8"
+            v-if="item.finish_staff_id || item.status === 8"
           >
             <text>{{ item.submit_name || "--" }}</text>
-            提交了订单审批
+            提交了{{ verifyTypeMap[item.verify_type] }}审批
           </view>
           <view class="item-submit-name" v-else>
             <text>{{ item.submit_name || "--" }}</text>
-            提交了订单审批
+            提交了{{ verifyTypeMap[item.verify_type] }}审批
           </view>
-          <template v-if="[3, 8, 9].includes(item.verify_status)">
-            <van-tag type="success" plain v-if="item.verify_status === 3"
+          <template v-if="[3, 8, 9].includes(item.status)">
+            <van-tag type="success" plain v-if="item.status === 3"
               >已通过</van-tag
             >
-            <van-tag color="#999" plain v-if="item.verify_status === 8"
+            <van-tag color="#999" plain v-if="item.status === 8"
               >已撤销</van-tag
             >
-            <van-tag type="warning" plain v-if="item.verify_status === 9"
+            <van-tag type="warning" plain v-if="item.status === 9"
               >已驳回</van-tag
             >
           </template>
@@ -90,6 +90,12 @@ export default {
       keyword: "",
       drawerShow: false,
       checkedIndex: null,
+      verifyTypeMap: {
+        0: "订单",
+        1: "订单退款",
+        2: "订单作废",
+        3: "订单退差价",
+      },
     };
   },
   onLoad() {
@@ -105,10 +111,10 @@ export default {
         this.listData[this.checkedIndex].pay_money = data.pay_money;
       }
     },
-    toDetail(orderId, index) {
+    toDetail(orderId, verifyId, index) {
       this.checkedIndex = index;
       uni.navigateTo({
-        url: `/subPackages/orderDetail/index?orderId=${orderId}&approve=1`,
+        url: `/subPackages/orderDetail/index?orderId=${orderId}&verifyId=${verifyId}&approve=1`,
       });
     },
     handleDrawerSearch(data) {
