@@ -1,7 +1,7 @@
-import request from '@/utils/request'
+import http from '@/utils/request'
 // crm订单列表
 export function getCrmOrderList(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/index',
         method: 'post',
         data
@@ -9,14 +9,14 @@ export function getCrmOrderList(data) {
 }
 // crm订单详情
 export function getCrmOrderDetail(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/detail',
         method: 'get',
         data
     })
 }
 export function orderCancel(data) {
-    return request({
+    return http.request({
         url: '/order/cancel',
         method: 'get',
         showToast: true,
@@ -25,7 +25,7 @@ export function orderCancel(data) {
 }
 // 订单操作 1、通过，2：拒绝 , 3:撤销/作废订单，4、删除订单
 export function crmOrderApprove(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/approve',
         method: 'post',
         showToast: true,
@@ -35,7 +35,7 @@ export function crmOrderApprove(data) {
 }
 // 订单催办
 export function hurryUp(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/hurryUp',
         method: 'post',
         showToast: true,
@@ -45,7 +45,7 @@ export function hurryUp(data) {
 }
 // 订单异动-审批
 export function orderUnusualApprove(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/action',
         method: 'post',
         showToast: true,
@@ -55,7 +55,7 @@ export function orderUnusualApprove(data) {
 }
 // 获取招生审批订单列表
 export function getCrmApproveOrder(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/authorize',
         method: 'post',
         data
@@ -63,7 +63,7 @@ export function getCrmApproveOrder(data) {
 }
 // crm创建回款计划
 export function createOrderPayPlan(data) {
-    return request({
+    return http.request({
         url: '/OrderPayPlan/create',
         method: 'post',
         showToast: true,
@@ -72,7 +72,7 @@ export function createOrderPayPlan(data) {
 }
 // 教务开课-获取机构
 export function getOrganizationOptions(data) {
-    return request({
+    return http.request({
         url: '/Organization/switchList',
         method: 'get',
         data
@@ -80,7 +80,7 @@ export function getOrganizationOptions(data) {
 }
 // 教务开课-获取机构项目班型
 export function getInstitutionClassType(data) {
-    return request({
+    return http.request({
         url: '/CrmCourse/classType',
         method: 'post',
         loading: true,
@@ -89,7 +89,7 @@ export function getInstitutionClassType(data) {
 }
 // 教务添加学生开课
 export function orderOpen(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/orderOpen',
         method: 'post',
         showToast: true,
@@ -98,7 +98,7 @@ export function orderOpen(data) {
 }
 // 获取项目选项
 export function getProjectOptions(data) {
-    return request({
+    return http.request({
         url: '/project/getproject',
         method: 'get',
         data,
@@ -106,7 +106,7 @@ export function getProjectOptions(data) {
 }
 // 获取分类选项
 export function getCateList(data) {
-    return request({
+    return http.request({
         url: '/courseCategory/getcategorytree',
         method: 'get',
         data,
@@ -114,7 +114,7 @@ export function getCateList(data) {
 }
 // 获取员工选项
 export function getStaffList(data) {
-    return request({
+    return http.request({
         url: '/staff/index',
         method: 'get',
         data,
@@ -122,7 +122,7 @@ export function getStaffList(data) {
 }
 // 添加回款记录
 export function payLogCreate(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/payLogCreate',
         method: 'post',
         showToast: true,
@@ -131,7 +131,7 @@ export function payLogCreate(data) {
 }
 // 异动审批列表
 export function getUnusualList(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/unusual',
         method: 'post',
         data
@@ -139,7 +139,7 @@ export function getUnusualList(data) {
 }
 // 招生回款审批列表
 export function getReturnPaymentList(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/log',
         method: 'post',
         data
@@ -147,7 +147,7 @@ export function getReturnPaymentList(data) {
 }
 // 渠道回款审批列表
 export function getOrgReceivableList(data) {
-    return request({
+    return http.request({
         url: '/OrgReceivable/getList',
         method: 'get',
         data
@@ -155,7 +155,7 @@ export function getOrgReceivableList(data) {
 }
 // 渠道回款详情
 export function getReceivableInfo(data) {
-    return request({
+    return http.request({
         url: '/OrgReceivable/getInfo',
         method: 'get',
         data
@@ -163,7 +163,7 @@ export function getReceivableInfo(data) {
 }
 // 招生回款-入账、驳回
 export function entryLog(data) {
-    return request({
+    return http.request({
         url: '/CrmOrder/entryLog',
         method: 'post',
         showToast: true,
@@ -173,7 +173,7 @@ export function entryLog(data) {
 }
 // 渠道回款审批
 export function reviewReceivableOrder(data) {
-    return request({
+    return http.request({
         url: '/OrgReceivable/reviewReceivableOrder',
         method: 'post',
         showToast: true,
@@ -183,7 +183,7 @@ export function reviewReceivableOrder(data) {
 }
 // 根据订单id获取学籍异动详情
 export function getOrderTransactionList(data) {
-    return request({
+    return http.request({
         url: '/Crm/getOrderTransactionList',
         method: 'get',
         data

@@ -1,8 +1,8 @@
-import request from '@/utils/request'
+import http from '@/utils/request'
 
 // 获取在销售简报数据
 export function getBriefing(data) {
-    return request({
+    return http.request({
         url: '/index/briefing',
         method: 'post',
         loading: true,
@@ -11,7 +11,7 @@ export function getBriefing(data) {
 }
 // 获取业绩指标数据
 export function performanceIndicators(data) {
-    return request({
+    return http.request({
         url: '/index/performanceIndicators',
         method: 'post',
         loading: true,
@@ -20,7 +20,7 @@ export function performanceIndicators(data) {
 }
 // 获取销售趋势数据
 export function getTrendData(data) {
-    return request({
+    return http.request({
         url: '/index/trend',
         method: 'post',
         loading: true,
@@ -29,7 +29,7 @@ export function getTrendData(data) {
 }
 // 获取销售龙虎榜
 export function getSalesRankData(data) {
-    return request({
+    return http.request({
         url: '/index/salesRank',
         method: 'post',
         loading: true,
@@ -38,7 +38,7 @@ export function getSalesRankData(data) {
 }
 // 获取客户录入排行榜
 export function getCustomerRankData(data) {
-    return request({
+    return http.request({
         url: '/index/customerRank',
         method: 'post',
         loading: true,
@@ -47,7 +47,7 @@ export function getCustomerRankData(data) {
 }
 // 获取查看数据范围选项
 export function getGroupWithUser(data) {
-    return request({
+    return http.request({
         url: '/index/getGroupWithUser',
         method: 'get',
         data
@@ -55,7 +55,7 @@ export function getGroupWithUser(data) {
 }
 // 根据数据范围选项查询用户ID
 export function getUserId(data) {
-    return request({
+    return http.request({
         url: '/index/getUserId',
         method: 'post',
         data

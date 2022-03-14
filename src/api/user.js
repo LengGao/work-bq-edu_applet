@@ -1,7 +1,7 @@
-import request from '@/utils/request'
+import http from '@/utils/request'
 // 获取小程序信息
 export const getVersion = (data) => {
-    return request({
+    return http.request({
         url: 'sign/getVersion',
         method: 'post',
         data,
@@ -11,7 +11,7 @@ export const getVersion = (data) => {
 }
 //根据微信code登录
 export const appletLogin = (data) => {
-    return request({
+    return http.request({
         url: '/passport/appletLogin',
         method: 'post',
         data,
@@ -20,7 +20,7 @@ export const appletLogin = (data) => {
 }
 //绑定账号登录
 export const appletBindPhone = (data) => {
-    return request({
+    return http.request({
         url: '/passport/appletBindPhone',
         method: 'post',
         data,
