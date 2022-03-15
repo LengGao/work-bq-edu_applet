@@ -41,7 +41,11 @@
           ></UserInfo>
         </van-tab>
         <van-tab title="证件资料">
-          <CertificateInformation :uid="uid"></CertificateInformation>
+          <CertificateInformation 
+            :uid="uid"
+             @openEdit="openEdit"
+            >
+          </CertificateInformation>
         </van-tab>
         <van-tab title="订单记录">
           <UserOrderRecond :uid="uid"></UserOrderRecond>
@@ -82,6 +86,7 @@
       @confirm="handleSelectOrgChange"
       :options="institutionOptions"
     />
+
   </view>
 </template>
 <script>
@@ -93,6 +98,7 @@ import { StudyProgress } from "./components/studyProgress.vue";
 import { areaList } from "@vant/area-data";
 import { mapGetters } from "vuex";
 import Select from "@/components/select/index.vue";
+
 import {
   getUserInfo,
   modifyUserInfo,
@@ -106,7 +112,7 @@ export default {
     CertificateInformation,
     UserOrderRecond,
     StudentClass,
-    StudyProgress,
+    StudyProgress
   },
   data() {
     return {
@@ -158,7 +164,7 @@ export default {
         tips: "",
         is_graduate: "",
         online_course: "",
-      },
+      }
     };
   },
   computed: {
@@ -176,7 +182,7 @@ export default {
     this.getUserInfo();
   },
   methods: {
-    //   初始化修改的参数
+    // 初始化修改的参数
     initFormData() {
       for (const k in this.formData) {
         this.formData[k] = this.userInfo[k] || "";

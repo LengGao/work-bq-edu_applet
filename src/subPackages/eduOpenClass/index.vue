@@ -138,7 +138,6 @@ export default {
       }
     },
     handleListTypeChange(val) {
-      console.log(val);
       this.listType = val
       this.pageNum = 1;
       this.keyword = ''
@@ -204,7 +203,6 @@ export default {
       this.checkedIds = []
       this.listRefreshLoading = false
       this.listLoading = false
-      this.skeletonLoading = false
 
       if (this.listType === 1) {
         data = { page: this.pageNum, keyword: this.keyword, ...this.searchData }
@@ -223,6 +221,8 @@ export default {
         }
         this.listTotal = res.data.total
       }
+      
+      this.skeletonLoading = false
     }
   },
 };

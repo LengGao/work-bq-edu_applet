@@ -10,8 +10,21 @@
     <view class="information">
         <view class="information-header">
             <Title title="资料信息"></Title>
-            <van-button plain type="primary" size="small" @click="handleUpload">上传资料</van-button>
         </view>
+                <van-uploader
+                    :file-list="fileList"
+                    upload-text="选择文件"
+                    multiple
+                    deletable
+                    show-upload
+                    accept="file"
+                    @after-read="handleAfterRead"
+                    @delete="({ detail }) => fileList.splice(detail.index, 1)"
+                >
+                    <!-- use-before-read -->
+                    <!-- @before-read="handleBeforeRead" -->
+                    <van-button icon="photo" plain type="primary" size="small" @click="handleUpload">上传资料</van-button>
+                </van-uploader>
 
         <view class="information-card" v-for="item in informations" :key="item.id">
             <view class="card-title">{{ item.file_name }}</view>
@@ -23,18 +36,37 @@
                 </view>
                 <view class="card-item-btns">
                     <van-button size="small" @click="handleEdit(item)">编辑</van-button>
-                    <van-button size="small" @click="handleDelete(item)">删除</van-button>
+                    <van-button size="small" @click="handleDelete(item.id)">删除</van-button>
                 </view>
             </view>
         </view>
-
     </view>
-    
+
+    <van-dialog
+        use-slot
+        title="编辑资料"
+        :show="showDialog"
+        show-cancel-button
+        @close="handleClose"
+        @confirm="handleConfirm" 
+        >
+        <van-cell-group>
+            <van-field
+                label="资料名称"
+                :value="editData.file_name"
+                placeholder="请输入资料名称"
+                :border="false"
+            />
+            <van-cell title="上传资料">
+            </van-cell>
+        </van-cell-group>        
+    </van-dialog>
+
   </view>
 </template>
 
 <script>
-import Title from "@/components/title/index2.vue";
+import Title from "@/components/title/index.vue";
 import { getCertificateInfo, getUserFileList, uploadImage, createFile, updateFile, deleteFile } from "@/api/customer"
 
 export default {
@@ -54,7 +86,7 @@ export default {
       certificate: {
         graduation_certificate: "",
         mobile: "17456241531",
-        photo_commitment: "../../../static/Presetation.png",
+        photo_commitment: "",
         photo_health: "",
         photo_id_card: "",
         photo_id_card_emblem: "",
@@ -67,13 +99,13 @@ export default {
         create_time: "2022-03-15 14:30:02",
         file_name: "111",
         id: 13,
-        oss_url: "../../../static/Presetation.png",
+        oss_url: "",
         size: "120.62KB",
         suffix: "png",
         uid: 102517,
         update_time: "2022-03-15 14:30:02",
       }],
-      defaultImage: '../../../static/Presetation.png',
+      defaultImage: '../../../static/upload.png',
       informationImages: [
         { type: "portrait", iamge: "", text: "免冠正面照" },
         { type: "photo_id_card_emblem", iamge: "", text: "身份证国徽面" },
@@ -83,21 +115,58 @@ export default {
         { type: "photo_commitment", iamge: "", text: "工作年限承诺书" },
         { type: "photo_health", iamge: "", text: "个人健康承诺书" },
       ],
+      showDialog: false,
+      editData: {},
+      fileList: []
     };
   },
   created() {
-    
     this.transfromData(this.certificate);
   },
   methods: {
-    handleDelete() {
+    // 上传前置狗子
+    handleBeforeRead({ detail }) {
+        const { file, callback } = detail;
+        console.log(detail);
+    },
+    // 上传后置狗子
+    async handleAfterRead({ detail }) {
+      const { file } = detail;
+      const { url } = await uploadImage(file);
+      this.fileList.push({ url, isImage: true });
+    },
+    handleDelete(data) {
+        uni.showModal({ title: '标题', content: '确定要删除此资料吗?' })
+        .then((res) => {
+            if (res.confirm) {
+                // 发送编辑请求
+            }
+        })
+        .catch(() => {})
+    },
+    handleEdit(data) {
+        this.showDialog = true
+    },
+    handleClose() {
+        this.showDialog = false
+    },
+    handleConfirm() {
 
     },
-    handleEdit() {
-
-    },
+    // 资料上传
     handleUpload() {
-        this.$emit('upload')
+        
+    },
+    previewImage(urls, index) {
+      uni.previewImage({ urls, current: urls[index] });
+    },
+    // 获取证件资料
+    async getCertificateInfo() {
+
+    },
+    // 获取相关资料
+    async getUserFileList() {
+
     },
     // 转换请求数据为目标结构
     transfromData(data = {}) {
@@ -116,8 +185,10 @@ export default {
 @import "@/styles/var";
 
 .certificate-information {
-    border-top: 20rpx solid #f2f6fc;
+    width: 100%;
     padding-bottom: 40rpx;
+    overflow: hidden;
+    border-top: 20rpx solid #f2f6fc;
 
     .certificate {
         display: flex;
@@ -156,7 +227,8 @@ export default {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        align-items: center;   
+        align-items: center;  
+        width: 100%;
         margin: 20rpx 0;
         font-size: @font-size-md;
         color: @text-color;
