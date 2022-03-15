@@ -7,8 +7,7 @@
             <text class="header-info-phone">{{ userInfo.telphone }}</text>
         </view>
     </view>
-    <video class="Split-line"> </video>
-    <van-cell-group>
+    <video class="Split-line">
       <van-cell
         title="学生编号"
         title-class="title"
@@ -72,8 +71,8 @@
         value-class="value"
         :value="userInfo.from_organization_name || '--'"
       />
-    </van-cell-group>
-  </view>
+    </video>
+</view>
 </template>
 
 <script>
@@ -154,7 +153,6 @@ export default {
   }
   .Split-line {
     width: 100%;
-    height: 0;
     border-top: 20rpx solid #f2f6fc;
   }
   .isLogin {
