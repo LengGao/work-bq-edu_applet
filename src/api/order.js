@@ -189,3 +189,12 @@ export function getOrderTransactionList(data) {
         data
     })
 }
+// 订单申请作废退款
+export function refundInvalid(data) {
+    return http.request({
+        url: '/CrmOrder/refundInvalid',
+        method: 'post',
+        showToast: true,
+        data
+    })
+}

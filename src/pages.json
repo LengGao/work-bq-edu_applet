@@ -61,6 +61,16 @@
 			"root": "subPackages",
 			"pages": [
 				{
+					"path": "applyRefund/index",
+					"style": {
+						"navigationBarTitleText": "申请退款作废",
+						"usingComponents": {
+							"van-uploader": "/wxcomponents/vant/uploader/index",
+							"van-notice-bar": "/wxcomponents/vant/notice-bar/index"
+						}
+					}
+				},
+				{
 					"path": "customerList/index",
 					"style": {
 						"navigationBarTitleText": "客户管理",

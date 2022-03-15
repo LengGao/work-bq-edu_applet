@@ -2,12 +2,12 @@
   <view class="user-info">
     <van-cell-group>
       <van-field
-        is-link
         title-class="title"
         value-class="value"
         :value="userInfo.surname"
         input-align="right"
         label="客户姓名"
+        right-icon="edit"
         @blur="
           ({ detail }) =>
             detail.value !== userInfo.surname &&
@@ -84,7 +84,7 @@
         :value="userInfo.customer_type || '--'"
       />
       <van-field
-        is-link
+        right-icon="edit"
         title-class="title"
         value-class="value"
         :value="userInfo.tips"
