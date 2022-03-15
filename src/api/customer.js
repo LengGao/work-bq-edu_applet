@@ -83,7 +83,6 @@ export function uploadImage(file) {
             fail: reject
         });
     })
-
 }
 // 教务开课列表
 export function projectUser(data) {
@@ -162,12 +161,81 @@ export function receiveHighSeas(data) {
         data
     })
 }
-
 // 客户基本信息
 export function getUserInfo(data) {
     return http.request({
         url: '/UserArchives/detail',
         method: 'get',
+        data
+    })
+}
+/**
+ * 客户证件资料
+ * @param {uid: number} data 
+ * @returns 
+ */
+export function getCertificateInfo(data) {
+    return http.request({        
+        url: '/userArchives/getCertificateInfo',
+        method: 'get',
+        data
+    })
+}
+/**
+ * 客户证件资料 相关资料
+ * @param {uid: number, page: 1, search_box: string} data 
+ * @returns 
+ */
+export function getUserFileList(data) {
+    return http.request({
+        url: '/User/getUserFileList',
+        method: 'get',
+        data
+    })
+}
+/**
+ * 客户证件资料 其他资料上传
+ * @param {file_name: string, uid: number, file: (binary)} data 
+ * @returns 
+ */
+ export function createFile(file) {
+    console.log("formData", file);
+    return new Promise((resolve, reject) => {
+        wx.uploadFile({
+            url: `${process.env.VUE_APP_BASE_API}/User/createFile`,
+            filePath: file.url,
+            name: `${file.file_name}`,
+            formData: {},
+            success: (res) => {
+                const data = JSON.parse(res.data)
+                resolve(data.data.data)
+            },
+            fail: reject
+        });
+    })
+}
+
+/**
+ * 客户证件资料 线管资料修改
+ * @param {file_name: string, id: number, uid: string} data 
+ * @returns 
+ */
+export function updateFile(data) {
+    return http.request({
+        url: '/User/updateFile',
+        method: 'post',
+        data
+    })
+}
+/**
+ * 客户证件资料 线管资料删除
+ * @param {id: number} data 
+ * @returns 
+ */
+export function deleteFile(data) {
+    return http.request({
+        url: '/User/deleteFile',
+        method: 'post',
         data
     })
 }
@@ -225,7 +293,6 @@ export function modifyUserInfo(data) {
         data
     })
 }
-
 // 获取题库进度
 export function getBuyQuestionBank(data) {
     return http.request({
@@ -245,7 +312,7 @@ export function updateUserFromOrgId(data) {
         data
     })
 }
-// 更换所属老师
+// 更换所属老师 
 export function changeStaffId(data) {
     return http.request({
         url: '/CrmCustomer/changeStaffId',

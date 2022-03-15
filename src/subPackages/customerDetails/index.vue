@@ -40,6 +40,9 @@
             @open-popup="popupShow = true"
           ></UserInfo>
         </van-tab>
+        <van-tab title="证件资料">
+          <CertificateInformation :uid="uid"></CertificateInformation>
+        </van-tab>
         <van-tab title="订单记录">
           <UserOrderRecond :uid="uid"></UserOrderRecond>
         </van-tab>
@@ -83,6 +86,7 @@
 </template>
 <script>
 import { UserInfo } from "./components/userInfo.vue";
+import { CertificateInformation } from "./components/certificateInformation.vue";
 import { UserOrderRecond } from "./components/userOrderRecond.vue";
 import { StudentClass } from "./components/studentClass.vue";
 import { StudyProgress } from "./components/studyProgress.vue";
@@ -99,6 +103,7 @@ export default {
   components: {
     Select,
     UserInfo,
+    CertificateInformation,
     UserOrderRecond,
     StudentClass,
     StudyProgress,
@@ -110,7 +115,7 @@ export default {
       studentClass: [],
       userProject: [],
       studyProgress: {},
-      active: 0,
+      active: 1,
       defaultAvator: "../../static/avator.png",
       uid: "",
       cid: "",
