@@ -486,10 +486,25 @@ export default {
           this.orderUnusualApprove(1);
           break;
         case "7":
+          const {
+            order_no,
+            create_time,
+            surname,
+            order_money,
+            pay_money,
+            overdue_money,
+            order_id,
+          } = this.detailData;
           uni.navigateTo({
-            url: `/subPackages/applyRefund/index?orderData=${JSON.stringify(
-              this.detailData
-            )}`,
+            url: `/subPackages/applyRefund/index?orderData=${JSON.stringify({
+              order_no,
+              create_time,
+              surname,
+              order_money,
+              pay_money,
+              overdue_money,
+              order_id,
+            })}`,
           });
           break;
       }
