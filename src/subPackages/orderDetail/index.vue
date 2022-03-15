@@ -117,7 +117,7 @@
           v-if="
             detailData.verify_status < 3 ||
             (detailData.verify_status === 1 && !detailData.reshuffle) ||
-            detailData.pay_status < 4
+            detailData.refund_button
           "
         >
           <template v-if="detailData.is_my_review">
@@ -136,9 +136,9 @@
           </template>
           <van-tabbar-item
             icon="failure"
-            v-if="detailData.pay_status < 4"
+            v-if="detailData.refund_button"
             name="7"
-            >作废</van-tabbar-item
+            >退款作废</van-tabbar-item
           >
         </van-tabbar>
       </template>
@@ -160,7 +160,7 @@
     <van-dialog id="van-dialog" />
     <van-dialog
       use-slot
-      :title="dialogType === 1 ? '驳回' : '作废'"
+      title="驳回"
       :show="rejectDialog"
       show-cancel-button
       @close="onRejectClose"
@@ -170,7 +170,7 @@
       <van-field
         :value="rejectReason"
         type="textarea"
-        :placeholder="`请输入${dialogType === 1 ? '驳回' : '作废'}原因`"
+        :placeholder="`请输入驳回原因`"
         autosize
         :border="false"
         @input="onReasonInputChange"
@@ -279,7 +279,6 @@ import {
   payLogCreate,
   orderUnusualApprove,
   getOrderTransactionList,
-  orderCancel,
 } from "@/api/order";
 import { uploadImage } from "@/api/customer";
 import Dialog from "@/wxcomponents/vant/dialog/dialog";
@@ -312,7 +311,6 @@ export default {
       isApprove: false, // 是否是审批
       isChange: false, // 是否是异动
       rejectDialog: false,
-      dialogType: 1, // 1：驳回 2：作废
       rejectReason: "",
       orderId: "",
       verifyId: "",
@@ -446,16 +444,12 @@ export default {
       this.rejectReason = detail;
     },
     onRejectConfirm() {
-      if (this.dialogType === 1) {
-        // 异动驳回
-        if (this.isChange) {
-          this.orderUnusualApprove(2, this.rejectReason);
-        } else {
-          // 订单驳回
-          this.crmOrderApprove(2, this.rejectReason);
-        }
+      // 异动驳回
+      if (this.isChange) {
+        this.orderUnusualApprove(2, this.rejectReason);
       } else {
-        this.orderCancel();
+        // 订单驳回
+        this.crmOrderApprove(2, this.rejectReason);
       }
     },
     onRejectClose() {
@@ -480,35 +474,24 @@ export default {
             });
           break;
         case "3":
-          this.dialogType = 1;
           this.rejectDialog = true;
           break;
         case "4":
           this.crmOrderApprove(1);
           break;
         case "5":
-          this.dialogType = 1;
           this.rejectDialog = true;
           break;
         case "6":
           this.orderUnusualApprove(1);
           break;
         case "7":
-          this.dialogType = 2;
-          this.rejectDialog = true;
+          uni.navigateTo({
+            url: `/subPackages/applyRefund/index?orderData=${JSON.stringify(
+              this.detailData
+            )}`,
+          });
           break;
-      }
-    },
-    // 订单作废
-    async orderCancel() {
-      const data = {
-        status: 4, //订单状态 5：退费，4： 作废
-        order_id: this.orderId,
-        tips: this.rejectReason,
-      };
-      const res = await orderCancel(data);
-      if (res.code === 0) {
-        this.getCrmOrderDetail();
       }
     },
     // 催办

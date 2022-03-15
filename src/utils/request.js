@@ -27,7 +27,6 @@ class Http {
     }
     // 添加订阅
     _addSubScribe(callback) {
-        console.log(callback)
         this.subscribers.push(callback)
     }
     // 执行所有并清空
@@ -104,7 +103,7 @@ class Http {
                             icon: 'none',
                             title: data.message || '请求失败'
                         })
-                        console.log(`${url} >>error：`, data)
+                        // console.log(`${url} >>error：`, data)
                         return reject(data)
                     }
                     if (showToast) {
