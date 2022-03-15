@@ -174,13 +174,18 @@ export default {
         order_id: this.orderData.order_id,
       };
       this.saveLoading = true;
-      const res = await refundInvalid(data).catch(() => {});
-      this.saveLoading = false;
+      const res = await refundInvalid(data).catch(() => {
+        this.saveLoading = false;
+      });
+
       if (res.code === 0) {
-        const pages = getCurrentPages();
-        const prevPage = pages[pages.length - 2];
-        prevPage && prevPage.$vm && prevPage.$vm.getCrmOrderDetail();
-        uni.navigateBack();
+        setTimeout(() => {
+          this.saveLoading = false;
+          const pages = getCurrentPages();
+          const prevPage = pages[pages.length - 2];
+          prevPage && prevPage.$vm && prevPage.$vm.getCrmOrderDetail();
+          uni.navigateBack();
+        }, 500);
       }
     },
     // 上传凭证
