@@ -70,12 +70,13 @@ export function createCrmOrder(data) {
 /**
  * 上传图片url
  */
-export function uploadImage(file) {
+export function uploadImage(file, formData = {}) {
     return new Promise((resolve, reject) => {
         wx.uploadFile({
             url: `${process.env.VUE_APP_BASE_API}/oss/uploadImage`,
             filePath: file.url,
             name: 'image',
+            formData: formData,
             success: (res) => {
                 const data = JSON.parse(res.data)
                 resolve(data.data.data)

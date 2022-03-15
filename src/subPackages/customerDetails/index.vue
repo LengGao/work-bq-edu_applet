@@ -24,13 +24,14 @@
     <view class="main">
       <van-tabs
         type="line"
-        title-active-color="#199fff"
         color="#199fff"
+        title-active-color="#199fff"
         animated
+        tab-class="custom-tab"
         :active="active"
         @click="handleTabClick"
       >
-        <van-tab title="基本信息">
+        <van-tab title="基本信息" >
           <UserInfo
             :user-info="userInfo"
             @open-select="handleOpenSelect"
@@ -344,5 +345,9 @@ export default {
     height: calc(100vh - 180rpx);
     overflow-y: auto;
   }
+}
+
+/deep/.custom-tab {
+  font-size: 28rpx;
 }
 </style>

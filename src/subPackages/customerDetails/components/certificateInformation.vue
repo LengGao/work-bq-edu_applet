@@ -1,7 +1,7 @@
 <template>
   <view class="certificate-information">
     <view class="certificate">
-      <view class="certificate-info" v-for="(item, index) in informationImages" :key="index">
+      <view class="certificate-info" v-for="(item, index) in informationImages" :key="index" @click="upCertificate">
         <image class="certificate-info-img" mode="aspectFit" :src="item.iamge || defaultImage" />
         <text class="certificate-info-text">{{item.text}}</text>
       </view>
@@ -10,33 +10,33 @@
     <view class="information">
         <view class="information-header">
             <Title title="资料信息"></Title>
+                    <van-uploader
+                        name="editInformation"
+                        accept="all"
+                        :show-upload="true"
+                        :preview-image="false"
+                        :preview-full-image="false"
+                        :file-list="editFiles"
+                        @after-read="handleAfterRead"
+                        @delete="handleImageDelete"
+                    >
+                       <van-button icon="photo" plain type="primary" size="small" @click="handleUpload">上传资料</van-button>
+                    </van-uploader>
         </view>
-                <van-uploader
-                    :file-list="fileList"
-                    upload-text="选择文件"
-                    multiple
-                    deletable
-                    show-upload
-                    accept="file"
-                    @after-read="handleAfterRead"
-                    @delete="({ detail }) => fileList.splice(detail.index, 1)"
-                >
-                    <!-- use-before-read -->
-                    <!-- @before-read="handleBeforeRead" -->
-                    <van-button icon="photo" plain type="primary" size="small" @click="handleUpload">上传资料</van-button>
-                </van-uploader>
 
         <view class="information-card" v-for="item in informations" :key="item.id">
-            <view class="card-title">{{ item.file_name }}</view>
+            <view class="card-header">
+                <view class="card-header-title">{{ item.file_name }}</view>
+                <view class="card-header-btns">
+                    <van-button icon="edit" size="small" plain  @click="handleEdit(item)">编辑</van-button>
+                    <van-button icon="delete-o"  size="small" plain  @click="handleDelete(item.id)">删除</van-button>
+                </view>
+            </view>
             <view class="card-item">
                 <image class="card-item-img" mode="aspectFit" :src="item.oss_url || defaultImage">
                 <view class="card-item-info">
                     <view class="format">文件格式<text class="value">{{ item.suffix }}</text></view>
                     <view class="size">文件大小<text class="value">{{ item.size }}</text></view>
-                </view>
-                <view class="card-item-btns">
-                    <van-button size="small" @click="handleEdit(item)">编辑</van-button>
-                    <van-button size="small" @click="handleDelete(item.id)">删除</van-button>
                 </view>
             </view>
         </view>
@@ -57,7 +57,29 @@
                 placeholder="请输入资料名称"
                 :border="false"
             />
-            <van-cell title="上传资料">
+            <van-cell>
+                <template #title>
+                    <text style="margin-right: 50rpx;">上传资料</text>
+                    <van-uploader
+                        name="edit"
+                        accept="all"
+                        :show-upload="true"
+                        :preview-image="false"
+                        :preview-full-image="false"
+                        :file-list="editFiles"
+                        @after-read="handleAfterRead"
+                        @delete="handleImageDelete"
+                    >
+                        <van-button size="small" type="primary">上传文件</van-button>
+                    </van-uploader>
+                </template>
+            </van-cell>
+            <van-cell>
+                <view v-for="(file, index) in editFiles" :key="index" class="edit-files">
+                    <van-icon name="notes-o" size="32rpx" color="#999999" />
+                    <text class="edit-files-name">{{file.name}}</text>
+                    <van-icon name="cross" size="32rpx" color="#999999" @click="handleCancel(file, index)" />
+                </view>
             </van-cell>
         </van-cell-group>        
     </van-dialog>
@@ -66,7 +88,7 @@
 </template>
 
 <script>
-import Title from "@/components/title/index.vue";
+import Title from "@/components/title/index2.vue";
 import { getCertificateInfo, getUserFileList, uploadImage, createFile, updateFile, deleteFile } from "@/api/customer"
 
 export default {
@@ -117,41 +139,93 @@ export default {
       ],
       showDialog: false,
       editData: {},
-      fileList: []
+      fileList: [],
+      editFiles: [],
+      currentEditId: ''
     };
   },
   created() {
     this.transfromData(this.certificate);
   },
   methods: {
+    upCertificate() {
+        wx.chooseImage({
+            count: 1,
+            sizeType: 'original',
+            sourceType: ['album', 'camera'],
+            success(files) {
+                let tempFilePaths = files.tempFilePaths, tempFiles = files.tempFiles,
+                src = tempFiles[0].path
+                console.log(tempFilePaths, tempFiles, src);
+                wx.compressImage({
+                    src: src,
+                    quality: 80,
+                    success(compress) {
+                        console.log("compress",compress);
+                        const param = {url: src}
+                        uploadImage(param).then(res => {
+                            console.log(res);
+                        }).catch(err => {
+                            console.log(err);
+                        })
+                    },
+                    fail(cerr) {
+                        console.log(cerr);
+                    }
+                })
+
+            },
+            fail(fail) {
+                console.log(fail);
+            }
+        })
+    },
     // 上传前置狗子
     handleBeforeRead({ detail }) {
+        console.log("handleBeforeRead",detail);
         const { file, callback } = detail;
-        console.log(detail);
+        callback(true);
     },
     // 上传后置狗子
     async handleAfterRead({ detail }) {
-      const { file } = detail;
-      const { url } = await uploadImage(file);
-      this.fileList.push({ url, isImage: true });
+    console.log("handleAfterRead", detail);
+      const { file } = detail
+      this.editFiles.push({ name: file.name, url: file.url, index: file.index, file: file})
+    },
+    handleCancel(data, index) {
+        console.log(data);
+        this.editFiles.splice(index, 1)
+    },
+    handleImageDelete({ detail }) {
+        this.editFiles.splice(detail.index, 1``)
     },
     handleDelete(data) {
         uni.showModal({ title: '标题', content: '确定要删除此资料吗?' })
         .then((res) => {
             if (res.confirm) {
-                // 发送编辑请求
             }
         })
         .catch(() => {})
     },
     handleEdit(data) {
         this.showDialog = true
+        this.currentEditId = data.id
     },
     handleClose() {
         this.showDialog = false
     },
-    handleConfirm() {
-
+    async handleConfirm() {
+        const data = this.editFiles[0]
+        const parse = {
+            file_name: data.name,
+            id: this.currentEditId,
+            file: data.file
+        }
+        const res = await uploadImage(data,file ,parse);
+        if (res.code == 0) {
+            this.editFiles = []
+            this.showDialog = false
+        }
     },
     // 资料上传
     handleUpload() {
@@ -204,12 +278,12 @@ export default {
         flex-direction: column;
         justify-content: space-between;
         align-items: center;
-        height: 290rpx;
+        height: 240rpx;
         margin-bottom: 20rpx;
 
         &-img {
-            width: 320rpx;
-            height: 240rpx;
+            width: 300rpx;
+            height: 200rpx;
             border: @border;
         }
 
@@ -228,7 +302,6 @@ export default {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;  
-        width: 100%;
         margin: 20rpx 0;
         font-size: @font-size-md;
         color: @text-color;
@@ -239,12 +312,24 @@ export default {
         border: @border;
     }
     
-    .card-title {
-        height: 72rpx;
-        line-height: 72rpx;
-        font-size: @font-size-lg;
-        color: @text-color;
-        border-bottom: @border;
+    .card-header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 20rpx;
+
+        .card-title {
+            font-size: @font-size-lg;
+            color: @text-color;
+            border-bottom: @border;
+        }
+
+        &-btns {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
     }
 
     .card-item {
@@ -269,13 +354,6 @@ export default {
             white-space: nowrap;
         }
 
-        &-btns {
-            width: 60rpx;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
         & .format {
             color: @text-color-grey;
         }
@@ -291,5 +369,32 @@ export default {
     }
 }
 
+.edit-files {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
 
+.edit-files-name {
+    width: 600rpx;
+    margin-left: 10rpx;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.upload-btn {
+    padding: 10rpx 20rpx;
+    color: #ffffff;
+    font-size: @font-size-sm;
+    background-color: @primary;
+}
+
+/deep/.van-uploader__upload input {
+    margin: 0;
+    padding: 0;
+    width: 750rpx;
+}
 </style>
