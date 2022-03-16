@@ -10,7 +10,7 @@
 
     <view class="information">
         <view class="information-header">
-            <Title title="资料信息"></Title>
+            <Title title="资料信息" customStyle="padding-left: 10rpx;"></Title>
         </view>
         <template v-if="informations.length > 0">
         <view class="information-card" v-for="item in informations" :key="item.id">
@@ -159,8 +159,10 @@ export default {
     },
     // 预览
     previewImageInformation(item) {
-      const urls = [item.oss_url], index = 0
-      uni.previewImage({ urls, current: urls[index] });
+      if (this.suffixMap.includes(item.suffix)) {
+        const urls = [item.oss_url], index = 0
+        uni.previewImage({ urls, current: urls[index] });
+      }
     },
     previewImageCertificate(item) {
       const urls = [item.iamge], index = 0
@@ -182,7 +184,8 @@ export default {
       }
     },
     // 阻止dialog 关闭事件冒泡
-    handelBeforeClose() {
+    handelBeforeClose(event) {
+      if (event == 'cancel') return true;
       return false;
     },
     // 确认编辑
@@ -297,6 +300,7 @@ export default {
     }
 
     &-text {
+      margin-top: 10rpx;
       font-size: @font-size-xs;
       color: @text-color-grey;
     }
@@ -311,12 +315,14 @@ export default {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin: 20rpx 0;
+    height: 64rpx;
+    list-style: 64rpx;
     font-size: @font-size-md;
     color: @text-color;
   }
 
   .information-card {
+    margin-top: 20rpx;
     padding: 0 20rpx;
     border: @border;
   }
