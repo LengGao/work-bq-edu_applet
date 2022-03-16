@@ -155,6 +155,11 @@ export default {
           path: "/subPackages/collectionApproval/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/7.png",
         },
+        {
+          title: "班级管理",
+          path: "/subPackages/classManagement/index",
+          icon: "https://oss-file.beiqujy.com/default/crm_applet/8.png",
+        }
       ],
       tabIndex: 0,
       // 工作通知

@@ -199,6 +199,34 @@
 						"navigationBarTitleText": "配置回款计划",
 						"usingComponents": {}
 					}
+				},
+				{
+					"path": "classManagement/index",
+					"style": {
+						"navigationBarTitleText": "班级管理",
+						"usingComponents": {}
+					}
+				},
+				{
+					"path": "classLive/index",
+					"style": {
+						"navigationBarTitleText": "班级直播",
+						"usingComponents": {}
+					}
+				},
+				{
+					"path": "classDetail/index",
+					"style": {
+						"navigationBarTitleText": "班级详情",
+						"usingComponents": {}
+					}
+				},
+				{
+					"path": "classAdd/index",
+					"style": {
+						"navigationBarTitleText": "添加班级",
+						"usingComponents": {}
+					}
 				}
 			]
 		}
