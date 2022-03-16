@@ -1,7 +1,7 @@
 <template>
   <view class="certificate-information">
     <view class="certificate">
-      <view class="certificate-info" v-for="(item, index) in informationImages" :key="index" @click="upCertificate(item)">
+      <view class="certificate-info" v-for="(item, index) in informationImages" :key="index" @click="item.iamge ? previewImageCertificate(item) : upCertificate(item)">
         <image class="certificate-info-img" mode="aspectFit" :src="item.iamge || defaultImage" />
         <text class="certificate-info-text">{{item.text}}</text>
         <van-icon v-if="item.iamge"  name="cross" class="btn-delete" @click.native.stop="handleImageDelete(item)" />
@@ -22,7 +22,7 @@
                 </view>
             </view>
             <view class="card-item">
-                <image class="card-item-img" mode="aspectFit" :src="getImg(item)">
+                <image class="card-item-img" mode="aspectFit" :src="getImg(item)" @click="previewImageInformation(item)">
                 <view class="card-item-info">
                     <view class="format">文件格式<text class="value">{{ item.suffix }}</text></view>
                     <view class="size">文件大小<text class="value">{{ item.size }}</text></view>
@@ -158,14 +158,21 @@ export default {
       }
     },
     // 预览
-    previewImage(urls, index) {
+    previewImageInformation(item) {
+      const urls = [item.oss_url], index = 0
+      uni.previewImage({ urls, current: urls[index] });
+    },
+    previewImageCertificate(item) {
+      const urls = [item.iamge], index = 0
       uni.previewImage({ urls, current: urls[index] });
     },
     // 删除编辑文件
     async handleImageDelete(item) {
-      let params = this.certificate,
-        type = item.type;
-      if (type) {
+      let params = this.certificate
+      let type = item.type
+      let modalOption = { title: "", content: "确定要删除此资料吗?", showCancel: true, cancelColor: "#199fff", confirmColor: "#199fff" };
+      let modal = await uni.showModal(modalOption);
+      if (modal[1].confirm) {
         params[type] = "";
         let res = await modifyCertificate(params).catch(() => {});
         if (res.code == 0) {
