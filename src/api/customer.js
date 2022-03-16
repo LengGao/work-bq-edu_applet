@@ -1,4 +1,6 @@
 import http from '@/utils/request'
+import store from '@/store'
+
 // crm客户列表
 export function getCrmCustomerList(data) {
     return http.request({
@@ -70,13 +72,12 @@ export function createCrmOrder(data) {
 /**
  * 上传图片url
  */
-export function uploadImage(file, formData = {}) {
+export function uploadImage(file) {
     return new Promise((resolve, reject) => {
         wx.uploadFile({
             url: `${process.env.VUE_APP_BASE_API}/oss/uploadImage`,
             filePath: file.url,
             name: 'image',
-            formData: formData,
             success: (res) => {
                 const data = JSON.parse(res.data)
                 resolve(data.data.data)
@@ -176,7 +177,7 @@ export function getUserInfo(data) {
  * @returns 
  */
 export function getCertificateInfo(data) {
-    return http.request({        
+    return http.request({
         url: '/userArchives/getCertificateInfo',
         method: 'get',
         data
@@ -215,16 +216,29 @@ export function getUserFileList(data) {
         });
     })
 }
-
 /**
- * 客户证件资料 线管资料修改
- * @param {file_name: string, id: number, uid: string} data 
+ * 
+ * @param {*} data 
  * @returns 
  */
-export function updateFile(data) {
+ export function modifyCertificate(data) {
+    return http.request({
+        url: '/userArchives/modifyCertificate',
+        method: 'post',
+        loading: true,
+        data
+    })
+}
+/**
+ * 客户证件资料 线管资料修改
+ * @param {file_name: string, id: number, file ?: (binary) } data 
+ * @returns 
+ */
+export function updateFileName(data) {
     return http.request({
         url: '/User/updateFile',
         method: 'post',
+        loading: true,
         data
     })
 }
@@ -237,6 +251,8 @@ export function deleteFile(data) {
     return http.request({
         url: '/User/deleteFile',
         method: 'post',
+        showToast:true,
+        loading: true,
         data
     })
 }

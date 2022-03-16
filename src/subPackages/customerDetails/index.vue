@@ -122,7 +122,7 @@ export default {
       studentClass: [],
       userProject: [],
       studyProgress: {},
-      active: 1,
+      active: 0,
       defaultAvator: "../../static/avator.png",
       uid: "",
       cid: "",
