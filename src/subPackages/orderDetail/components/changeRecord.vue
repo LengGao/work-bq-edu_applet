@@ -29,7 +29,13 @@
         title="共享业绩"
         title-class="title"
         value-class="value right"
-        :value="data.union_staff_name"
+        :value="data.union_staff_name || '--'"
+      />
+      <van-cell
+        title="届别名称"
+        title-class="title"
+        value-class="value right"
+        :value="data.jiebie_name || '--'"
         :border="false"
       />
     </van-cell-group>
@@ -69,6 +75,47 @@
         </template>
       </van-cell>
     </van-cell-group>
+    <view class="change-record-title">
+      <Title title="项目信息"> </Title>
+    </view>
+    <template v-if="data.project && data.project.length">
+      <van-cell-group
+        custom-class="cell-group"
+        inset
+        :border="false"
+        v-for="(item, index) in data.project"
+        :key="index"
+      >
+        <van-cell
+          title-width="180rpx"
+          title-class="title"
+          value-class="value"
+          title="项目名称"
+          :value="item.project_name"
+        >
+        </van-cell>
+        <van-cell
+          :border="false"
+          title-width="180rpx"
+          title-class="title"
+          value-class="value"
+          title="项目价格"
+          :value="item.project_price | moneyFormat"
+        >
+        </van-cell>
+      </van-cell-group>
+    </template>
+    <template v-else>
+      <van-cell-group inset :border="false" custom-class="cell-group">
+        <van-cell :border="false"></van-cell>
+        <van-cell
+          :border="false"
+          value-class="center"
+          value="暂无数据"
+        ></van-cell>
+        <van-cell :border="false"></van-cell>
+      </van-cell-group>
+    </template>
     <view class="change-record-title">
       <Title title="回款计划"> </Title>
     </view>
