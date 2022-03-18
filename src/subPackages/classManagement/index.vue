@@ -3,11 +3,10 @@
     <PureSearch
       :sheetActions="listTypes"
       v-model="listType"
-      searchText="搜索信息"
       :onlySearch="onlySearch"
       @search="handleSearch"
-      @sheet-change="handleListTypeChange"  
-      placeholder="请输入客户姓名/手机号码"
+      @sheet-change="handleListTypeChange"
+      :placeholder="placeholderOption[listType]"
       @filter-click="drawerShow = true"
     />
     <!-- 开课数据 -->
@@ -21,59 +20,75 @@
       @refresh="handleRefresh"
       class="load-more"
     >
-    <template v-if="listType === 1">
-      <view class="item" v-for="(item, index) in listData" :key="item.id">
-        <view class="item-info">
-          <view class="item-info-status">
-            <view class="user-name">{{ item.surname }}-{{ item.project_name }}</view>
-            <van-tag plain type="success" v-if="item.open_course">已开课</van-tag>
-            <van-tag plain type="warning" v-else>未开课</van-tag>
-          </view>
-          <view class="item-info-time"
-            >{{ item.create_time }} | {{ item.customer_type || "--" }}
-          </view>
-        </view>
+      <template v-if="listType === 1">
         <view
-          class="item-actions"
-          v-if="!item.open_course"
-          @click="openCourseConfirm(item.id, index)"
+          class="item"
+          v-for="item in listData"
+          :key="item.classroom_id"
+          @click="toClassDetail(item.classroom_id, item.course_id)"
         >
-          <van-icon name="add" size="40rpx" />
-          <view class="btn-name">开课</view>
-        </view>
-      </view>
-    </template>
-
-    <template v-else>
-      <view class="item" v-for="(item) in listData" :key="item.uid">
-        <view class="item-header" @click.native="toUserDetail(item)">
-          <image class="item-avator" :src="item.user_img || defaultAvator"></image>
-          <view class="item-info" >
+          <view class="item-info">
             <view class="item-info-status">
-              <view class="user-name">
-                <text class="noWrap">{{ item.user_nicename }} </text>
-                <text class="user-phone">{{ item.telphone | phoneFormat }} </text>
-              </view>
+              <view class="user-name">{{ item.classroom_name }}</view>
             </view>
             <view class="item-info-time">
-              {{ item.staff_name || '--' }}
+              <text decode>
+                {{ item.project_name }} | 班主任 &nbsp;{{ item.staff_name || "--" }}
+              </text>
             </view>
           </view>
         </view>
-        <view class="item-actions">
-          <view class="btn-switch">
-            <van-switch
-              size="32rpx" 
-              inactive-color="#D7D7D7"
-              :checked="checkedState[item.state]"
-              @change.native.self="handleSwitch(item)" />
-            <view class="btn-switch-text" :style="item.state === 1 ? '' : 'color: #D7D7D7;' ">
-              {{statusText[item.state]}}
+      </template>
+
+      <template v-else>
+        <view class="item" v-for="item in listData" :key="item.live_class_id">
+          <view
+            class="item-header"
+            @click.native="toClassLiveDetail(item.live_class_id, item.live_class_name)"
+          >
+            <view class="item-info">
+              <view class="item-info-status">
+                <view class="user-name">
+                  <text class="noWrap">{{ item.live_class_name }} </text>
+                </view>
+              </view>
+              <view class="item-info-time flex-row">
+                <text decode>
+                  任课老师 &nbsp; {{ item.teacher_name || "--" }}
+                </text>
+                <view class="livestate-state">
+                  <template v-if="item.live_status">
+                    <van-icon 
+                      name="circle" size="16rpx" color="#199fff" 
+                      custom-style="margin-left: 20rpx; line-height: 16rpx; background-color: #199fff; border-radius: 50%;" 
+                    />
+                    <text class="item-info-livestate info-livestate-active" >
+                      {{ live_statusText[item.live_status] }}
+                    </text>
+                  </template>
+                  <template v-else>
+                    <van-icon 
+                      name="circle" size="16rpx" color="#ddd" 
+                      custom-style="height: 16rpx; margin-left: 20rpx; line-height: 16rpx; background-color: #ddd; border-radius: 50%;"
+                    />
+                    <text class="item-info-livestate" >
+                      {{ live_statusText[item.live_status] }}
+                    </text>
+                  </template>
+                </view>
+              </view>
             </view>
           </view>
+          <view class="item-actions">
+            <van-tag v-if="item.live_status" plain size="large" type="warning">
+              <text @click="handleCloseLive(item.live_class_id)">关闭直播</text>
+            </van-tag>
+            <van-tag v-else plain size="large" type="primary">
+              <text @click="handleStartLive(item.live_class_id)">开始直播 </text>
+            </van-tag>
+          </view>
         </view>
-      </view>
-    </template>
+      </template>
     </LoadMore>
 
     <SearchDrawer
@@ -81,23 +96,20 @@
       @close="drawerShow = false"
       @search="handleDrawerSearch"
     />
-    <DragButton @tap="toAdd" />
     <van-dialog id="van-dialog" />
   </view>
 </template>
 
 <script>
-import Dialog from "@/wxcomponents/vant/dialog/dialog";
 import LoadMore from "@/components/loadMore/index.vue";
-import DragButton from "@/components/dragButton/index.vue";
 import SearchBar from "@/components/searchBar/index.vue";
 import PureSearch from "@/components/pureSearch/index.vue";
 import SearchDrawer from "./components/searchDrawer.vue";
-import { projectUser, eduOpenCourse, studentUsers, studentUsersClear } from "@/api/customer";
+import { getClassList, classLiveList, livestart, closelive } from "@/api/class";
+
 export default {
   components: {
     LoadMore,
-    DragButton,
     SearchBar,
     PureSearch,
     SearchDrawer,
@@ -116,11 +128,26 @@ export default {
       checkedIndex: null,
       inputShow: false,
       listType: 1,
-      listTypes: [{ name: '班级管理', value: 1 }, { name: '班级直播', value: 2 }],
+      listTypes: [
+        { name: "班级管理", value: 1 },
+        { name: "班级直播", value: 2 },
+      ],
       checkedState: [false, true, false],
-      statusText: { 1: '启用', 2: '禁用' },
+      statusText: { 1: "启用", 2: "禁用" },
+      live_statusText: { 0: "无直播", 1: "直播中" },
       onlySearch: false,
-      defaultAvator: "../../static/avator.png"
+      defaultAvator: "../../static/avator.png",
+      placeholderOption: [ '', '请输入班级名或班主任', '请输入直播名称' ],
+      liveStateStyleActive: {
+        marginLeft: '20rpx',
+        backgroundColor: '#199fff',
+        borderRadius: '50%'
+      },
+      liveStateStytle: {
+        'margin-left': '20rpx',
+        'background': '#999999',
+        'border-radius': '50%'
+      }
     };
   },
   onLoad() {
@@ -128,53 +155,69 @@ export default {
     this.getList();
   },
   methods: {
-    async handleSwitch(item) {
-      const status = { 1: 'close', 2: 'open' },
-            data = { type: status[item.state], uid: item.uid }
+    // 开始直播
+  async handleStartLive(id) {
+    let params = { live_class_id: id },
+        modalOption = {
+          title: "直播提示",
+          content: "你确定要开启直播吗？",
+          showCancel: true,
+          cancelColor: "#199fff",
+          confirmColor: "#199fff",
+        };
+      let modal = await uni.showModal(modalOption);
+      if (modal[1].confirm) {
+        let res = await livestart(params).catch(() => {});
+        if (res.code === 0) {
+          this.getList();
+        }
+      }
+    // 关闭直播
+    },
+    async handleCloseLive(id) {
+      let params = { live_class_id: id },
+          modalOption = {
+            title: "直播提示",
+            content: "你确定要开启直播吗？",
+            showCancel: true,
+            cancelColor: "#199fff",
+            confirmColor: "#199fff",
+          };
+      let modal = await uni.showModal(modalOption);
+      if (modal[1].confirm) {
+        let res = await closelive(params).catch(() => {});
+        if (res.code === 0) {
+          this.getList();
+        }
+      }
+    },
 
-      const res = await studentUsersClear(data).catch(() => {})
+    async handleSwitch(item) {
+      let status = { 1: "close", 2: "open" },
+          data = { type: status[item.state], uid: item.uid };
+
+      const res = await studentUsersClear(data).catch(() => {});
       if (res.code === 0) {
-        item.state = item.state === 1 ? 2 : 1
+        item.state = item.state === 1 ? 2 : 1;
       }
     },
     handleListTypeChange(val) {
-      this.listType = val
+      this.listType = val;
       this.pageNum = 1;
-      this.keyword = ''
+      this.keyword = "";
       this.skeletonLoading = true;
-      this.onlySearch = (val === 2 ? true : false);
+      this.onlySearch = val === 2 ? true : false;
       this.getList();
     },
-    toUserDetail(data) {
-      let info = Object.create(null)
-      Object.keys(data).forEach(key => info[key] = data[key])
+    toClassDetail(crid, cid) {
       uni.navigateTo({
-        url: `/subPackages/userDetail/index?info=${JSON.stringify(info)}`
-      })
-    },
-    toAdd() {
-      uni.navigateTo({
-        url: "/subPackages/addStudent/index",
+        url: `/subPackages/classDetail/index?crid=${crid}&cid=${cid}`,
       });
     },
-    openCourseConfirm(id, index) {
-      Dialog.confirm({
-        message: "是否确定一键开通课程和题库？",
-      })
-        .then(() => {
-          this.checkedIndex = index;
-          this.eduOpenCourse(id);
-        })
-        .catch(() => {
-          // on cancel
-        });
-    },
-    async eduOpenCourse(id) {
-      const data = { id };
-      const res = await eduOpenCourse(data);
-      if (res.code === 0) {
-        this.listData[this.checkedIndex].open_course = 1;
-      }
+    toClassLiveDetail(id, name) {
+      uni.navigateTo({
+        url: `/subPackages/classLive/index?lid=${id}&name=${name}`,
+      });
     },
     handleDrawerSearch(data) {
       this.searchData = data;
@@ -198,32 +241,37 @@ export default {
       this.getList();
     },
     async getList() {
-      let api = undefined, data = {}
+      let api = undefined,
+        data = {};
       // 初始化状态
-      this.checkedIds = []
-      this.listRefreshLoading = false
-      this.listLoading = false
+      this.checkedIds = [];
+      this.listRefreshLoading = false;
+      this.listLoading = false;
 
       if (this.listType === 1) {
-        data = { page: this.pageNum, keyword: this.keyword, ...this.searchData }
-        api = projectUser
+        data = {
+          page: this.pageNum,
+          keyword: this.keyword,
+          category_id: this.searchData.category_id,
+          project_id: this.searchData.project_id,
+        };
+        api = getClassList;
       } else {
-        data = { page: this.pageNum, keyword: this.keyword }
-        api = studentUsers
+        data = { page: this.pageNum, live_class_name: this.keyword };
+        api = classLiveList;
       }
 
-      const res = await api(data).catch(() => {})
+      const res = await api(data).catch(() => {});
       if (res.code == 0) {
         if (this.pageNum === 1) {
-          this.listData = res.data.list
+          this.listData = res.data.list;
         } else {
-          this.listData.push(...res.data.list)
+          this.listData.push(...res.data.list);
         }
-        this.listTotal = res.data.total
+        this.listTotal = res.data.total;
       }
-      
-      this.skeletonLoading = false
-    }
+      this.skeletonLoading = false;
+    },
   },
 };
 </script>
@@ -235,6 +283,11 @@ export default {
   /deep/.load-more {
     height: calc(100% - 50px);
   }
+  .flex-row {
+    display: flex;
+    flex-direction: row;
+  }
+
   .item {
     .flex-c-b();
     padding: 20rpx;
@@ -276,6 +329,25 @@ export default {
       &-time {
         color: @text-color-grey;
       }
+
+      .livestate-state {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 140rpx;
+        margin-left: 20rpx;
+        white-space: nowrap;
+      }
+
+      .item-info-livestate {
+        margin-left: 10rpx;
+        color: @text-color-grey;
+      }
+      
+      .info-livestate-active {
+        color: @primary;
+      }
     }
     &-actions {
       flex-shrink: 0;
@@ -285,13 +357,7 @@ export default {
       .btn-name {
         font-size: @font-size-xs;
       }
-      .btn-switch {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
     }
   }
 }
-
 </style>

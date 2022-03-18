@@ -8,13 +8,13 @@
     >
       <view class="drawer-content">
         <van-cell-group>
-          <van-cell
+          <!-- <van-cell
             title="所属机构"
             title-width="80px"
             is-link
             :value="checkedOrgName || '请选择'"
             @click="selectOrgShow = true"
-          />
+          /> -->
           <van-cell
             title="所属分类"
             title-width="80px"
@@ -29,7 +29,7 @@
             :value="checkedProjectName || '请选择'"
             @click="selectProjectShow = true"
           />
-          <van-cell
+          <!-- <van-cell
             title="所属老师"
             title-width="80px"
             is-link
@@ -63,7 +63,7 @@
             :border="false"
             :value="searchData.dateEnd || '请选择'"
             @click="openDatePcker('dateEnd')"
-          />
+          /> -->
         </van-cell-group>
       </view>
       <view class="drawer-footer">
@@ -84,19 +84,19 @@
         >
       </view>
     </van-popup>
-    <DatePicker
+    <!-- <DatePicker
       :show="datePickerShow"
       @close="datePickerShow = false"
       @confirm="onDatePickerConfirm"
-    />
-    <Select
+    /> -->
+    <!-- <Select
       :show="selectOrgShow"
       @close="selectOrgShow = false"
       @confirm="handleSelectOrgChange"
       :options="orgOptions"
       option-name="institution_name"
       option-value="institution_id"
-    />
+    /> -->
     <Select
       :show="selectProjectShow"
       @close="selectProjectShow = false"
@@ -104,7 +104,6 @@
       :options="projectOptions"
       option-name="project_name"
       option-value="project_id"
-      multiple
     />
     <Select
       :show="selectCategoryShow"
@@ -113,9 +112,8 @@
       :options="categoryOptions"
       option-name="category_name"
       option-value="category_id"
-      multiple
     />
-    <Select
+    <!-- <Select
       :show="selectStaffShow"
       @close="selectStaffShow = false"
       @confirm="handleSelectStaffChange"
@@ -129,7 +127,7 @@
       :actions="sheetActions"
       @close="sheetShow = false"
       @select="onSheetSelect"
-    />
+    /> -->
   </view>
 </template>
 
@@ -202,8 +200,8 @@ export default {
     ...mapGetters([
       "projectOptions",
       "categoryOptions",
-      "staffOptions",
-      "orgOptions",
+      // "staffOptions",
+      // "orgOptions",
     ]),
   },
   methods: {

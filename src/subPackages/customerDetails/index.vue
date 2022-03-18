@@ -282,6 +282,7 @@ export default {
   },
 };
 </script>
+
 <style lang="less" scoped>
 @import "@/styles/var";
 @avator-width: 100rpx;

@@ -210,7 +210,7 @@
 				{
 					"path": "classLive/index",
 					"style": {
-						"navigationBarTitleText": "班级直播",
+						"navigationBarTitleText": "直播场次",
 						"usingComponents": {}
 					}
 				},

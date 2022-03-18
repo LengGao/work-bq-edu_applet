@@ -3,7 +3,6 @@
     <PureSearch
       :sheetActions="listTypes"
       v-model="listType"
-      searchText="搜索信息"
       :onlySearch="onlySearch"
       @search="handleSearch"
       @sheet-change="handleListTypeChange"  

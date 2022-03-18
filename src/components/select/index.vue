@@ -12,7 +12,7 @@
     >
       <van-search
         :value="searchValue"
-        placeholder="请输入搜索关键词"
+        :placeholder="placeholder"
         shape="round"
         clearable
         @change="({ detail }) => filterOptions(detail)"
@@ -113,6 +113,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    placeholder: {
+      type: String,
+      default: '请输入搜索关键词'
+    }
   },
   data() {
     return {
