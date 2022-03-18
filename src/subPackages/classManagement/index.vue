@@ -178,7 +178,7 @@ export default {
       let params = { live_class_id: id },
           modalOption = {
             title: "直播提示",
-            content: "你确定要开启直播吗？",
+            content: "你确定要关闭直播吗？",
             showCancel: true,
             cancelColor: "#199fff",
             confirmColor: "#199fff",

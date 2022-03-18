@@ -132,7 +132,7 @@
 </template>
 
 <script>
-import Select from "@/components/select/index.vue";
+import Select from "@/components/select/index2.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
 export default {
@@ -243,28 +243,28 @@ export default {
     },
     // 选择业绩归属人
     handleSelectStaffChange(checked) {
+      if (!Array.isArray(checked)) checked = [checked];
       this.selectStaffShow = false;
       this.checkedStaffName = checked.map((item) => item.staff_name).join(",");
       this.searchData.staff_id = checked.map((item) => item.staff_id).join(",");
     },
     // 选择分类
     handleSelectCategoryChange(checked) {
+      if (!Array.isArray(checked)) checked = [checked];
       this.selectCategoryShow = false;
-      this.searchData.category_id = checked
-        .map((item) => item.category_id)
-        .join(",");
-      this.checkedCategorytName = checked
-        .map((item) => item.category_name)
-        .join("，");
+      this.searchData.category_id = checked.map((item) => item.category_id).join(",");
+      this.checkedCategorytName = checked.map((item) => item.category_name).join("，");
     },
     // 选择机构
     handleSelectOrgChange(checked) {
+      if (!Array.isArray(checked)) checked = [checked];
       this.selectOrgShow = false;
       this.searchData.from_org = checked.institution_id;
       this.checkedOrgName = checked.institution_name;
     },
     // 选择项目
     handleSelectProjectChange(checked) {
+      if (!Array.isArray(checked)) checked = [checked];
       this.selectProjectShow = false;
       this.searchData.project_id = checked
         .map((item) => item.project_id)

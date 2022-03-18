@@ -54,6 +54,7 @@
       </view>
 
       <LoadMore
+        v-if="listLength > 0"
         class="load-more"
         :data="list"
         :total="total"
@@ -104,6 +105,8 @@
           </view>
         </view>
        </LoadMore>
+
+        <NoData v-else />
     </view>
 
     <Select
@@ -136,6 +139,7 @@ import {
   editClassroom, 
   classroomUserList, 
   exchangestudents,
+  batchchangestudents,
   classstudentsBatchRemove,
   updateUserFromOrgId
 } from '@/api/class'
@@ -165,6 +169,7 @@ export default {
       cid: '',                    // 课程id
       info: {},                   // 班级详情
       list: [],                   // 学生列表
+      listLength: 0,
       page: 1,
       limit: 20,
       total: 0,
@@ -186,9 +191,6 @@ export default {
     this.getInfo()
     this.getList()
     this.getClassList()
-  },
-  onReady() {
-    console.log("getOrgOptions(", this.orgOptions);
   },
   onReachBottom() {
     this.handleLoadMore()
@@ -221,7 +223,7 @@ export default {
     async handleSelectClassChange(data) {
       let row = this.waitStudent
       let params = {
-          uid: row.uid,
+          uid: [row.uid],
           new_classroom_id: data.value,
           old_classroom_id: row.class_id,
           course_students_id: [row.student_id],
@@ -235,7 +237,7 @@ export default {
         };
       let modal = await uni.showModal(modalOption);
       if (modal[1].confirm) {
-        let res = await exchangestudents(params).catch(() => {});
+        let res = await batchchangestudents(params).catch(() => {});
         this.showClass = false
         this.page = 1
         if (res.code === 0) {
@@ -251,6 +253,7 @@ export default {
     },
     // 跟换所属机构
     async handleSelectOrgChange(data) {
+      console.log("handleSelectOrgChange",data);
       const params = {
           institution_id: data.value,
           uid_arr: [this.waitInstitutionStudent.uid],
@@ -273,8 +276,7 @@ export default {
       }
     },
     // 上拉到底/右 加载事件
-    handleLoadMore(data) {
-      console.log('local more', data);
+    handleLoadMore() {
       this.page++;
       this.listLoading = true;
       this.getList();
@@ -303,6 +305,7 @@ export default {
         } else {
           this.list.push(...res.data.list)
         }
+        this.listLength = this.list.length
         this.total = res.data.total
       }
       this.skeletonLoading = false;
