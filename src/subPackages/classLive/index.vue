@@ -94,7 +94,9 @@ export default {
     this.getData()
   },
   onReachBottom() {
-    this.handleLoadMore()
+    if (!this.listLoading && this.list.length < this.total) {
+      this.handleLoadMore()
+    }
   },
   methods: {
     // 搜索放出

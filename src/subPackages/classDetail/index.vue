@@ -193,7 +193,9 @@ export default {
     this.getClassList()
   },
   onReachBottom() {
-    this.handleLoadMore()
+    if (!this.listLoading && this.list.length < this.total) {      
+      this.handleLoadMore()
+    }
   },
   methods: {
     // 编辑学生
@@ -294,7 +296,7 @@ export default {
     },
     // 获取学生列表
     async getList() {
-      let param = { class_id: +this.crid, page: 1, limit: this.limit, search_box: this.searchData.search_box }
+      let param = { class_id: +this.crid, page: this.page, limit: this.limit, search_box: this.searchData.search_box }
       let res = await classroomUserList(param).catch(() => {})
       this.listLoading = false;
       this.listRefreshLoading = false;
