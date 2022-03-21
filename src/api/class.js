@@ -38,7 +38,6 @@ export function getClassList(data) {
     return http.request({
       url: '/classroom/edit',
       method: 'get',
-      showToast: true,
       data,
     })
   }
@@ -195,7 +194,6 @@ export function updateUserFromOrgId(data) {
   return http.request({
     url: '/classroom/updateUserFromOrgId',
     method: 'post',
-    showToast: true,
     data,
   })
 }

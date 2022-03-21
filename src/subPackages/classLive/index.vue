@@ -12,6 +12,11 @@
       </SearchBar>
     </view>
 
+    <view class="header-class">
+      <text class="col-title">班级名称</text>
+      <text class="col-value">{{ className }}</text>
+    </view>
+
     <view class="hr"></view>
 
     <view class="live-list">
@@ -75,6 +80,7 @@ export default {
   data() {
     return {
       liveTitle: '',                // 直播标题
+      className: '',                // 班级名称
       lid: '',                      // 直播 id
       list: [],
       listLength: 0,
@@ -89,7 +95,8 @@ export default {
   // 班级课程名德国
   onLoad(query) {
     this.lid = query.lid
-    this.liveTitle = query.name
+    this.liveTitle = query.liveName
+    this.className = query.className
     this.skeletonLoading = true
     this.getData()
   },
@@ -155,6 +162,7 @@ export default {
     align-items: center;
     width: 750rpx;
     height: 100rpx;
+    border-bottom: @border;
 
     &-title {
       width: 680rpx;
@@ -167,6 +175,30 @@ export default {
       color: @text-color;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+  }
+
+  .header-class {
+    display: flex;
+    flex-direction: column;
+    padding: 10rpx 20rpx;
+
+    .col-title {
+      height: 52rpx;
+      line-height: 52rpx;
+      font-size: @font-size-sm;
+      color: @text-color-grey;
+    }
+
+    .col-value {
+      height: 52rpx;
+      width: 700rpx;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 52rpx;
+      font-size: @font-size-sm;
+      color: @text-color;
     }
   }
 

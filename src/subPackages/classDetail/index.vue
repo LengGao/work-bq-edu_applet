@@ -67,7 +67,7 @@
         
         <view class="item-card" v-for="item in list" :key="item.student_id">
           <view class="item-card-hader">
-            <view class="header-title" >
+            <view class="header-title"  @click="toCustomDetail(item.uid)">
               <text class="col-title">学生姓名</text>
               <text class="col-value">{{ item.user_realname || '--' }}</text>
             </view>
@@ -82,6 +82,27 @@
                 <text class="col-title">手机号码</text>
                 <text class="col-value ellipsis">{{ item.telphone | phoneFormat }}</text>
               </view>
+              <view class="row-right phone-icons">
+                <van-icon 
+                  name="coupon-o" 
+                  size="32rpx"
+                  color="#199fff"
+                  custom-style="margin-right: 50rpx;" 
+                  @click="onCopy(item.telephone)"
+                />
+                <van-icon 
+                  name="phone-o" 
+                  size="32rpx"
+                  color="#199fff" 
+                  @click="onPhoneCall(item.telephone)"
+                />
+              </view>
+            </view>
+            <view class="card-item-row">
+              <view class="row-left">
+                <text class="col-title">所属老师</text>
+                <text class="col-value ellipsis">{{ item.staff_name || '--' }}</text>
+              </view>
               <view class="row-right">
                 <text class="col-title">所属部门</text>
                 <text class="col-value ellipsis">{{ item.department_name || '--' }}</text>
@@ -90,7 +111,7 @@
             <view class="card-item-row">
               <view class="row-left full-width">
                 <text class="col-title">报读项目</text>
-                <text class="col-value">{{ item.project_name || '--' }}</text>
+                <text class="col-value">{{ item.project_str || '--' }}</text>
               </view>
             </view>
             <view class="card-item-row">
@@ -138,7 +159,6 @@ import {
   getClassList, 
   editClassroom, 
   classroomUserList, 
-  exchangestudents,
   batchchangestudents,
   classstudentsBatchRemove,
   updateUserFromOrgId
@@ -198,6 +218,20 @@ export default {
     }
   },
   methods: {
+    // 复制
+    onCopy(data) {
+      uni.setClipboardData({ data })
+    },
+    // 拨号
+    onPhoneCall(phoneNumber) {
+      uni.makePhoneCall({ phoneNumber })
+    },
+    // 去往学生先详情
+    toCustomDetail(uid) {
+      uni.navigateTo({
+        url: `/subPackages/customerDetails/index?uid=${uid}&cid=`,
+      })
+    },
     // 编辑学生
     handleEdit(row) {
       this.showClass = true
@@ -485,6 +519,13 @@ export default {
         .full-width {
           width: 100%;
         }
+
+        .phone-icons {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-end;
+          align-items: center;
+        }
       }
     }
   }
@@ -495,5 +536,10 @@ export default {
     background-color: @background-color;
   }
 
+  .telephone-icon {
+    font-size: 24rpx;
+    color: #199fff;
+    margin-left: 20rpx;
+  }
 }
 </style>

@@ -28,13 +28,16 @@
           @click="toClassDetail(item.classroom_id, item.course_id)"
         >
           <view class="item-info">
-            <view class="item-info-status">
+            <view class="item-info-status flex-temp">
               <view class="user-name">{{ item.classroom_name }}</view>
+              <text class="user-name-count">{{ item.student_number }}人</text>
             </view>
-            <view class="item-info-time">
-              <text decode>
-                {{ item.project_name }} | 班主任 &nbsp;{{ item.staff_name || "--" }}
-              </text>
+            <view class="item-info-time flex-temp">
+              <view>
+                <van-icon name="column" color="#ddd" size="32rpx" custom-style="margin-right: 10rpx;" />
+                <text class="item-info-project-name"> {{ item.project_name }} </text>
+              </view>
+              <text class="item-info-staff-name"> 班主任：{{ item.staff_name || "--" }} </text>
             </view>
           </view>
         </view>
@@ -44,7 +47,7 @@
         <view class="item" v-for="item in listData" :key="item.live_class_id">
           <view
             class="item-header"
-            @click.native="toClassLiveDetail(item.live_class_id, item.live_class_name)"
+            @click.native="toClassLiveDetail(item.live_class_id, item.live_class_name, item.class_name)"
           >
             <view class="item-info">
               <view class="item-info-status">
@@ -53,14 +56,15 @@
                 </view>
               </view>
               <view class="item-info-time flex-row">
-                <text decode>
-                  任课老师 &nbsp; {{ item.teacher_name || "--" }}
+                <van-icon name="manager-o" size="16rpx" color="#ddd" />
+                <text>
+                  任课老师：{{ item.teacher_name || "--" }}
                 </text>
                 <view class="livestate-state">
                   <template v-if="item.live_status">
                     <van-icon 
-                      name="circle" size="16rpx" color="#199fff" 
-                      custom-style="margin-left: 20rpx; line-height: 16rpx; background-color: #199fff; border-radius: 50%;" 
+                      name="circle" size="16rpx" color="#59D234" 
+                      custom-style="margin-left: 20rpx; line-height: 16rpx; background-color: #59D234; border-radius: 50%;" 
                     />
                     <text class="item-info-livestate info-livestate-active" >
                       {{ live_statusText[item.live_status] }}
@@ -69,7 +73,7 @@
                   <template v-else>
                     <van-icon 
                       name="circle" size="16rpx" color="#ddd" 
-                      custom-style="height: 16rpx; margin-left: 20rpx; line-height: 16rpx; background-color: #ddd; border-radius: 50%;"
+                      custom-style="height: 20rpx; margin-left: 20rpx; line-height: 16rpx; background-color: #ddd; border-radius: 50%;"
                     />
                     <text class="item-info-livestate" >
                       {{ live_statusText[item.live_status] }}
@@ -96,6 +100,7 @@
       @close="drawerShow = false"
       @search="handleDrawerSearch"
     />
+
     <van-dialog id="van-dialog" />
   </view>
 </template>
@@ -138,16 +143,8 @@ export default {
       onlySearch: false,
       defaultAvator: "../../static/avator.png",
       placeholderOption: [ '', '请输入班级名或班主任', '请输入直播名称' ],
-      liveStateStyleActive: {
-        marginLeft: '20rpx',
-        backgroundColor: '#199fff',
-        borderRadius: '50%'
-      },
-      liveStateStytle: {
-        'margin-left': '20rpx',
-        'background': '#999999',
-        'border-radius': '50%'
-      }
+      showLinkDialog: false,
+      liveInfo: {}
     };
   },
   onLoad() {
@@ -170,6 +167,8 @@ export default {
         let res = await livestart(params).catch(() => {});
         if (res.code === 0) {
           this.getList();
+          this.showLinkDialog = true
+          this.liveInfo = res.data.data
         }
       }
     // 关闭直播
@@ -214,9 +213,9 @@ export default {
         url: `/subPackages/classDetail/index?crid=${crid}&cid=${cid}`,
       });
     },
-    toClassLiveDetail(id, name) {
+    toClassLiveDetail(id, live_name, class_name) {
       uni.navigateTo({
-        url: `/subPackages/classLive/index?lid=${id}&name=${name}`,
+        url: `/subPackages/classLive/index?lid=${id}&liveName=${live_name}&className=${class_name}`,
       });
     },
     handleDrawerSearch(data) {
@@ -310,26 +309,53 @@ export default {
     }
     &-info {
       &-status {
+        display: flex;
         margin-bottom: 10rpx;
-        .flex();
+        
         .user-name {
           flex: 1;
           margin-right: 10rpx;
           font-size: @font-size-md;
         }
+
         .noWrap {
           width: 280rpx;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
+
+        .user-name-count {
+          font-size: @font-size-md;
+          color: @primary;
+        }
+
         .user-phone {
           margin-left: 8rpx;
           color: @text-color-grey;
         }
       }
+
       &-time {
         color: @text-color-grey;
+      }
+
+      .flex-temp {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 710rpx;
+      }
+      
+      .item-info-project-name {
+          display: inline-block;
+          width: 450rrpx;
+      }
+
+      .item-info-staff-name {
+          display: inline-block;
+          display: 260rpx;
       }
 
       .livestate-state {
@@ -337,7 +363,7 @@ export default {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        width: 140rpx;
+        width: 120rpx;
         margin-left: 20rpx;
         white-space: nowrap;
       }
@@ -348,7 +374,7 @@ export default {
       }
       
       .info-livestate-active {
-        color: @primary;
+        color: @success;
       }
     }
     &-actions {
