@@ -73,14 +73,14 @@
             </view>
             <view class="header-btns">
                 <van-button custom-class="btn edit-btn" icon="edit" size="small" plain  @click="handleEdit(item)">转班</van-button>
-                <van-button custom-class="btn del-btn" icon="delete-o" size="small" plain  @click="handleDelete(item)">删除</van-button>
+                <van-button custom-class="btn del-btn" icon="delete-o" size="small" plain  @click="handleDelete(item)">移除</van-button>
             </view>
           </view>
           <view class="item-card-item">
             <view class="card-item-row">
               <view class="row-left">
                 <text class="col-title">手机号码</text>
-                <text class="col-value ellipsis">{{ item.telphone || '--' }}</text>
+                <text class="col-value ellipsis">{{ item.telphone | phoneFormat }}</text>
               </view>
               <view class="row-right">
                 <text class="col-title">所属部门</text>
@@ -253,14 +253,13 @@ export default {
     },
     // 跟换所属机构
     async handleSelectOrgChange(data) {
-      console.log("handleSelectOrgChange",data);
       const params = {
           institution_id: data.value,
           uid_arr: [this.waitInstitutionStudent.uid],
         },
         modalOption = {
           title: "转班提示",
-          content: "确定要将该学生吗转至此班吗？",
+          content: `确定更换该学生所属机构为${data.name}吗？`,
           showCancel: true,
           cancelColor: "#199fff",
           confirmColor: "#199fff",
