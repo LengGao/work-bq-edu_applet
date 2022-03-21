@@ -284,6 +284,7 @@ export default {
     handleRefresh() {
       this.page = 1;
       this.listLoading = true;
+      this.listRefreshLoading = true;
       this.getList();
     },
     // 搜索放出
@@ -295,9 +296,8 @@ export default {
     // 获取学生列表
     async getList() {
       let param = { class_id: this.crid, page: 1, limit: this.limit, search_box: this.searchData.search_box }
-      this.listRefreshLoading = false;
-      this.listLoading = false;
       let res = await classroomUserList(param).catch(() => {})
+
       if (res.code == 0) {
         if (this.page == 1) {
           this.list = res.data.list
@@ -307,6 +307,9 @@ export default {
         this.listLength = this.list.length
         this.total = res.data.total
       }
+
+      this.listLoading = false;
+      this.listRefreshLoading = false;
       this.skeletonLoading = false;
     },
     // 获取班级信息

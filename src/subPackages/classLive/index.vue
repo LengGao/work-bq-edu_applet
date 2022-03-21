@@ -99,8 +99,9 @@ export default {
   methods: {
     // 搜索放出
     handleSearch(data) {
-      this.searchData.search_box = data
+      this.searchData.search_box = data;
       this.page = 1;
+      this.listLoading = true;
       this.getData()
     },
     // 上拉到底/右 加载事件
@@ -111,6 +112,7 @@ export default {
     },
     // scroll-view下拉事件
     handleRefresh() {
+      this.listLoading = true
       this.listRefreshLoading = true;
       this.page = 1;
       this.getData()
@@ -118,10 +120,6 @@ export default {
     // 获取列表
     async getData() {
       let data = { id: this.lid, search_box: this.searchData.search_box, page: this.page }
-      // 初始化状态
-      this.checkedIds = [];
-      this.listRefreshLoading = false;
-      this.listLoading = false;
       let res = await liveSessionList(data).catch(() => {});
 
       if (res.code == 0) {
@@ -133,6 +131,9 @@ export default {
         this.total = res.data.total;
       }
       this.listLength = this.list.length
+      // 初始化状态
+      this.listLoading = false;
+      this.listRefreshLoading = false;
       this.skeletonLoading = false;
     },
   },

@@ -236,6 +236,7 @@ export default {
       this.getList();
     },
     handleRefresh() {
+      this.listLoading = true
       this.listRefreshLoading = true;
       this.pageNum = 1;
       this.getList();
@@ -245,8 +246,6 @@ export default {
         data = {};
       // 初始化状态
       this.checkedIds = [];
-      this.listRefreshLoading = false;
-      this.listLoading = false;
 
       if (this.listType === 1) {
         data = {
@@ -262,6 +261,7 @@ export default {
       }
 
       const res = await api(data).catch(() => {});
+
       if (res.code == 0) {
         if (this.pageNum === 1) {
           this.listData = res.data.list;
@@ -270,6 +270,8 @@ export default {
         }
         this.listTotal = res.data.total;
       }
+      this.listRefreshLoading = false;
+      this.listLoading = false;
       this.skeletonLoading = false;
     },
   },

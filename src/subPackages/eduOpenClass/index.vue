@@ -200,8 +200,7 @@ export default {
       let api = undefined, data = {}
       // 初始化状态
       this.checkedIds = []
-      this.listRefreshLoading = false
-      this.listLoading = false
+
 
       if (this.listType === 1) {
         data = { page: this.pageNum, keyword: this.keyword, ...this.searchData }
@@ -220,7 +219,9 @@ export default {
         }
         this.listTotal = res.data.total
       }
-      
+
+      this.listRefreshLoading = false
+      this.listLoading = false
       this.skeletonLoading = false
     }
   },
