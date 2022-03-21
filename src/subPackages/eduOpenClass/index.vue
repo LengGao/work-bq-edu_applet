@@ -211,6 +211,10 @@ export default {
       }
 
       const res = await api(data).catch(() => {})
+      this.listRefreshLoading = false
+      this.listLoading = false
+      this.skeletonLoading = false
+      
       if (res.code == 0) {
         if (this.pageNum === 1) {
           this.listData = res.data.list
@@ -219,10 +223,6 @@ export default {
         }
         this.listTotal = res.data.total
       }
-
-      this.listRefreshLoading = false
-      this.listLoading = false
-      this.skeletonLoading = false
     }
   },
 };

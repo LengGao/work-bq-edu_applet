@@ -112,7 +112,6 @@ export default {
     },
     // scroll-view下拉事件
     handleRefresh() {
-      this.listLoading = true
       this.listRefreshLoading = true;
       this.page = 1;
       this.getData()
@@ -121,6 +120,10 @@ export default {
     async getData() {
       let data = { id: this.lid, search_box: this.searchData.search_box, page: this.page }
       let res = await liveSessionList(data).catch(() => {});
+      // 初始化状态
+      this.listLoading = false;
+      this.listRefreshLoading = false;
+      this.skeletonLoading = false;
 
       if (res.code == 0) {
         if (this.page === 1) {
@@ -131,10 +134,6 @@ export default {
         this.total = res.data.total;
       }
       this.listLength = this.list.length
-      // 初始化状态
-      this.listLoading = false;
-      this.listRefreshLoading = false;
-      this.skeletonLoading = false;
     },
   },
 };

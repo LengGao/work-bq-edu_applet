@@ -4,7 +4,7 @@
         <image class="header-avator" :src="userInfo.user_img || defaultAvator"></image>          
         <view class="header-info">
             <text class="header-info-name">{{ userInfo.user_nicename }}</text>
-            <text class="header-info-phone">{{ userInfo.telphone }}</text>
+            <text class="header-info-phone">{{ userInfo.telphone | phoneFormat }}</text>
         </view>
     </view>
     <video class="Split-line">

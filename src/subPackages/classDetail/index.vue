@@ -272,7 +272,7 @@ export default {
         if (res.code === 0) {
           this.getList()
         }
-      }
+      }x
     },
     // 上拉到底/右 加载事件
     handleLoadMore() {
@@ -283,7 +283,6 @@ export default {
     // scroll-view下拉事件
     handleRefresh() {
       this.page = 1;
-      this.listLoading = true;
       this.listRefreshLoading = true;
       this.getList();
     },
@@ -295,8 +294,11 @@ export default {
     },
     // 获取学生列表
     async getList() {
-      let param = { class_id: this.crid, page: 1, limit: this.limit, search_box: this.searchData.search_box }
+      let param = { class_id: +this.crid, page: 1, limit: this.limit, search_box: this.searchData.search_box }
       let res = await classroomUserList(param).catch(() => {})
+      this.listLoading = false;
+      this.listRefreshLoading = false;
+      this.skeletonLoading = false;
 
       if (res.code == 0) {
         if (this.page == 1) {
@@ -307,10 +309,6 @@ export default {
         this.listLength = this.list.length
         this.total = res.data.total
       }
-
-      this.listLoading = false;
-      this.listRefreshLoading = false;
-      this.skeletonLoading = false;
     },
     // 获取班级信息
     async getInfo() {
