@@ -30,6 +30,18 @@
           </van-radio-group>
         </template>
       </van-cell>
+      <van-cell title="新客户">
+        <template #right-icon>
+          <van-radio-group
+            :value="formData.is_new"
+            direction="horizontal"
+            @change="({ detail }) => (formData.is_new = detail)"
+          >
+            <van-radio name="1">是</van-radio>
+            <van-radio name="2">否</van-radio>
+          </van-radio-group>
+        </template>
+      </van-cell>
       <van-cell
         required
         title="客户来源"
@@ -151,6 +163,7 @@ export default {
         name: "",
         mobile: "",
         sex: "1",
+        is_new: '',
         from: "",
         education: "",
         province: "",
