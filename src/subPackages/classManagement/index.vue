@@ -34,7 +34,7 @@
             </view>
             <view class="item-info-time flex-temp">
               <view>
-                <van-icon name="column" color="#ddd" size="32rpx" custom-style="margin-right: 10rpx;" />
+                <van-icon name="graphic" color="#ddd" size="32rpx" custom-style="margin-right: 10rpx;" />
                 <text class="item-info-project-name"> {{ item.project_name }} </text>
               </view>
               <text class="item-info-staff-name"> 班主任：{{ item.staff_name || "--" }} </text>
@@ -240,11 +240,9 @@ export default {
       this.pageNum = 1;
       this.getList();
     },
+
     async getList() {
-      let api = undefined,
-        data = {};
-      // 初始化状态
-      this.checkedIds = [];
+      let api = undefined, data = {};
 
       if (this.listType === 1) {
         data = {
@@ -259,7 +257,10 @@ export default {
         api = classLiveList;
       }
 
+      this.listLoading = false;
+      this.listRefreshLoading = false;
       const res = await api(data).catch(() => {});
+      this.skeletonLoading = false;
 
       if (res.code == 0) {
         if (this.pageNum === 1) {
@@ -269,9 +270,6 @@ export default {
         }
         this.listTotal = res.data.total;
       }
-      this.listRefreshLoading = false;
-      this.listLoading = false;
-      this.skeletonLoading = false;
     },
   },
 };

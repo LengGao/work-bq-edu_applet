@@ -2,7 +2,7 @@
   <scroll-view
     class="load-more"
     scroll-y
-    refresher-enabled
+    :refresher-enabled="refresherEnabled"
     @refresherrefresh="handleRefresh"
     :refresher-triggered="rLoading"
     refresher-background="#efefef"
@@ -61,6 +61,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    refresherEnabled: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {

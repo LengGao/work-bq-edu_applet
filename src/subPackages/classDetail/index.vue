@@ -59,6 +59,7 @@
         :data="list"
         :total="total"
         :load-loading="listLoading"
+        :refresherEnabled="false"
         :skeleton-loading="skeletonLoading"
         :refresh-loading="listRefreshLoading"
         @load-more="handleLoadMore"
@@ -81,20 +82,20 @@
               <view class="row-left">
                 <text class="col-title">手机号码</text>
                 <text class="col-value ellipsis">{{ item.telphone | phoneFormat }}</text>
-              </view>
-              <view class="row-right phone-icons">
                 <van-icon 
-                  name="coupon-o" 
+                  name="newspaper-o" 
                   size="32rpx"
                   color="#199fff"
-                  custom-style="margin-right: 50rpx;" 
-                  @click="onCopy(item.telephone)"
+                  custom-style="margin-left: 20rpx;" 
+                  @click="onCopy(item.telphone)"
                 />
+              </view>
+              <view class="row-right phone-icons">
                 <van-icon 
                   name="phone-o" 
                   size="32rpx"
                   color="#199fff" 
-                  @click="onPhoneCall(item.telephone)"
+                  @click="onPhoneCall(item.telphone)"
                 />
               </view>
             </view>
@@ -195,7 +196,7 @@ export default {
       total: 0,
       listLoading: false,         // 加载状态
       skeletonLoading: false,     // 骨架屏状态
-      listRefreshLoading: false,  // 下拉状态
+      listRefreshLoading: true,  // 下拉状态
       showInstitution: false,     // 更换所属机构
       showClass: false,           // 显示可转班级
       clasnOptions: [],           // 可转班级
@@ -220,11 +221,13 @@ export default {
   methods: {
     // 复制
     onCopy(data) {
+      console.log("data",data);
       uni.setClipboardData({ data })
     },
     // 拨号
     onPhoneCall(phoneNumber) {
-      uni.makePhoneCall({ phoneNumber })
+      console.log("phoneNumber", phoneNumber);
+      uni.makePhoneCall({ phoneNumber})
     },
     // 去往学生先详情
     toCustomDetail(uid) {
@@ -319,7 +322,7 @@ export default {
     // scroll-view下拉事件
     handleRefresh() {
       this.page = 1;
-      this.listRefreshLoading = true;
+      // this.listRefreshLoading = true;
       this.getList();
     },
     // 搜索放出
@@ -331,9 +334,9 @@ export default {
     // 获取学生列表
     async getList() {
       let param = { class_id: +this.crid, page: this.page, limit: this.limit, search_box: this.searchData.search_box }
-      let res = await classroomUserList(param).catch(() => {})
       this.listLoading = false;
       this.listRefreshLoading = false;
+      let res = await classroomUserList(param).catch(() => {})
       this.skeletonLoading = false;
 
       if (res.code == 0) {

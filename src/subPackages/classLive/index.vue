@@ -26,6 +26,7 @@
         :data="list"
         :total="total"
         :load-loading="listLoading"
+        :refresherEnabled="false"
         :skeleton-loading="skeletonLoading"
         :refresh-loading="listRefreshLoading"
         @load-more="handleLoadMore"
@@ -128,10 +129,9 @@ export default {
     // 获取列表
     async getData() {
       let data = { id: this.lid, search_box: this.searchData.search_box, page: this.page }
-      let res = await liveSessionList(data).catch(() => {});
-      // 初始化状态
       this.listLoading = false;
       this.listRefreshLoading = false;
+      let res = await liveSessionList(data).catch(() => {});
       this.skeletonLoading = false;
 
       if (res.code == 0) {
