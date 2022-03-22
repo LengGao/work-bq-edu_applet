@@ -221,12 +221,10 @@ export default {
   methods: {
     // 复制
     onCopy(data) {
-      console.log("data",data);
       uni.setClipboardData({ data })
     },
     // 拨号
     onPhoneCall(phoneNumber) {
-      console.log("phoneNumber", phoneNumber);
       uni.makePhoneCall({ phoneNumber})
     },
     // 去往学生先详情
@@ -311,7 +309,7 @@ export default {
         if (res.code === 0) {
           this.getList()
         }
-      }x
+      }
     },
     // 上拉到底/右 加载事件
     handleLoadMore() {

@@ -143,8 +143,6 @@ export default {
       onlySearch: false,
       defaultAvator: "../../static/avator.png",
       placeholderOption: [ '', '请输入班级名或班主任', '请输入直播名称' ],
-      showLinkDialog: false,
-      liveInfo: {}
     };
   },
   onLoad() {
@@ -152,7 +150,7 @@ export default {
     this.getList();
   },
   methods: {
-    // 开始直播
+  // 开始直播
   async handleStartLive(id) {
     let params = { live_class_id: id },
         modalOption = {
@@ -167,12 +165,14 @@ export default {
         let res = await livestart(params).catch(() => {});
         if (res.code === 0) {
           this.getList();
-          this.showLinkDialog = true
-          this.liveInfo = res.data.data
+          let data = res.data.data
+          uni.navigateTo({
+            url: '/subPackages/livePublish/index?info=' + encodeURIComponent(JSON.stringify(data))
+          })
         }
       }
-    // 关闭直播
     },
+    // 关闭直播
     async handleCloseLive(id) {
       let params = { live_class_id: id },
           modalOption = {
@@ -188,16 +188,6 @@ export default {
         if (res.code === 0) {
           this.getList();
         }
-      }
-    },
-
-    async handleSwitch(item) {
-      let status = { 1: "close", 2: "open" },
-          data = { type: status[item.state], uid: item.uid };
-
-      const res = await studentUsersClear(data).catch(() => {});
-      if (res.code === 0) {
-        item.state = item.state === 1 ? 2 : 1;
       }
     },
     handleListTypeChange(val) {

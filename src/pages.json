@@ -222,9 +222,9 @@
 					}
 				},
 				{
-					"path": "classAdd/index",
+					"path": "livePublish/index",
 					"style": {
-						"navigationBarTitleText": "添加班级",
+						"navigationBarTitleText": "发布成功",
 						"usingComponents": {}
 					}
 				}
