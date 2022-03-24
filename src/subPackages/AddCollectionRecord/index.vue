@@ -100,8 +100,95 @@
       @cancel="datePickerShow = false"
       @confirm="handleDateChange"
       :value="currentDate"
-      :max-date="currentDate"
     />
+
+    <van-action-sheet
+      :show="sheetShow"
+      :actions="sheetActions"
+      @close="sheetShow = false"
+      @select="onSheetSelect"
+    />
+
+    <Select
+      :show="selectShow"
+      @close="selectShow = false"
+      @confirm="handleSelectChange"
+      :options="planOptions"
+      option-name="name"
+      option-value="value"
+      multiple
+    />
+
+
+    <van-popup
+      :show="popupShow"
+      position="right"
+      custom-class="drawer"
+      @close="popupShow = false"
+    >
+      <view class="drawer-content">
+        <van-cell-group>
+          <van-cell
+            title-width="80px"
+            title="回款期次"
+            is-link
+            :value="checkedPeriodName || '请选择'"
+            @click="openSheet('periodOptions')"
+          />
+          <van-field
+            required
+            type="number"
+            :value="formData.pay_money"
+            input-align="right"
+            clearable
+            label="回款金额"
+            placeholder="请输入"
+            @input="({ detail }) => (formData.pay_money = detail)"
+          />
+          <van-cell
+            required
+            title="支付方式"
+            is-link
+            :value="formData.pay_type || '请选择'"
+            @click="openSheet('payTypeOptions')"
+          />
+          <van-cell
+            required
+            title-width="100px"
+            title="回款日期"
+            is-link
+            :value="formData.pay_date || '请选择'"
+            @click="datePickerShow = true"
+          />
+          <van-cell title="回款凭证" title-width="160rpx" :border="false">
+            <van-uploader
+              :file-list="fileList"
+              @after-read="handleAfterRead"
+              deletable
+              @delete="({ detail }) => fileList.splice(detail.index, 1)"
+            />
+          </van-cell>
+        </van-cell-group>
+      </view>
+      <view class="drawer-footer">
+        <van-button
+          type="default"
+          custom-class="btn reset"
+          round
+          plan
+          @click="handleDrawerReset"
+          >取 消</van-button
+        >
+        <van-button
+          type="primary"
+          custom-class="btn"
+          round
+          :loading="addLoading"
+          @click="handleDrawerConfirm"
+          >确 定</van-button
+        >
+      </view>
+    </van-popup>
 
 
   </view>
@@ -112,6 +199,7 @@ import Title from "@/components/title/index2";
 import DatePicker from "@/components/datePicker/index.vue";
 import { getPlanTypeList } from '@/api/order'
 import { getPlanYearOptions, currentYear } from "@/utils/date"
+import { AddCollectionMessage } from "./components/AddCollectionMessage"
 
 export default {
   components: {
@@ -131,6 +219,7 @@ export default {
         type: [],
         payList: [],
       },
+      order_id: '',
       // 年份
       planYearOptions: [],
       // 多项列表
@@ -138,25 +227,71 @@ export default {
       prevCheckeds: [],
       payList: [],
       currentItem: {},
-      currentIndex: 0
+      currentIndex: 0,
+      eventChannel: '',
+      popupShow: false,
     };
   },
   onLoad(query) {
-    let q = JSON.parse(decodeURIComponent(query.params))
-    console.log("paymentPlan", q);
-    this.formData = Object.assign(this.formData, q)
+    this.order_id = query.orderId
+    const eventChannel = this.getOpenerEventChannel()
+    this.eventChannel = eventChannel
     this.getPlanTypeList()
     this.getPlanYearOptions()
   },
   methods: {
+    handleDrawerReset() {
+      this.popupShow = false;
+      for (const k in this.formData) {
+        this.formData[k] = "";
+      }
+      this.checkedPeriodName = "";
+    },
+    //添加回款记录
+    async handleDrawerConfirm() {
+      if (this.formData.pay_money === "") {
+        uni.showToast({
+          icon: "none",
+          title: "回款金额不能为空",
+        });
+        return;
+      }
+      if (this.formData.pay_type === "") {
+        uni.showToast({
+          icon: "none",
+          title: "支付方式不能为空",
+        });
+        return;
+      }
+      if (this.formData.pay_date === "") {
+        uni.showToast({
+          icon: "none",
+          title: "回款日期不能为空",
+        });
+        return;
+      }
+      const data = {
+        ...this.formData,
+        receipt_file: this.fileList.map((item) => item.url),
+        order_id: this.orderId,
+      };
+      this.addLoading = true;
+      const res = await payLogCreate(data).catch(() => {});
+      this.addLoading = false;
+      if (res.code === 0) {
+        this.handleDrawerReset();
+        // this.getCrmOrderDetail();
+        console.log("确定");
+      }
+    },
     // 上一步
     toPrev() {
         uni.navigateBack()
     },
     toNext() {
-        console.log('getParm2', this.formData);
-        let param = this.formData
-        param.payList = this.payList
+        let param = {
+          payList: this.payList
+        }
         this.validator(
           [
             {
@@ -172,16 +307,21 @@ export default {
               message: '请输入回款金额'
             }
           ],
-          () => {
-            uni.navigateTo({
-                url: '/subPackages/signSubmit/index?params=' + encodeURIComponent(JSON.stringify(param))
-            })
+          async () => {
+            const res = await createOrderPayPlan(data).catch(() => {})
+            if (res.code == 0) {
+            let url = '/subPackages/AddCollectionMessage/index',
+                params = '?orderId=' + this.order_id,
+                _this = this
+              uni.showToast({ icon: 'none', title: '创建成功' })
+              uni.navigateTo({
+               url: `${url}${params}`
+              })
+            }
           }
         )
     },
     openPicker(key, index, item) {
-      // console.log("openPicker", index, item);
-
       if (key == 'date') {
         this.datePickerShow = true
         this.currentItem = item
@@ -471,4 +611,23 @@ page {
   height: 30rpx;
   background-color: @background-color;
 }
+
+  /deep/.drawer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    overflow: hidden;
+    &-footer {
+      text-align: center;
+      padding: 40rpx 20rpx;
+      .btn {
+        width: 45%;
+        &.reset {
+          margin-right: 20rpx;
+        }
+      }
+    }
+  }
 </style>

@@ -7,9 +7,7 @@
         v-if="detailData.reshuffle_list[unusualIndex].status === 3"
         wrapable
         left-icon="volume-o"
-        :text="`驳回原因：${
-          detailData.reshuffle_list[unusualIndex].tips || '无'
-        }`"
+        :text="`驳回原因：${detailData.reshuffle_list[unusualIndex].tips || '无'}`"
       />
       <van-notice-bar
         v-else
@@ -62,8 +60,10 @@
       <van-tab title="回款记录">
         <PayRecord
           :isApprove="isApprove"
+          :passParams="passParams"
           :data="detailData"
-          @add-click="popupShow = true"
+          @add-click="onAdd"
+          @setting="onSetting"
         />
       </van-tab>
       <van-tab
@@ -341,10 +341,10 @@ export default {
     ...mapGetters(["payTypeOptions"]),
     periodOptions() {
       return this.detailData.pay_plan.map((item, index) => {
-        return {
+        return ({
           name: `第${index + 1}期 ${item.day} ￥${item.money}`,
-          value: item.id,
-        };
+          value: item.id
+        })
       });
     },
   },
@@ -353,6 +353,12 @@ export default {
     this.isChange = change == 1;
     this.orderId = orderId;
     this.verifyId = verifyId;
+    this.passParams = {
+      isApprove: this.isApprove,
+      isChange: this.isImage,
+      orderId: orderId,
+      verifyId: verifyId
+    }
     if (this.isChange) {
       uni.setNavigationBarTitle({ title: "异动详情" });
     }
@@ -360,6 +366,37 @@ export default {
     this.getOrderTransactionList();
   },
   methods: {
+    onAdd() {
+      let url = '/subPackages/AddCollectionRecord/index',
+          params = '?orderId=' + this.orderId,
+          _this = this
+
+      uni.navigateTo({
+        url: `${url}${params}`,
+        events: {
+          updateData() {
+            _this.getCrmOrderDetail(true)
+            _this.getOrderTransactionList();
+          }
+        }
+      })
+    },
+    onSetting() {
+      let url = '/subPackages/AddCollectionMessage/index',
+          params = '?orderId=' + this.orderId,
+          _this = this
+
+      uni.navigateTo({
+        url: `${url}${params}`,
+        events: {
+          updateData() {
+            console.log("tex updateData");
+            _this.getCrmOrderDetail(true)
+            _this.getOrderTransactionList();
+          }
+        }
+      })
+    },
     async getOrderTransactionList() {
       const data = { order_id: this.orderId };
       const res = await getOrderTransactionList(data);

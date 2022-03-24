@@ -69,7 +69,7 @@
       <van-button
         type="primary"
         v-if="!isApprove"
-        @click="toConfigPlan"
+        @click="$emit('setting')"
         size="small"
         >配置回款计划</van-button
       >
@@ -131,6 +131,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    passParams: {
+      type: Boolean,
+      default: {}
+    }
   },
   components: {
     Title,
@@ -151,15 +155,6 @@ export default {
       uni.previewImage({
         urls,
         current: urls[index],
-      });
-    },
-    toAdd() {
-      console.log("toAdd", this.data);
-    },
-    toConfigPlan() {
-      console.log("toConfigPlan", this.data);
-      uni.navigateTo({
-        url: `/subPackages/payPlanConfig/index?orderId=${this.data.order_id}`,
       });
     },
   },

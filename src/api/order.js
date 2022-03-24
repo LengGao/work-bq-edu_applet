@@ -61,15 +61,6 @@ export function getCrmApproveOrder(data) {
         data
     })
 }
-// crm创建回款计划
-export function createOrderPayPlan(data) {
-    return http.request({
-        url: '/OrderPayPlan/create',
-        method: 'post',
-        showToast: true,
-        data
-    })
-}
 // 教务开课-获取机构
 export function getOrganizationOptions(data) {
     return http.request({
@@ -118,15 +109,6 @@ export function getStaffList(data) {
         url: '/staff/index',
         method: 'get',
         data,
-    })
-}
-// 添加回款记录
-export function payLogCreate(data) {
-    return http.request({
-        url: '/CrmOrder/payLogCreate',
-        method: 'post',
-        showToast: true,
-        data
     })
 }
 // 异动审批列表
@@ -205,5 +187,25 @@ export function getPlanTypeList(params) {
         url: '/CustomerOrder/planTypeList',
         method: 'get',
         params,
+    })
+}
+
+// crm 创建回款计划
+export function createOrderPayPlan(data) {
+    return http.request({
+        url: 'OrderPayPlan/create',
+        method: 'post',
+        showToast: true,
+        data
+    })
+}
+
+// crm创建回款记录
+export function payLogCreate(data) {
+    return request({
+        url: 'CrmOrder/payLogCreate',
+        method: 'post',
+        showToast: true,
+        data
     })
 }

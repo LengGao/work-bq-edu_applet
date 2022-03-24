@@ -177,8 +177,6 @@ export default {
         )
     },
     openPicker(key, index, item) {
-      // console.log("openPicker", index, item);
-
       if (key == 'date') {
         this.datePickerShow = true
         this.currentItem = item

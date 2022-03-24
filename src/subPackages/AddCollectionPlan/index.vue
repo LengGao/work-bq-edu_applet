@@ -82,8 +82,8 @@
 
     <view class="footer">
       <view class="footer-submit">
-        <van-button round @click="toPrev">上一步</van-button>
-        <van-button round type="primary" :loading="saveLoading" @click="toNext">下一步</van-button>
+        <van-button round @click="toPrev">取消</van-button>
+        <van-button round type="primary" :loading="saveLoading" @click="toNext">确定</van-button>
       </view>
     </view>
 
@@ -100,7 +100,6 @@
       @cancel="datePickerShow = false"
       @confirm="handleDateChange"
       :value="currentDate"
-      :max-date="currentDate"
     />
   </view>
 </template>
@@ -108,7 +107,7 @@
 <script>
 import Title from "@/components/title/index2";
 import DatePicker from "@/components/datePicker/index.vue";
-import { getPlanTypeList } from '@/api/order'
+import { getPlanTypeList, createOrderPayPlan } from '@/api/order'
 import { getPlanYearOptions, currentYear } from "@/utils/date"
 
 export default {
@@ -129,6 +128,7 @@ export default {
         type: [],
         payList: [],
       },
+      order_id: '',
       // 年份
       planYearOptions: [],
       // 多项列表
@@ -136,13 +136,15 @@ export default {
       prevCheckeds: [],
       payList: [],
       currentItem: {},
-      currentIndex: 0
+      currentIndex: 0,
+      eventChannel: ''
     };
   },
   onLoad(query) {
-    let q = JSON.parse(decodeURIComponent(query.params))
-    console.log("paymentPlan", q);
-    this.formData = Object.assign(this.formData, q)
+    this.order_id = query.orderId
+    const eventChannel = this.getOpenerEventChannel()
+    this.eventChannel = eventChannel
+    console.log("paymentPlan", query, eventChannel);
     this.getPlanTypeList()
     this.getPlanYearOptions()
   },
@@ -151,10 +153,21 @@ export default {
     toPrev() {
         uni.navigateBack()
     },
-    toNext() {
-        console.log('getParm2', this.formData);
-        let param = this.formData
-        param.payList = this.payList
+   toNext() {
+      let payList = this.payList.map(item => {
+        return {
+          type: item.type,
+          day: item.day,
+          year: item.year,
+          money: item.money
+        }
+      })
+      let data = {
+          data: JSON.stringify(payList),
+          order_id: this.order_id
+        }
+      let _this = this
+      
         this.validator(
           [
             {
@@ -170,16 +183,20 @@ export default {
               message: '请输入回款金额'
             }
           ],
-          () => {
-            uni.navigateTo({
-                url: '/subPackages/signSubmit/index?params=' + encodeURIComponent(JSON.stringify(param))
-            })
+          async () => {
+            const res = await createOrderPayPlan(data).catch(() => {})
+            if (res.code == 0) {
+              uni.showToast({ icon: 'none', title: '创建成功' })
+              uni.navigateBack({
+                success() {
+                  _this.eventChannel.emit('updateData', {})
+                }
+              })
+            }
           }
         )
     },
-    openPicker(key, index, item) {
-      // console.log("openPicker", index, item);
-
+    openPicker(key, index, item) {      
       if (key == 'date') {
         this.datePickerShow = true
         this.currentItem = item
@@ -331,6 +348,7 @@ export default {
       let res = await getPlanTypeList().catch(() => {})
       this.expenseType = res.data
     },
+
     validator(err, callback) {
       let payList = this.payList, flag = true
       if (payList.length > 0) {
