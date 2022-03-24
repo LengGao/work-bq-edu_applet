@@ -271,13 +271,10 @@ export default {
         this.reloadList();
         setTimeout(() => {
           if (type === 2) {
-            uni.redirectTo({
-              url: `/subPackages/customeSignUp/index?userId=${res.data.id}
-              &userName=${res.data.surname}
-              &userMobile=${res.data.mobile}
-              &source=${res.data.from}
-              `,
-            });
+          uni.redirectTo({
+            url: `/subPackages/customeSignUp/index?userId=${res.data.id}&userName=${res.data.surname}&userMobile=${res.data.mobile}&source=${res.data.from}`,
+          });
+              
           } else {
             this.addLoading = false;
             uni.navigateBack();

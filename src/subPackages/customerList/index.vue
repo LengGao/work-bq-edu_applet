@@ -112,10 +112,12 @@ export default {
       this.getCrmCustomerList();
       this.drawerShow = false;
     },
-    toAdd() {
-      uni.navigateTo({
-        url: "/subPackages/addCustomer/index",
-      });
+    toAdd(e) {
+      if (e) {
+        uni.navigateTo({
+          url: "/subPackages/addCustomer/index",
+        });  
+      }
     },
     toSignUp(row) {
       uni.navigateTo({

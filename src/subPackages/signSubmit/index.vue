@@ -88,6 +88,7 @@
       @cancel="datePickerShow = false"
       @confirm="handleDateChange"
       :value="currentDate"
+      :min-date="currentDate"
     >
     </DatePicker>
 
@@ -250,7 +251,7 @@ export default {
       if (res.code === 0) {
         setTimeout(() => {
           this.saveLoading = false;          
-          uni.redirectTo({
+          uni.reLaunch({
             url: '/subPackages/orderApprove/index'
           })
         }, 800);

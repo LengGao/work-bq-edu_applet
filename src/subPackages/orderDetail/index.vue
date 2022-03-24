@@ -382,7 +382,7 @@ export default {
       })
     },
     onSetting() {
-      let url = '/subPackages/AddCollectionMessage/index',
+      let url = '/subPackages/AddCollectionPlan/index',
           params = '?orderId=' + this.orderId,
           _this = this
 
@@ -507,7 +507,7 @@ export default {
               this.crmOrderApprove(3);
             })
             .catch(() => {
-              // on cancel
+              // Sett cancel
             });
           break;
         case "3":

@@ -88,6 +88,7 @@
       @cancel="datePickerShow = false"
       @confirm="handleDateChange"
       :value="currentDate"
+      :min-date="currentDate"
     >
     </DatePicker>
 
@@ -96,9 +97,7 @@
 </template>
 
 <script>
-import {
-  createCrmOrder, uploadImage,
-} from "@/api/customer";
+import { uploadImage } from "@/api/customer";
 import Select from "@/components/select/index.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
@@ -110,6 +109,16 @@ export default {
   },
   computed: {
     ...mapGetters(["staffOptions", "payTypeOptions"]),
+  },
+  props: {
+    orderId: {
+      type: String,
+      default: ''
+    },
+    payList: {
+      type: Array,
+      default: []
+    }
   },
   data() {
     return {
@@ -135,17 +144,14 @@ export default {
         pay_day: '',      // 回款日期
         pay_money: '',    // 回款金额
         pay_type: '',     // 支付方式
-        pay_plan_ids: '',
+        pay_plan_id: '',
         receipt_file: []
       }
     };
   },
-  onLoad(query) {
-    let q = JSON.parse(decodeURIComponent(query.params))
-    console.log("q", q);
-    this.formData = Object.assign(this.formData, q)
-    this.planData = this.formData.payList
-    this.getPlanData(this.formData.payList)
+  mounted() {
+    console.log("payList", this.payList, this.orderId);
+    this.getPlanData(this.payList)
   },
   methods: {
     // 获取配置好的计划
@@ -189,7 +195,7 @@ export default {
       let ids = detail.map(item => item.id.split('-')[1] ).join(',')
       this.planCheckedName = `${names[0]} (${names.length})` 
       this.planCheckedIndex = indexs
-      this.formData.pay_plan_ids = ids
+      this.formData.pay_plan_id = ids
       this.selectShow = false
     },
     // 回款日期
@@ -205,62 +211,28 @@ export default {
     },
     // 报名缴费
     async createCrmOrder() {
-      console.log("from", this.formData);
       let data = {
         order_id: this.formData.order_id,
         pay_date: this.formData.pay_day,
         pay_money: this.formData.pay_money,
         pay_type: this.formData.pay_type,
-        plan_id: this.formData.pay_plan_ids,
+        plan_id: this.formData.pay_plan_id,
         receipt_file: this.fileList.map((item) => item.url),
+        order_id: this.orderId
       };
       
-      this.saveLoading = true;
-      const res = await createCrmOrder(data).catch(() => {
-      this.saveLoading = false;
-      });
-      if (res.code === 0) {
-        setTimeout(() => {
-          this.saveLoading = false;          
-          uni.redirectTo({
-            url: '/subPackages/orderApprove/index'
-          })
-        }, 800);
-      }
-    },
-    // 计划数据处理
-    reslvePlanData() {
-
+      this.$emit("confirm", data)
     },
     handleCancel() {
-      uni.navigateBack()
+      this.$emit('cancel')
     },
     // 保存
     handleSave() {
       this.validate(
         [
           {
-            key: "surname",
-            errmsg: "客户姓名不能为空",
-          },
-          {
-            key: "id_card_number",
-            errmsg: "请输入正确的身份证号码",
-            minLength: 18,
-          },
-          {
-            key: "mobile",
-            errmsg: "请输入正确的手机号",
-            reg: /^1[3-9]\d{9}$/,
-          },
-          {
-            key: "pay_plan_ids",
-            errmsg: "请配置回款计划",
-            // minLength: 1,
-          },
-          {
-            key: "order_money",
-            errmsg: "请输入订单金额",
+            key: 'pay_plan_id',
+            errmsg: '请选择回款计划'
           },
           {
             key: "pay_money",
@@ -346,9 +318,8 @@ export default {
     padding: 0 60rpx 60rpx;
     background-color: #fff;
   }
-
   /deep/.van-button {
-    width: 300rpx;
+    width: 100%;
   }
 }
 </style>

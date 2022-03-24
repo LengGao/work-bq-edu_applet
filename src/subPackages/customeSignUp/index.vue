@@ -69,7 +69,7 @@
         :value="formData.order_money"
         required
         type="number"
-        label="订单金额"
+        label="学费金额"
         label-class="pay_label"
         input-class="pay_input"
         placeholder="请输入订单金额"
