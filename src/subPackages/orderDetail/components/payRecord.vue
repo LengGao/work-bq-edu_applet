@@ -153,7 +153,11 @@ export default {
         current: urls[index],
       });
     },
+    toAdd() {
+      console.log("toAdd", this.data);
+    },
     toConfigPlan() {
+      console.log("toConfigPlan", this.data);
       uni.navigateTo({
         url: `/subPackages/payPlanConfig/index?orderId=${this.data.order_id}`,
       });

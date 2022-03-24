@@ -100,6 +100,7 @@
       @cancel="datePickerShow = false"
       @confirm="handleDateChange"
       :value="currentDate"
+      :max-date="currentDate"
     />
   </view>
 </template>

@@ -562,8 +562,8 @@ page {
   overflow: hidden;
 }
 /deep/.pay_label {
+  width: 400rpx;
   font-size: @font-size-md;
-  white-space: nowrap;
 }
 /deep/.pay_input {
   font-size: @font-size-md;

@@ -1,6 +1,9 @@
 <template>
   <view class="order-list">
     <SearchBar
+      :sheetActions="listTypes"
+      v-model="listType"
+      @sheet-change="handleListTypeChange"
       @search="handleSearch"
       placeholder="请输入客户姓名"
       @filter-click="drawerShow = true"
@@ -62,6 +65,11 @@ export default {
   },
   data() {
     return {
+      listType: 2,
+      listTypes: [
+        { name: "渠道订单", value: 1 },
+        { name: "招生订单", value: 2 },
+      ],
       listData: [],
       listRefreshLoading: false,
       listLoading: false,
@@ -79,6 +87,11 @@ export default {
     this.getCrmOrderList();
   },
   methods: {
+    handleListTypeChange() {
+      this.pageNum = 1;
+      this.skeletonLoading = true;
+      this.getCrmOrderList();
+    },
     handleDrawerSearch(data) {
       this.searchData = data;
       this.pageNum = 1;
@@ -118,7 +131,7 @@ export default {
       this.checkedIds = [];
       const data = {
         page: this.pageNum,
-        channel: 2,
+        channel: this.listType,
         keyword: this.keyword,
         ...this.searchData,
       };

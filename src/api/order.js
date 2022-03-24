@@ -1,5 +1,5 @@
 import http from '@/utils/request'
-// crm订单列表
+// crm订单列表 渠道订单 channel: 1 招生订单 channel: 2
 export function getCrmOrderList(data) {
     return http.request({
         url: '/CrmOrder/index',

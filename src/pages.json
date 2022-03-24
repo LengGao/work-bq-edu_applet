@@ -172,6 +172,27 @@
 					}
 				},
 				{
+					"path": "AddCollectionPlan/index",
+					"style": {
+						"navigationBarTitleText": "配置回款计划",
+						"usingComponents": {}
+					}
+				},
+				{
+					"path": "AddCollectionRecord/index",
+					"style": {
+						"navigationBarTitleText": "添加回款记录",
+						"usingComponents": {}
+					}
+				},
+				{
+					"path": "AddCollectionMessage/index",
+					"style": {
+						"navigationBarTitleText": "添加回款信息",
+						"usingComponents": {}
+					}
+				},
+				{
 					"path": "addStudent/index",
 					"style": {
 						"navigationBarTitleText": "添加学生",

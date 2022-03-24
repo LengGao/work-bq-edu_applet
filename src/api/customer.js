@@ -346,3 +346,21 @@ export function changeStaffId(data) {
         data,
     })
 }
+
+// crm 创建回款计划
+export function createOrderPayPlan(data) {
+    return http.request({
+        url: 'OrderPayPlan/create',
+        method: 'post',
+        data
+    })
+}
+
+// crm创建回款记录
+export function payLogCreate(data) {
+    return request({
+        url: 'CrmOrder/payLogCreate',
+        method: 'post',
+        data
+    })
+}
