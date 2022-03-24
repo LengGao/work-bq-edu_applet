@@ -185,7 +185,23 @@
 						"usingComponents": {
 						}
 					}
-				},
+				}, 
+				{
+					"path": "paymentPlan/index",
+					"style": {
+						"navigationBarTitleText": "配置回款计划",
+						"usingComponents": {
+						}
+					}
+				}, 
+				{
+					"path": "signSubmit/index",
+					"style": {
+						"navigationBarTitleText": "回款信息",
+						"usingComponents": {
+						}
+					}
+				}, 
 				{
 					"path": "addCustomer/index",
 					"style": {

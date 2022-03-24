@@ -1,5 +1,5 @@
 
-import { getStaffList, getProjectOptions, getCateList, getOrganizationOptions } from '@/api/order'
+import { getStaffList, getProjectOptions, getCateList, getOrganizationOptions, getPlanTypeList } from '@/api/order'
 import { getCustomfieldOptions, getCrmTags, getGradeOptions } from "@/api/customer";
 const options = {
     state: {
@@ -82,8 +82,13 @@ const options = {
         payTypeOptions: null,
         orgOptions: null,
         gradeOptions: null,
+        // 回款费用类型
+        expenseType: null,
     },
     mutations: {
+        SET_EXPENSE_TYPE(state, data) {
+            state.expenseType = data
+        },
         SET_PROJECT_OPTIONS(state, data) {
             state.projectOptions = data
         },
@@ -133,7 +138,7 @@ const options = {
             const res = await getStaffList(data);
             commit('SET_STAFF_OPTIONS', res.data.list)
         },
-        // 获取客户来源
+        // 获取客户来源payTypeOptions
         async getFromOptions({ commit }) {
             const data = {
                 field_name: "customer_source",
@@ -167,6 +172,13 @@ const options = {
         async getGradeOptions({ commit }) {
             const res = await getGradeOptions();
             commit('SET_GRADE_OPTIONS', res.data.map((item) => ({ name: item.title, value: item.id })))
+        },
+        // 获取费用类型
+        async getPlanTypeList({ commit }) {
+            const res = await getPlanTypeList();
+            if (res.code === 0) {
+                commit('SET_EXPENSE_TYPE', res.data)
+            }
         },
     }
 }

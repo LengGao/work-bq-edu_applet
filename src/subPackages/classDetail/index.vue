@@ -150,7 +150,7 @@
 </template>
 
 <script>
-import { Title } from '@/components/title/index2';
+import Title from '@/components/title/index2';
 import Select from "@/components/select/index.vue";
 import SearchBar from "@/components/searchBar/index2.vue";
 import LoadMore from '@/components/loadMore/index';

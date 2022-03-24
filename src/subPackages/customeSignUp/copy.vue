@@ -67,12 +67,12 @@
         input-align="right"
       />
       <van-field
-        :value="formData.pay_price"
+        :value="formData.order_money"
         required
         type="number"
-        label="实收金额"
+        label="订单金额"
         placeholder="请输入订单金额"
-        @input="({ detail }) => (formData.pay_price = detail)"
+        @input="({ detail }) => (formData.order_money = detail)"
         input-align="right"
       />
       <van-cell
@@ -152,11 +152,70 @@
         :border="false"
       />
     </van-cell-group>
+    <van-cell-group custom-class="group-cell">
+      <van-cell
+        is-link
+        title-width="130px"
+        :value="planCheckedName || '请选择'"
+        @click="openSheet('planOptions')"
+      >
+        <view class="period" slot="title" @click.stop="toConfigPlan">
+          <view class="period-text">回款期次</view>
+          <view class="period-btn">配置</view>
+        </view>
+      </van-cell>
+      <van-field
+        :value="formData.pay_money"
+        required
+        type="number"
+        label="回款金额"
+        placeholder="请输入回款金额"
+        @input="({ detail }) => (formData.pay_money = detail)"
+        input-align="right"
+      />
+      <van-cell
+        title="支付方式"
+        required
+        is-link
+        title-width="200rpx"
+        :value="formData.pay_type || '请选择'"
+        @click="openSheet('payTypeOptions')"
+      />
+      <van-cell
+        title="回款日期"
+        is-link
+        required
+        :value="formData.pay_day || '请选择'"
+        @click="datePickerShow = true"
+      />
+      <van-cell title="回款凭证" title-width="160rpx" :border="false">
+        <van-uploader
+          :file-list="fileList"
+          @after-read="handleAfterRead"
+          deletable
+          @delete="({ detail }) => fileList.splice(detail.index, 1)"
+        />
+      </van-cell>
+    </van-cell-group>
 
-
-    <view class="add-curtomer-submit add-curtomer-submit-flex">
-      <van-button round @click="handleCancel" style="margin-right: 30rpx;">取消</van-button>
-      <van-button round type="primary" :disabled="!checked" @click="handleSave">下一步</van-button>
+    <view class="add-curtomer-submit">
+      <view class="agreement-checkbox">
+        <van-checkbox
+          :value="checked"
+          shape="square"
+          @change="({ detail }) => (checked = detail)"
+          >我已阅读并同意</van-checkbox
+        >
+        <view class="link" @click="toAgreement">《用户协议和隐私政策》</view>
+      </view>
+      <van-button
+        type="primary"
+        :disabled="!checked"
+        :loading="saveLoading"
+        round
+        @click="handleSave"
+        >提交订单</van-button
+      >
     </view>
 
     <van-action-sheet
@@ -200,8 +259,8 @@
 
 <script>
 import {
-  categoryGetSessionList,
   getCateProjectDetail,
+  createCrmOrder,
   uploadImage,
 } from "@/api/customer";
 import DatePicker from "@/components/datePicker/index.vue";
@@ -218,31 +277,32 @@ export default {
   },
   data() {
     return {
-      checked: true,
+      checked: false,
       saveLoading: false,
       currentDate: new Date().getTime(),
       checkedStaffName: "",
       formData: {
-        surname: "", // 用户名
-        mobile: "",  // 手机号
-        id_card_number: "", // 身份证
-        type: "0",  // 报名类型 
-        union_staff_id: '',  // 报名项目
-        order_money: "",  // 订单金额
-        jiebie_id: "",
-        pay_price: "",  // 实收金额
-        examination: "", //
-        textbook: "", // 
+        surname: "",
+        mobile: "",
+        id_card_number: "",
+        type: "0",
+        union_staff_id: "",
+        order_money: "",
+        pay_money: "",
+        pre_tutor: "",
+        examination: "",
+        textbook: "",
+        graduation_guidance: "",
         thesis_defense: "",
         platform_fee: "",
+        others: "",
         tips: "",
+        pay_day: "",
+        pay_type: "",
         id: "",
+        jiebie_id: "",
         projectData: [],
-        graduation_guidance: "",  // 毕业设计费用
-        others: "", // 其他费用
       },
-      // 届别
-      gradeCheckedName: "",
       // 选择支付方式
       sheetShow: false,
       sheetActions: [],
@@ -256,10 +316,19 @@ export default {
       checkedProjectName: "",
       // 选择学历项目
       selectEduProjectShow: false,
+      // 上传
+      fileList: [],
+      // 回款计划
+      planData: [],
+      planOptions: [],
+      planCheckedName: "",
+      planCheckedIndex: 0,
+      // 届别
+      gradeCheckedName: "",
     };
   },
   computed: {
-    ...mapGetters(["staffOptions", "payTypeOptions", 'gradeOptions']),
+    ...mapGetters(["staffOptions", "payTypeOptions", "gradeOptions"]),
   },
   onLoad({ userId = "", userName = "", userMobile = "", userIdCard = "" }) {
     this.formData.id = userId;
@@ -297,27 +366,10 @@ export default {
         value: index,
       }));
     },
-    // 动态获取界别
-    async getGradeOptions(data) {
-      let param = { category_id: data }
-      const res = await categoryGetSessionList(param).catch(() => {})
-      if (res.code == 0) {
-        let gradeOptions = res.data.map(item => ({ name: item.title, value: item.id }))
-        if (gradeOptions.length > 0) {
-          this.sheetActions = gradeOptions
-        } else {
-          this.sheetActions = [{ name: '暂无数据', value: '' }]
-        }
-      }
-    },
     toConfigPlan() {
       uni.navigateTo({
         url: "/subPackages/payPlanConfig/index",
       });
-    },
-    // 取消
-    handleCancel() {
-      uni.navigateBack()
     },
     // 保存
     handleSave() {
@@ -348,15 +400,20 @@ export default {
             errmsg: "请输入订单金额",
           },
           {
-            key: "pay_price",
-            errmsg: "请输入实收金额",
-          }
+            key: "pay_money",
+            errmsg: "请输入回款金额",
+          },
+          {
+            key: "pay_type",
+            errmsg: "请选择支付方式",
+          },
+          {
+            key: "pay_day",
+            errmsg: "请选择回款日期",
+          },
         ],
         () => {
-          let params = this.getParams()
-          uni.navigateTo({
-            url: '/subPackages/paymentPlan/index?params=' + encodeURIComponent(JSON.stringify(params))
-          })
+          this.createCrmOrder();
         }
       );
     },
@@ -429,7 +486,6 @@ export default {
       const res = await getCateProjectDetail(data);
       if (res.code === 0) {
         this.formData.projectData = res.data;
-        this.getGradeOptions(res.data[0].category_id)
       }
     },
     // 选择业绩共享人
@@ -454,18 +510,9 @@ export default {
         });
         return;
       }
-      if (key === 'gradeOptions' && !this.formData.projectData.length) {
-        uni.showToast({
-          icon: "none",
-          title: "请先选择项目",
-        });
-        return;
-      }
-      if (this.formData.type != 0) {
-        this.sheetActions = this[key];
-      }
-      this.sheetShow = true; 
       this.sheetChecked = key;
+      this.sheetActions = this[key];
+      this.sheetShow = true;
     },
     onSheetSelect({ detail }) {
       if (this.sheetChecked === "payTypeOptions") {
@@ -483,8 +530,8 @@ export default {
         return;
       }
     },
-    getParams() {
-      console.log("getParams1", this.formData);
+    // 报名缴费
+    async createCrmOrder() {
       let data = {
         order_token: Date.now(),
         id: this.formData.id,
@@ -496,10 +543,12 @@ export default {
         union_staff_id: this.formData.union_staff_id,
         type: this.formData.type,
         jiebie_id: this.formData.jiebie_id,
+        receipt_file: this.fileList.map((item) => item.url),
       };
       // 学历报名参数
       if (this.formData.type == 1) {
         data = {
+          ...data,
           pre_tutor: this.formData.pre_tutor || 0,
           textbook: this.formData.textbook || 0,
           graduation_guidance: this.formData.graduation_guidance || 0,
@@ -555,10 +604,38 @@ export default {
             }))
           ),
         };
-      }  
-      
-
-      return data
+      }
+      let pay_plan = [
+        {
+          pay_day: this.formData.pay_day,
+          pay_money: this.formData.pay_money,
+          pay_type: this.formData.pay_type,
+        },
+      ];
+      if (this.planData.length) {
+        pay_plan = this.planData.map((item, index) => {
+          if (index === this.planCheckedIndex) {
+            return {
+              ...item,
+              pay_day: this.formData.pay_day,
+              pay_money: this.formData.pay_money,
+              pay_type: this.formData.pay_type,
+            };
+          }
+          return item;
+        });
+      }
+      data.pay_plan = JSON.stringify(pay_plan);
+      this.saveLoading = true;
+      const res = await createCrmOrder(data).catch(() => {
+        this.saveLoading = false;
+      });
+      if (res.code === 0) {
+        setTimeout(() => {
+          this.saveLoading = false;
+          uni.navigateBack();
+        }, 800);
+      }
     },
   },
 };
@@ -588,20 +665,13 @@ page {
     padding-bottom: 60rpx;
     position: absolute;
     bottom: 0;
-    left: 0;
     width: 100%;
+    left: 0;
     text-align: center;
     background-color: #fff;
     z-index: 100;
-
-    &-submit-flex {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-
     /deep/.van-button {
-      width: 40%;
+      width: 80%;
     }
   }
   .agreement-checkbox {

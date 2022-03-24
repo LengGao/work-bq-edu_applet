@@ -55,6 +55,12 @@ const getters = {
             store.dispatch('getGradeOptions')
         }
         return state.options.gradeOptions || []
-    }
+    },
+    expenseType: (state) => {
+        if (!state.options.expenseType) {
+            store.dispatch('getPlanTypeList')
+        }
+        return state.options.expenseType || {}
+    },
 }
 export default getters

@@ -126,9 +126,9 @@ export default {
         }`,
       });
     },
-    toDetails({ uid, id: cid }) {
+    toDetails({ uid, id }) {
       uni.navigateTo({
-        url: `/subPackages/customerDetails/index?uid=${uid}&cid=${cid}`,
+        url: `/subPackages/customerDetails/index?uid=${uid}&cid=${id}`,
       });
     },
     handleSearch(val) {

@@ -198,3 +198,12 @@ export function refundInvalid(data) {
         data
     })
 }
+
+// 获取计划费用类型
+export function getPlanTypeList(params) {
+    return http.request({
+        url: '/CustomerOrder/planTypeList',
+        method: 'get',
+        params,
+    })
+}

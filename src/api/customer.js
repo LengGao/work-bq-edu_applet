@@ -43,6 +43,14 @@ export function getGradeOptions(data) {
         data,
     })
 }
+// 获取届别下拉项目 新
+export function categoryGetSessionList(data) {
+    return http.request({
+        url: '/Crm/categoryGetSessionList',
+        method: 'get',
+        data,
+    })
+}
 // 报名时选择项目-查询已选项目的详情
 export function getCateProjectDetail(data) {
     return http.request({
