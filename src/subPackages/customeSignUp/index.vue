@@ -6,6 +6,8 @@
         :value="formData.surname"
         input-align="right"
         label="客户姓名"
+        label-class="pay_label"
+        input-class="pay_input"
         @input="({ detail }) => (formData.surname = detail)"
         placeholder="请输入客户姓名"
       />
@@ -14,6 +16,8 @@
         required
         type="idcard"
         label="身份证号"
+        label-class="pay_label"
+        input-class="pay_input"
         placeholder="请输入身份证号"
         @input="({ detail }) => (formData.id_card_number = detail)"
         input-align="right"
@@ -23,6 +27,8 @@
         required
         type="number"
         label="手机号码"
+        label-class="pay_label"
+        input-class="pay_input"
         placeholder="请输入手机号码"
         @input="({ detail }) => (formData.mobile = detail)"
         input-align="right"
@@ -30,15 +36,15 @@
       />
     </van-cell-group>
     <van-cell-group custom-class="group-cell">
-      <van-cell title="报名类型">
+      <van-cell title="报名类型" title-class="pay_label" value-class="pay_input">
         <template #right-icon>
           <van-radio-group
             :value="formData.type"
             direction="horizontal"
             @change="handleTypeChange"
           >
-            <van-radio name="0">职业教育</van-radio>
-            <van-radio name="1">学历教育</van-radio>
+            <van-radio name="0" label-class="pay_input">职业教育</van-radio>
+            <van-radio name="1" label-clas="pay_input">学历教育</van-radio>
           </van-radio-group>
         </template>
       </van-cell>
@@ -47,6 +53,8 @@
         title="报名项目"
         title-width="200rpx"
         is-link
+        title-class="pay_label"
+        value-class="pay_input"
         :value="checkedProjectName || '请选择'"
         @click="openSelceProjectSheet"
       />
@@ -62,19 +70,26 @@
         required
         type="number"
         label="订单金额"
+        label-class="pay_label"
+        input-class="pay_input"
         placeholder="请输入订单金额"
         @input="({ detail }) => (formData.order_money = detail)"
         input-align="right"
       />
-      <van-field
-        :value="formData.pay_price"
-        required
-        type="number"
-        label="实收金额"
-        placeholder="请输入订单金额"
-        @input="({ detail }) => (formData.pay_price = detail)"
-        input-align="right"
-      />
+      <template v-for="(item, index) in formData.projectData">
+        <van-field
+          :key="item.id"
+          :value="item.pay_money"
+          required
+          type="number"
+          label-class="pay_label"
+          input-class="pay_input"
+          :label="item.project_name + '-实收金额'"
+          placeholder="请输入订单金额"
+          @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
+          input-align="right"
+        />
+      </template>
       <van-cell
         title="共享业绩"
         is-link
@@ -87,6 +102,8 @@
           :value="formData.pre_tutor"
           type="number"
           label="考前辅导费"
+          label-class="pay_label"
+          input-class="pay_input"
           placeholder="请输入考前辅导费"
           @input="({ detail }) => (formData.pre_tutor = detail)"
           input-align="right"
@@ -95,6 +112,8 @@
           :value="formData.examination"
           type="number"
           label="报考费"
+          label-class="pay_label"
+          input-class="pay_input"
           placeholder="请输入报考费"
           @input="({ detail }) => (formData.examination = detail)"
           input-align="right"
@@ -103,6 +122,8 @@
           :value="formData.textbook"
           type="number"
           label="教材费"
+          label-class="pay_label"
+          input-class="pay_input"
           placeholder="请输入教材费"
           @input="({ detail }) => (formData.textbook = detail)"
           input-align="right"
@@ -111,6 +132,8 @@
           :value="formData.graduation_guidance"
           type="number"
           label="毕设指导费"
+          label-class="pay_label"
+          input-class="pay_input"
           placeholder="请输入毕设指导费"
           @input="({ detail }) => (formData.graduation_guidance = detail)"
           input-align="right"
@@ -119,6 +142,8 @@
           :value="formData.thesis_defense"
           type="number"
           label="论文答辩费"
+          label-class="pay_label"
+          input-class="pay_input"
           placeholder="请输入论文答辩费"
           @input="({ detail }) => (formData.thesis_defense = detail)"
           input-align="right"
@@ -127,6 +152,8 @@
           :value="formData.platform_fee"
           type="number"
           label="平台费"
+          label-class="pay_label"
+          input-class="pay_input"
           placeholder="请输入平台费"
           @input="({ detail }) => (formData.platform_fee = detail)"
           input-align="right"
@@ -135,6 +162,8 @@
           :value="formData.others"
           type="number"
           label="其他费用"
+          label-class="pay_label"
+          input-class="pay_input"
           placeholder="请输入其他费用"
           @input="({ detail }) => (formData.others = detail)"
           input-align="right"
@@ -144,6 +173,8 @@
       <van-field
         :value="from.tips"
         label="备注信息"
+        label-class="pay_label"
+        input-class="pay_input"
         type="textarea"
         placeholder="请输入备注"
         autosize
@@ -230,13 +261,13 @@ export default {
         union_staff_id: '',  // 报名项目
         order_money: "",  // 订单金额
         jiebie_id: "",
-        pay_price: "",  // 实收金额
         examination: "", //
         textbook: "", // 
         thesis_defense: "",
         platform_fee: "",
         tips: "",
         id: "",
+        source: '', // 客户来源
         projectData: [],
         graduation_guidance: "",  // 毕业设计费用
         others: "", // 其他费用
@@ -259,20 +290,16 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["staffOptions", "payTypeOptions", 'gradeOptions']),
+    ...mapGetters(["staffOptions", "payTypeOptions", 'gradeOptions' ]),
   },
-  onLoad({ userId = "", userName = "", userMobile = "", userIdCard = "" }) {
+  onLoad({ userId = "", userName = "", userMobile = "", userIdCard = "", source = "" }) {
     this.formData.id = userId;
     this.formData.surname = userName;
     this.formData.mobile = userMobile;
     this.formData.id_card_number = userIdCard;
+    this.formData.source = source
   },
   methods: {
-    toAgreement() {
-      uni.navigateTo({
-        url: "/pages/agreement/index",
-      });
-    },
     // 报名类型切换
     handleTypeChange({ detail }) {
       this.formData.type = detail;
@@ -288,14 +315,6 @@ export default {
       } else {
         this.selectEduProjectShow = true;
       }
-    },
-    // 获取配置好的计划
-    getPlanData(data) {
-      this.planData = data;
-      this.planOptions = data.map((item, index) => ({
-        name: `第${index + 1}期 ${item.day} ￥${item.money}`,
-        value: index,
-      }));
     },
     // 动态获取界别
     async getGradeOptions(data) {
@@ -337,7 +356,6 @@ export default {
             errmsg: "请输入正确的手机号",
             reg: /^1[3-9]\d{9}$/,
           },
-
           {
             key: "projectData",
             errmsg: "请选择报名项目",
@@ -347,10 +365,6 @@ export default {
             key: "order_money",
             errmsg: "请输入订单金额",
           },
-          {
-            key: "pay_price",
-            errmsg: "请输入实收金额",
-          }
         ],
         () => {
           let params = this.getParams()
@@ -398,16 +412,19 @@ export default {
     },
     // 选择学历项目
     handleSelectEduProjectChange(project) {
-      this.formData.projectData = project;
-      this.checkedProjectName = project
-        .map(
-          (item) => `${item.school_name}-${item.level_name}-${item.major_name}`
-        )
-        .join(",");
+      console.log("handleSelectEduProjectChange", project);
+      this.formData.projectData = project.map(item => {
+          item.pay_money = ''
+          return item
+      });
+      this.checkedProjectName = project.map(
+          item => {`${item.school_name}-${item.level_name}-${item.major_name}`
+      }).join(",");
       this.selectEduProjectShow = false;
     },
     // 选择职称项目
     handleSelectProjectChange(project) {
+      console.log("handleSelectProjectChange", project);
       const idStr = project.length
         ? project.map((item) => item.value).join(",")
         : "";
@@ -416,6 +433,7 @@ export default {
         : "";
       this.selectProjectShow = false;
       this.getCateProjectDetail(idStr);
+      
     },
     // 已选职称项目详情
     async getCateProjectDetail(idStr) {
@@ -428,7 +446,10 @@ export default {
       };
       const res = await getCateProjectDetail(data);
       if (res.code === 0) {
-        this.formData.projectData = res.data;
+        this.formData.projectData = res.data.map(item => {
+          item.pay_money = ''
+          return item
+        });
         this.getGradeOptions(res.data[0].category_id)
       }
     },
@@ -447,13 +468,6 @@ export default {
     },
     // 打开选择客户回款日期、支付方式
     openSheet(key) {
-      if (key === "planOptions" && !this.planOptions.length) {
-        uni.showToast({
-          icon: "none",
-          title: "请先配置",
-        });
-        return;
-      }
       if (key === 'gradeOptions' && !this.formData.projectData.length) {
         uni.showToast({
           icon: "none",
@@ -470,11 +484,6 @@ export default {
     onSheetSelect({ detail }) {
       if (this.sheetChecked === "payTypeOptions") {
         this.formData.pay_type = detail.name;
-        return;
-      }
-      if (this.sheetChecked === "planOptions") {
-        this.planCheckedName = detail.name;
-        this.planCheckedIndex = detail.value;
         return;
       }
       if (this.sheetChecked === "gradeOptions") {
@@ -496,10 +505,13 @@ export default {
         union_staff_id: this.formData.union_staff_id,
         type: this.formData.type,
         jiebie_id: this.formData.jiebie_id,
+        source: this.formData.source,
+        project_pay_money: {}
       };
       // 学历报名参数
       if (this.formData.type == 1) {
         data = {
+          ...data,
           pre_tutor: this.formData.pre_tutor || 0,
           textbook: this.formData.textbook || 0,
           graduation_guidance: this.formData.graduation_guidance || 0,
@@ -507,56 +519,35 @@ export default {
           platform_fee: this.formData.platform_fee || 0,
           others: this.formData.others || 0,
           examination: this.formData.examination || 0,
-          project: JSON.stringify(
-            this.formData.projectData.map((item) => ({
-              id: item.id,
-              type: {
-                id: item.type_id,
-                value: item.type_name,
-              },
-              university: {
-                id: item.school_id,
-                value: item.school_name,
-              },
-              level: {
-                id: item.level_id,
-                value: item.level_name,
-              },
-              major: {
-                id: item.major_id,
-                value: item.major_name,
-              },
-              total_money: item.price,
-              lower_price: item.lowest_price,
-              service_period: item.service_period,
-              service_type: item.service_type,
-              service_effective: item.service_effective,
-              project: {
-                id: item.project_id,
-                value: item.project_name,
-              },
-            }))
-          ),
+          project: this.formData.projectData.map((item) => {
+            if (!item.pay_money) {
+              uni.showToast({
+                icon: 'none',
+                title: `请输入 ${item.project_name} 的实收金额`
+              })
+              throw new Error("pay_money is null");
+            }
+            data.project_pay_money[item.id] = item.pay_money;
+            return item.id;
+          })
         };
       } else {
         // 安监报名参数
         data = {
           ...data,
-          project: JSON.stringify(
-            this.formData.projectData.map((item) => ({
-              id: item.id,
-              project_name: item.project_name,
-              project_price: item.price,
-              lower_price: item.lowest_price,
-              must_price: item.must_price,
-              service_effective: item.service_effective,
-              service_period: item.service_period,
-              service_type: item.service_type,
-            }))
-          ),
+          project: this.formData.projectData.map((item) => {
+            if (!item.pay_money) {
+              uni.showToast({
+                icon: 'none',
+                title: `请输入 ${item.project_name} 的实收金额`
+              })
+              throw new Error("pay_money is null");
+            }
+            data.project_pay_money[item.id] = item.pay_money;
+            return item.id;
+          })
         };
       }  
-      
 
       return data
     },
@@ -569,6 +560,13 @@ export default {
 page {
   height: 100%;
   overflow: hidden;
+}
+/deep/.pay_label {
+  font-size: @font-size-md;
+  white-space: nowrap;
+}
+/deep/.pay_input {
+  font-size: @font-size-md;
 }
 .add-curtomer {
   height: 100%;

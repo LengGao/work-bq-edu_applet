@@ -1,7 +1,6 @@
 <template>
   <view class="payment-plan">
     <view class="hr"></view>
-
     <view class="payment-check"> 
       <view class="header">
         <Title title="回款计划" customStyle="padding-left: 10rpx;" ></Title>
@@ -305,12 +304,13 @@ export default {
         startId = `${type}-${len + 100}`
       } else {
         let lastindex = this.handleFindLast(payList, (item) => item.type = type)
-        let ids = payList[lastindex].id.split('-')        
+        let ids = payList[lastindex].id.split('-')     
         startId = `${ids[0]}-${Number(ids[1]) + 1}`
       }
 
       return  {
-        id: startId, type, 
+        id: startId, 
+        type, 
         name: typs[type],
         year: _currentYear,
         day: '', 
@@ -367,6 +367,14 @@ export default {
 page {
   height: 100%;
   overflow: hidden;
+}
+
+/deep/.label-class {
+  font-size: @font-size-md;
+}
+
+/deep/.input-class {
+  font-size: @font-size-md;
 }
 
 .payment-plan {

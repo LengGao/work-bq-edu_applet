@@ -5,6 +5,8 @@
         title="回款日期"
         is-link
         required
+        title-class="label"
+        value-class="input"
         :value="formData.pay_day || '请选择'"
         @click="datePickerShow = true"
       />
@@ -13,6 +15,8 @@
         title="回款计划"
         is-link
         required
+        title-class="label"
+        value-class="input"
         :value="planCheckedName || '请选择'"
         @click="selectShow = true"
       />
@@ -21,6 +25,8 @@
         required
         type="number"
         label="回款金额"
+        label-class="label"
+        input-class="input"
         :value="formData.pay_money"
         placeholder="请输入回款金额"
         @input="({ detail }) => (formData.pay_money = detail)"
@@ -30,6 +36,8 @@
         title="支付方式"
         required
         is-link
+        title-class="label"
+        value-class="input"
         title-width="200rpx"
         :value="formData.pay_type || '请选择'"
         @click="openSheet('payTypeOptions')"
@@ -128,6 +136,7 @@ export default {
         pay_day: '',      // 回款日期
         pay_money: '',    // 回款金额
         pay_type: '',     // 支付方式
+        pay_plan_ids: '',
         receipt_file: []
       }
     };
@@ -144,8 +153,9 @@ export default {
     getPlanData(data) {
       this.planData = data;
       this.planOptions = data.map((item, index) => ({
-        name: `${item.name} ${item.year} ￥${item.money}`,
+        name: `${item.year} ${item.name} ￥${item.money}`,
         value: index,
+        id: item.id
       }));
     },
     toConfigPlan() {
@@ -156,12 +166,6 @@ export default {
     onSheetSelect({ detail }) {
       if (this.sheetChecked === "payTypeOptions") {
         this.formData.pay_type = detail.name;
-        return;
-      }
-      if (this.sheetChecked === "planOptions") {
-        console.log("planOptions", detail);
-        this.planCheckedName = detail.name;
-        this.planCheckedIndex = detail.value;
         return;
       }
     },
@@ -181,7 +185,12 @@ export default {
     // 胡款计划
     handleSelectChange(detail) {
       console.log("detail", detail);
-      this.planCheckedName = detail[0].name
+      let names = detail.map(item => item.name)
+      let indexs = detail.map(item => item.value)
+      let ids = detail.map(item => item.id.split('-')[1] ).join(',')
+      this.planCheckedName = `${names[0]} (${names.length})` 
+      this.planCheckedIndex = indexs
+      this.formData.pay_plan_ids = ids
       this.selectShow = false
     },
     // 回款日期
@@ -208,34 +217,33 @@ export default {
         tips: this.formData.tips,
         union_staff_id: this.formData.union_staff_id,
         type: this.formData.type,
+        project: this.formData.project,
+        project_pay_money: this.formData.project_pay_money,
         jiebie_id: this.formData.jiebie_id,
         receipt_file: this.fileList.map((item) => item.url),
-        project: this.formData.project
+        source: this.formData.source,
+        pay_day: this.formData.pay_day,
+        pay_money: this.formData.pay_money,
+        pay_type: this.formData.pay_type,
+        pay_plan_ids: this.formData.pay_plan_ids,
+        pay_plan: []
       };
 
-      let pay_plan = [
-        {
-          pay_day: this.formData.pay_day,
-          pay_money: this.formData.pay_money,
-          pay_type: this.formData.pay_type,
-        },
-      ];
-
       if (this.formData.payList.length) {
-        pay_plan = this.formData.payList.map((item, index) => {
-          if (index === this.planCheckedIndex) {
+        data.pay_plan = this.formData.payList.map((item, index) => {
+          if (this.planCheckedIndex.indexOf(index) !== -1) {
             return {
               temp_id: item.id.split('-')[1],
-              name: item.name,
-              pay_day: this.formData.pay_day,
-              pay_money: this.formData.pay_money,
-              pay_type: this.formData.pay_type,
+              year: item.year,
+              type: item.type,
+              day: item.day,
+              money: item.money,
             };
           }
           return item;
         });
       }
-      data.pay_plan = JSON.stringify(pay_plan);
+      
       this.saveLoading = true;
       const res = await createCrmOrder(data).catch(() => {
       this.saveLoading = false;
@@ -244,10 +252,14 @@ export default {
         setTimeout(() => {
           this.saveLoading = false;          
           uni.redirectTo({
-            url: '/subPackages/customerList/index'
+            url: '/subPackages/orderApprove/index'
           })
         }, 800);
       }
+    },
+    // 计划数据处理
+    reslvePlanData() {
+
     },
     handleCancel() {
       uni.navigateBack()
@@ -270,11 +282,11 @@ export default {
             errmsg: "请输入正确的手机号",
             reg: /^1[3-9]\d{9}$/,
           },
-          // {
-          //   key: "projectData",
-          //   errmsg: "请选择报名项目",
-          //   minLength: 1,
-          // },
+          {
+            key: "pay_plan_ids",
+            errmsg: "请配置回款计划",
+            // minLength: 1,
+          },
           {
             key: "order_money",
             errmsg: "请输入订单金额",
@@ -333,6 +345,13 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
+
+/depp/.label {
+  font-size: @font-size-md;
+}
+/deep/.input {
+  font-size: @font-size-md;
+}
 
 .footer {
   position: static;

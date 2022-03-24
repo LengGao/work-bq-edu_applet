@@ -71,7 +71,7 @@ export function getUniversityMajorDetailList(data) {
 // crm报名 
 export function createCrmOrder(data) {
     return http.request({
-        url: '/CrmOrder/create',
+        url: '/CustomerOrder/create',
         method: 'post',
         showToast: true,
         data
