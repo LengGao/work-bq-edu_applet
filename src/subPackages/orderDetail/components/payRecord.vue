@@ -28,8 +28,18 @@
       </van-cell>
       <van-cell :border="false">
         <template #title>
-          <text class="title">关联期次</text>
-          <text class="value">{{ item.pay_plan_sort || "无" }}</text>
+          <text class="title">关联计划</text>
+          <text class="value">{{ item.relation_plan || "无" }}</text>
+        </template>
+        <text class="title">入账状态</text>
+        <text class="value">{{
+          payStatusMap[item.verify_status] || "--"
+        }}</text>
+      </van-cell>
+      <van-cell :border="false">
+        <template #title>
+          <text class="title">关联计划</text>
+          <text class="value">{{ item.relation_plan || "无" }}</text>
         </template>
         <text class="title">入账状态</text>
         <text class="value">{{

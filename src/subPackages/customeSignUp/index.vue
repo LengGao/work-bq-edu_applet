@@ -71,7 +71,7 @@
             @change="({ detail }) => (formData.online_course = detail)"
           >
             <van-radio name="1">是</van-radio>
-            <van-radio name="2">否</van-radio>
+            <van-radio name="0">否</van-radio>
           </van-radio-group>
         </template>
       </van-cell>
@@ -127,10 +127,10 @@
             input-class="input"
             input-align="right"
             label-class="label"
-            :label="`${item.project_name}-实收金额`"
             title-width="400rpx"
-            placeholder="请输入订单金额"
+            placeholder="请输入实收金额"
             :value="item.pay_money"
+            :label="`${item.project_name}-实收金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
           />
         </view>
@@ -171,11 +171,14 @@
             type="number"
             label-class="label"
             input-class="input"
-            placeholder="请输入订单金额"
-            :label="`${item.project_name}-实收金额`"
+            placeholder="请输入实收金额"
             input-align="right"
             title-width="400rpx"
+            confirm-type=“确定”
+            adjust-position
+            :cursor-spacing="0"
             :value="item.pay_money"
+            :label="`${item.project_name}-实收金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
           />
         </view>
@@ -377,8 +380,8 @@ export default {
         { key: "surname", errmsg: "客户姓名不能为空" },
         { key: "id_card_number", errmsg: "请输入正确的身份证号码", minLength: 18 },
         { key: "mobile", errmsg: "请输入正确的手机号", reg: /^1[3-9]\d{9}$/ },
-        { key: "projectData", errmsg: "请选择报名项目", minLength: 1, },
-        { key: "order_money", errmsg: "请输入订单金额" },
+        { key: "projectData", errmsg: "请选择报名项目或专业", minLength: 1, },
+        { key: "order_money", errmsg: "请输入学费金额" },
       ]
 
       const callback = () => {

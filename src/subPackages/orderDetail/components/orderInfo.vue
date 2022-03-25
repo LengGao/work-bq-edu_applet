@@ -104,6 +104,7 @@
       value-class="value"
       :value="data.project_name"
     />
+    
     <van-cell
       title="届别名称"
       title-class="title"
@@ -114,7 +115,19 @@
       title="订单金额"
       title-class="title"
       value-class="value"
+      :value="data.total_money | moneyFormat"
+    />
+    <van-cell
+      title="学费金额"
+      title-class="title"
+      value-class="value"
       :value="data.order_money | moneyFormat"
+    />
+    <van-cell
+      title="其他金额"
+      title-class="title"
+      value-class="value"
+      :value="data.other_money | moneyFormat"
     />
     <van-cell
       title="已回款金额"

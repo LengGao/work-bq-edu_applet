@@ -13,7 +13,7 @@
     </view>
 
     <view class="header-class">
-      <text class="col-title">班级名称</text>
+      <!-- <text class="col-title">班级名称</text> -->
       <text class="col-value">{{ className }}</text>
     </view>
 

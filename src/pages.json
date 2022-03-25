@@ -219,8 +219,7 @@
 					"path": "signSubmit/index",
 					"style": {
 						"navigationBarTitleText": "回款信息",
-						"usingComponents": {
-						}
+						"usingComponents": {}
 					}
 				}, 
 				{

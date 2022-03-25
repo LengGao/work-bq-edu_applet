@@ -59,8 +59,8 @@
       </view>
 
       <view class="footer-submit">
-        <van-button round @click="handleCancel">上一步</van-button>
-        <van-button round type="primary" :loading="saveLoading" @click="handleSave">保存</van-button>
+        <van-button style="width: 300rpx;" round @click="handleCancel">上一步</van-button>
+        <van-button style="width: 300rpx;" round type="primary" @click="handleSave">保存</van-button>
       </view>    
     </view>
 
@@ -124,7 +124,6 @@ export default {
     return {
       selectShow: false, // 选择
       showPlan: false,
-      saveLoading: false,
       // 回款日期
       datePickerShow: false,
       currentDate: new Date().getTime(),
@@ -297,7 +296,6 @@ export default {
 }
 
 .footer {
-  position: static;
   margin-top: 360rpx;
 
   .tags {
@@ -315,11 +313,12 @@ export default {
     align-items: center;
     width: 100%;
     margin-top: 40rpx;
-    padding: 0 60rpx 60rpx;
+    padding: 0 60rpx;
     background-color: #fff;
   }
-  /deep/.van-button {
-    width: 100%;
-  }
+}
+
+/deep/.van-button {
+  width: 600rpx;
 }
 </style>

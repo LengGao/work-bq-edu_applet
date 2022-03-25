@@ -117,7 +117,7 @@
           v-if="
             detailData.verify_status < 3 ||
             (detailData.verify_status === 1 && !detailData.reshuffle) ||
-            detailData.refund_button
+            (detailData.refund_button && !isApprove)
           "
         >
           <template v-if="detailData.is_my_review">
@@ -349,8 +349,8 @@ export default {
     },
   },
   onLoad({ orderId, approve, change, verifyId }) {
-    this.isApprove = approve == 1;
-    this.isChange = change == 1;
+    this.isApprove = approve == 1; // 是否审批 1 审批
+    this.isChange = change == 1; // 是否异动 1 异动
     this.orderId = orderId;
     this.verifyId = verifyId;
     this.passParams = {

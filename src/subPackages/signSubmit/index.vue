@@ -1,5 +1,5 @@
 <template>
-<view class="sign-submit">
+  <view class="sign-submit">
     <van-cell-group custom-class="group-cell">
       <van-cell
         title="回款日期"
@@ -44,24 +44,32 @@
       />
       <van-cell title="回款凭证" title-width="160rpx" :border="false">
         <van-uploader
-          :file-list="fileList"
+          :file-list="this.formData.receipt_file"
           @after-read="handleAfterRead"
           deletable
-          @delete="({ detail }) => fileList.splice(detail.index, 1)"
+          @delete="
+            ({ detail }) => formData.receipt_file.splice(detail.index, 1)
+          "
         />
       </van-cell>
     </van-cell-group>
 
-
     <view class="footer">
-      <view class="tags"> 
-          * 回款时必须保证回款金额等于所选回款计划的总金额，如不相等请先修改回款计划 
+      <view class="tags">
+        *
+        回款时必须保证回款金额等于所选回款计划的总金额，如不相等请先修改回款计划
       </view>
 
       <view class="footer-submit">
         <van-button round @click="handleCancel">上一步</van-button>
-        <van-button round type="primary" :loading="saveLoading" @click="handleSave">保存</van-button>
-      </view>    
+        <van-button
+          round
+          type="primary"
+          :loading="saveLoading"
+          @click="handleSave"
+          >保存</van-button
+        >
+      </view>
     </view>
 
     <van-action-sheet
@@ -81,7 +89,6 @@
       multiple
     />
 
-
     <DatePicker
       :show="datePickerShow"
       @close="datePickerShow = false"
@@ -89,17 +96,12 @@
       @confirm="handleDateChange"
       :value="currentDate"
       :max-date="currentDate"
-    >
-    </DatePicker>
-
-
-</view>
+    />
+  </view>
 </template>
 
 <script>
-import {
-  createCrmOrder, uploadImage,
-} from "@/api/customer";
+import { createCrmOrder, uploadImage } from "@/api/customer";
 import Select from "@/components/select/index.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
@@ -110,25 +112,22 @@ export default {
     DatePicker
   },
   computed: {
-    ...mapGetters(["staffOptions", "payTypeOptions"]),
+    ...mapGetters(["payTypeOptions"]),
   },
   data() {
     return {
-      selectShow: false, // 选择
-      showPlan: false,
-      saveLoading: false,
-      // 回款日期
-      datePickerShow: false,
+      saveLoading: false, // 板寸按钮加载状态
+      // 日期选择
+      datePickerShow: false, // 回款日期
       currentDate: new Date().getTime(),
-      // 上传
-      fileList: [],
-      //回款计划
-      planData: [],
-      planOptions: [],
-      planCheckedName: "",
-      planCheckedIndex: 0,
+      // 回款计划
+      selectShow: false, // 选择回款计划
+      planData: [], // 回款计划数据
+      planOptions: [], // 回款计划选项
+      planCheckedName: "", // 当前选择的会跨计划
+      planCheckedIndex: [], // 当前选择的会跨计划索引
       // 选择支付方式
-      sheetShow: false,
+      sheetShow: false, 
       sheetActions: [],
       sheetChecked: "",
       // 提交表单
@@ -136,178 +135,64 @@ export default {
         pay_day: '',      // 回款日期
         pay_money: '',    // 回款金额
         pay_type: '',     // 支付方式
-        pay_plan_ids: '',
+        pay_plan_ids: '', // 选择回款计划id
         receipt_file: []
-      }
+      },
     };
   },
   onLoad(query) {
-    let q = JSON.parse(decodeURIComponent(query.params))
-    console.log("q", q);
+    let q = JSON.parse(decodeURIComponent(query.params))    
     this.formData = Object.assign(this.formData, q)
     this.planData = this.formData.payList
     this.getPlanData(this.formData.payList)
   },
   methods: {
-    // 获取配置好的计划
-    getPlanData(data) {
-      this.planData = data;
-      this.planOptions = data.map((item, index) => ({
-        name: `${item.year} ${item.name} ￥${item.money}`,
-        value: index,
-        id: item.id
-      }));
-    },
-    toConfigPlan() {
-      uni.navigateTo({
-        url: "/subPackages/payPlanConfig/index",
-      });
-    },
+    // 支付方式
     onSheetSelect({ detail }) {
-      if (this.sheetChecked === "payTypeOptions") {
-        this.formData.pay_type = detail.name;
-        return;
-      }
+      this.formData.pay_type = detail.name;
     },
     // 打开选择客户回款日期、支付方式
     openSheet(key) {
-      if (key === "planOptions" && !this.planOptions.length) {
-        uni.showToast({
-          icon: "none",
-          title: "请先配置",
-        });
-        return;
-      }
       this.sheetChecked = key;
       this.sheetActions = this[key];
       this.sheetShow = true;
     },
     // 胡款计划
     handleSelectChange(detail) {
-      console.log("detail", detail);
+      this.selectShow = false
       let names = detail.map(item => item.name)
       let indexs = detail.map(item => item.value)
-      let ids = detail.map(item => item.id.split('-')[1] ).join(',')
+      let ids = detail.map(item => item.id).join(',')
       this.planCheckedName = `${names[0]} (${names.length})` 
       this.planCheckedIndex = indexs
       this.formData.pay_plan_ids = ids
-      this.selectShow = false
     },
     // 回款日期
     handleDateChange(day) {
-      this.formData.pay_day = day;
       this.datePickerShow = false;
-    },
-    // 上传凭证
-    async handleAfterRead({ detail }) {
-      const { file } = detail;
-      const { url } = await uploadImage(file);
-      this.fileList.push({ url, isImage: true });
-    },
-    // 报名缴费
-    async createCrmOrder() {
-      console.log("from", this.formData);
-      let data = {
-        order_token: Date.now(),
-        id: this.formData.id,
-        order_money: this.formData.order_money,
-        surname: this.formData.surname,
-        mobile: this.formData.mobile,
-        id_card_number: this.formData.id_card_number,
-        tips: this.formData.tips,
-        union_staff_id: this.formData.union_staff_id,
-        type: this.formData.type,
-        project: this.formData.project,
-        project_pay_money: this.formData.project_pay_money,
-        jiebie_id: this.formData.jiebie_id,
-        receipt_file: this.fileList.map((item) => item.url),
-        source: this.formData.source,
-        pay_day: this.formData.pay_day,
-        pay_money: this.formData.pay_money,
-        pay_type: this.formData.pay_type,
-        pay_plan_ids: this.formData.pay_plan_ids,
-        pay_plan: []
-      };
-
-      if (this.formData.payList.length) {
-        data.pay_plan = this.formData.payList.map((item, index) => {
-          if (this.planCheckedIndex.indexOf(index) !== -1) {
-            return {
-              temp_id: item.id.split('-')[1],
-              year: item.year,
-              type: item.type,
-              day: item.day,
-              money: item.money,
-            };
-          }
-          return item;
-        });
-      }
-      
-      this.saveLoading = true;
-      const res = await createCrmOrder(data).catch(() => {
-      this.saveLoading = false;
-      });
-      if (res.code === 0) {
-        setTimeout(() => {
-          this.saveLoading = false;          
-          uni.reLaunch({
-            url: '/subPackages/orderApprove/index'
-          })
-        }, 800);
-      }
-    },
-    // 计划数据处理
-    reslvePlanData() {
-
+      this.formData.pay_day = day;
     },
     handleCancel() {
       uni.navigateBack()
     },
     // 保存
     handleSave() {
-      this.validate(
-        [
-          {
-            key: "surname",
-            errmsg: "客户姓名不能为空",
-          },
-          {
-            key: "id_card_number",
-            errmsg: "请输入正确的身份证号码",
-            minLength: 18,
-          },
-          {
-            key: "mobile",
-            errmsg: "请输入正确的手机号",
-            reg: /^1[3-9]\d{9}$/,
-          },
-          {
-            key: "pay_plan_ids",
-            errmsg: "请配置回款计划",
-            // minLength: 1,
-          },
-          {
-            key: "order_money",
-            errmsg: "请输入订单金额",
-          },
-          {
-            key: "pay_money",
-            errmsg: "请输入回款金额",
-          },
-          {
-            key: "pay_type",
-            errmsg: "请选择支付方式",
-          },
-          {
-            key: "pay_day",
-            errmsg: "请选择回款日期",
-          },
-        ],
-        () => {
-          this.createCrmOrder();
-        }
-      );
+      let validator = [
+          { key: "surname",errmsg: "客户姓名不能为空" },
+          { key: "id_card_number", errmsg: "请输入正确的身份证号码", minLength: 18 },
+          { key: "mobile", errmsg: "请输入正确的手机号", reg: /^1[3-9]\d{9}$/ },
+          { key: "pay_plan_ids", errmsg: "请配置回款计划" },
+          { key: "order_money", errmsg: "请输入学费金额" },
+          { key: "pay_money", errmsg: "请输入回款金额" },
+          { key: "pay_type", errmsg: "请选择支付方式" },
+          { key: "pay_day", errmsg: "请选择回款日期" },
+      ]
+
+      const callback = () => {
+        this.createCrmOrder()
+      }
+
+      this.validate(validator, callback)
     },
     validate(arr, cb) {
       for (const item of arr) {
@@ -337,7 +222,66 @@ export default {
           }
         }
       }
-      cb && cb();
+      
+      if (cb) cb();
+    },
+    // 获取配置好的计划
+    getPlanData(data) {
+      this.planData = data;
+      this.planOptions = data.map((item, index) => ({
+        name: `${item.year} ${item.name} ￥${item.money}`,
+        value: index,
+        id: item.id
+      }))
+    },
+    // 上传凭证
+    async handleAfterRead({ detail }) {
+      const { file } = detail;
+      const { url } = await uploadImage(file);
+      this.formData.receipt_file.push({ url, isImage: true });
+    },
+    // 报名缴费
+    async createCrmOrder() {
+      let formData = this.formData,
+          receipt_file = formData.receipt_file.map((item) => item.url)
+      
+      let data = {
+        order_token: Date.now(),
+        id: formData.id,
+        order_money: formData.order_money,
+        surname: formData.surname,
+        mobile: formData.mobile,
+        id_card_number: formData.id_card_number,
+        tips: formData.tips,
+        union_staff_id: formData.union_staff_id,
+        type: formData.type,
+        project: formData.project,
+        project_pay_money: formData.project_pay_money,
+        jiebie_id: formData.jiebie_id,
+        source: formData.source,
+        receipt_file: receipt_file,
+        pay_day: formData.pay_day,
+        pay_money: formData.pay_money,
+        pay_type: formData.pay_type,
+        pay_plan_ids: formData.pay_plan_ids,
+        pay_plan: []
+      };
+
+      data.pay_plan = formData.payList.map((item, index) => {
+        if (this.planCheckedIndex.indexOf(index) !== -1) {
+          return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money }
+        }
+      })
+      
+      this.saveLoading = true;
+      const res = await createCrmOrder(data).catch(() => { this.saveLoading = false; })
+      
+      if (res.code === 0) {
+        setTimeout(() => {
+          this.saveLoading = false;          
+          uni.reLaunch({ url: '/subPackages/orderApprove/index' })
+        }, 800);
+      }
     },
   }
 }
@@ -345,6 +289,16 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
+@pageHeight: 100vh;
+
+.sign-submit {
+  width: 100%;
+  overflow: hidden;
+}
+
+.group-cell {
+  height: 60vh;
+}
 
 /depp/.label {
   font-size: @font-size-md;
@@ -355,13 +309,13 @@ export default {
 
 .footer {
   position: static;
-  margin-top: 360rpx;
+  margin-top: calc(@pageHeight * 0.2);
 
   .tags {
     padding: 20rpx;
     margin: 0 40rpx;
     font-size: 24rpx;
-    color: #FF4B4B; 
+    color: #ff4b4b;
     border: @border;
   }
 

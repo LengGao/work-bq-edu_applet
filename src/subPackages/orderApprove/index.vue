@@ -52,10 +52,10 @@
           >-{{ item.project_name }}
         </view>
         <view class="item-desc">
-          <text>应收金额{{ item.order_money | moneyFormat }}</text>
-          <text style="margin-left: 20rpx"
-            >已收金额{{ item.pay_money | moneyFormat }}</text
-          >
+          <text>订单总金额{{ item.total_money | moneyFormat }}</text>
+          <text style="margin-left: 20rpx">
+            实收金额{{ ((+item.pay_money) + (+item.other_money)) | moneyFormat }}
+          </text>
         </view>
       </view>
     </LoadMore>
@@ -72,6 +72,7 @@ import SearchBar from "@/components/searchBar/index.vue";
 import LoadMore from "@/components/loadMore/index.vue";
 import SearchDrawer from "./components/searchDrawer.vue";
 import { getCrmApproveOrder } from "@/api/order";
+
 export default {
   components: {
     SearchBar,

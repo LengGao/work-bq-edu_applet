@@ -55,6 +55,13 @@
           :value="item.total_money | moneyFormat"
         >
         </van-cell>
+        <van-cell
+          title="实收金额"
+          title-class="title"
+          value-class="value"
+          :value="item.must_money | moneyFormat"
+        >
+        </van-cell>
       </van-cell-group>
     </template>
     <template v-else>
@@ -89,6 +96,13 @@
           title-class="title"
           value-class="value"
           :value="item.project_price | moneyFormat"
+        >
+        </van-cell>
+        <van-cell
+          title="实收金额"
+          title-class="title"
+          value-class="value"
+          :value="item.must_money | moneyFormat"
         >
         </van-cell>
       </van-cell-group>

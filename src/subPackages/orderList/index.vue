@@ -32,10 +32,14 @@
 
             <text class="tag" v-if="item.reshuffle">异</text>
           </view>
-          <view class="item-info-money"
+          <view class="item-info-money">
+            订单总金额 {{ item.total_money | moneyFormat }} 
+            / 实收金额 {{ ((+item.pay_money) + (+item.other_money)) | moneyFormat }}
+          </view>
+          <!-- <view class="item-info-money"
             >应收 {{ item.order_money | moneyFormat }} / 已收
             {{ item.pay_money | moneyFormat }}
-          </view>
+          </view> -->
         </view>
         <view class="item-status">
           <van-tag plain :color="item.verify_status | orderApplyStatus">{{
