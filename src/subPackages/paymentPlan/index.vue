@@ -225,7 +225,7 @@ export default {
           _currentYear = currentYear,
           payList = this.payList, 
           len = payList.length, 
-          lastItem = payList[len -1]
+          lastItem = payList[len -1],
           startId = 0
 
       if (index == -1) {
@@ -388,8 +388,9 @@ export default {
   }
   
   .footer {
-    position: static;
-    margin-top: 100rpx;
+    position: absolute;
+    bottom: 40rpx;
+    left: 0;
 
     &-submit {
       display: flex;
@@ -397,7 +398,7 @@ export default {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 0 60rpx 60rpx;
+      padding: 0 60rpx;
       background-color: #fff;
     }
 

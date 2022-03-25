@@ -289,7 +289,6 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
-@pageHeight: 100vh;
 
 .sign-submit {
   width: 100%;
@@ -297,7 +296,7 @@ export default {
 }
 
 .group-cell {
-  height: 60vh;
+  height: 80vh;
 }
 
 /depp/.label {
@@ -308,9 +307,10 @@ export default {
 }
 
 .footer {
-  position: static;
-  margin-top: calc(@pageHeight * 0.2);
-
+  position: absolute;
+  bottom: 20rpx;
+  left: 0;
+  
   .tags {
     padding: 20rpx;
     margin: 0 40rpx;
@@ -326,7 +326,7 @@ export default {
     align-items: center;
     width: 100%;
     margin-top: 40rpx;
-    padding: 0 60rpx 60rpx;
+    padding: 0 60rpx 20rpx;
     background-color: #fff;
   }
 

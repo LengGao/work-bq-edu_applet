@@ -59,8 +59,8 @@
       </view>
 
       <view class="footer-submit">
-        <van-button style="width: 300rpx;" round @click="handleCancel">上一步</van-button>
-        <van-button style="width: 300rpx;" round type="primary" @click="handleSave">保存</van-button>
+        <van-button custom-style="width: 300rpx" round @click="handleCancel">上一步</van-button>
+        <van-button custom-style="width: 300rpx" round type="primary" @click="handleSave">保存</van-button>
       </view>    
     </view>
 
@@ -80,7 +80,6 @@
       option-value="value"
       multiple
     />
-
 
     <DatePicker
       :show="datePickerShow"
@@ -287,38 +286,41 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
+.sign-submit {
+  width: 100%;
+  overflow: hidden;
 
-/depp/.label {
-  font-size: @font-size-md;
-}
-/deep/.input {
-  font-size: @font-size-md;
-}
-
-.footer {
-  margin-top: 360rpx;
-
-  .tags {
-    padding: 20rpx;
-    margin: 0 40rpx;
-    font-size: 24rpx;
-    color: #FF4B4B; 
-    border: @border;
+  /depp/.label {
+    font-size: @font-size-md;
   }
 
-  &-submit {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 40rpx;
-    padding: 0 60rpx;
-    background-color: #fff;
+  /deep/.input {
+    font-size: @font-size-md;
   }
-}
 
-/deep/.van-button {
-  width: 600rpx;
+  .footer {
+    position: absolute;
+    bottom: 20rpx;
+    left: 0;
+
+    .tags {
+      padding: 20rpx;
+      margin: 0 40rpx;
+      font-size: 24rpx;
+      color: #FF4B4B; 
+      border: @border;
+    }
+
+    &-submit {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-top: 40rpx;
+      padding: 0 60rpx;
+      background-color: #fff;
+    }
+  }
 }
 </style>

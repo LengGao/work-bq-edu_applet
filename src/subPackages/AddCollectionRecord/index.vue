@@ -443,10 +443,10 @@ page {
 /deep/.drawer {
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
   overflow: hidden;
+  // display: flex;
+  // justify-content: space-between;
+  // flex-direction: column;
 }
 
 .payment-plan {

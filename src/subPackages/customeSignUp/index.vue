@@ -63,9 +63,9 @@
         :value="checkedStaffName || '请选择'"
         @click="selectShow = true"
       />
-      <van-cell title="是否开通网课" title-class="label">
+      <van-cell title="开通网课" title-class="label" required>
         <template #right-icon>
-          <van-radio-group 
+          <van-radio-group
             direction="horizontal"
             :value="formData.online_course" 
             @change="({ detail }) => (formData.online_course = detail)"
@@ -129,6 +129,8 @@
             label-class="label"
             title-width="400rpx"
             placeholder="请输入实收金额"
+            :adjust-position="undefined"
+            :cursor-spacing="1"
             :value="item.pay_money"
             :label="`${item.project_name}-实收金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
@@ -175,8 +177,6 @@
             input-align="right"
             title-width="400rpx"
             confirm-type=“确定”
-            adjust-position
-            :cursor-spacing="0"
             :value="item.pay_money"
             :label="`${item.project_name}-实收金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
@@ -195,9 +195,11 @@
         :value="from.tips"
         placeholder="请输入备注"
         @input="({ detail }) => (formData.tips = detail)"
-      />
+      >
+      </van-field>
     </van-cell-group>
 
+    <view class="line"></view>
 
     <view class="add-curtomer-submit add-curtomer-submit-flex">
       <van-button round @click="handleCancel" style="margin-right: 30rpx;">取消</van-button>
@@ -258,6 +260,9 @@ export default {
   },
   data() {
     return {
+      isFocus: false,
+      inputValue: '',
+      reasonHeight: 0,
       // 选择支付方式
       sheetShow: false, // 是否显示面板
       sheetActions: [], // 当前面板数据
@@ -382,6 +387,7 @@ export default {
         { key: "mobile", errmsg: "请输入正确的手机号", reg: /^1[3-9]\d{9}$/ },
         { key: "projectData", errmsg: "请选择报名项目或专业", minLength: 1, },
         { key: "order_money", errmsg: "请输入学费金额" },
+        { key: "online_course", errmsg: "请选择是否开通网课" },
       ]
 
       const callback = () => {
@@ -501,9 +507,11 @@ page {
   height: 100%;
   overflow-y: scroll;
   padding-bottom: 240rpx;
+
   /deep/.group-cell {
     border-top: 20rpx solid #f2f6fc;
   }
+
   /deep/.period {
     .flex-c();
     &-btn {
@@ -511,8 +519,9 @@ page {
       margin-left: 10rpx;
     }
   }
+
   &-submit {
-    padding-bottom: 60rpx;
+    padding-bottom: 40rpx;
     position: absolute;
     bottom: 0;
     left: 0;
@@ -539,6 +548,12 @@ page {
     }
   }
 }
+.line {
+  display: block;
+  width: 100%;
+  height: 100rpx;
+  margin-top: 500rpx;
+}
 
 /deep/.title {
   font-size: @font-size-md;
@@ -553,6 +568,10 @@ page {
 }
 /deep/.input {
   font-size: @font-size-md;
+}
+
+/deep/.super-input {
+
 }
 
 </style>

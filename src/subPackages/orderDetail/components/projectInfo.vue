@@ -84,13 +84,13 @@
           :value="item.project_name"
         >
         </van-cell>
-        <van-cell
+        <!-- <van-cell
           title="所属分类"
           title-class="title"
           value-class="value"
           :value="item.category_name"
         >
-        </van-cell>
+        </van-cell> -->
         <van-cell
           title="项目价格"
           title-class="title"
@@ -105,6 +105,13 @@
           :value="item.must_money | moneyFormat"
         >
         </van-cell>
+        <!-- <van-cell
+          title="其他金额"
+          title-class="title"
+          value-class="value"
+          :value="item.other_money | moneyFormat"
+        >
+        </van-cell> -->
       </van-cell-group>
     </template>
   </view>
