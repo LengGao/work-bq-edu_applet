@@ -30,7 +30,7 @@
           </van-radio-group>
         </template>
       </van-cell>
-      <van-cell title="新客户">
+      <van-cell title="新客户" required>
         <template #right-icon>
           <van-radio-group
             :value="formData.is_new"
@@ -218,6 +218,15 @@ export default {
         });
         return;
       }
+
+      if (!this.formData.is_new) {
+        uni.showToast({
+          icon: "none",
+          title: "请选择是否为新客户",
+        });
+        return;
+      }
+
       this.createCrmCustomer(type);
     },
     // 添加标签
@@ -271,8 +280,10 @@ export default {
         this.reloadList();
         setTimeout(() => {
           if (type === 2) {
+          let data = res.data
+          let options = `&userName=${data.surname}&userMobile=${data.mobile}&source=${this.formData.from}&is_new=${this.formData.is_new}`
           uni.redirectTo({
-            url: `/subPackages/customeSignUp/index?userId=${res.data.id}&userName=${res.data.surname}&userMobile=${res.data.mobile}&source=${res.data.from}`,
+            url: `/subPackages/customeSignUp/index?userId=${data.id}${options}`
           });
               
           } else {

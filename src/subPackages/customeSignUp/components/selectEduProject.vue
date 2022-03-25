@@ -145,7 +145,7 @@ export default {
       level_id = 0,
     } = {}) {
       const data = {
-        limit: 9999,
+        limit: 99,
         status: 1,
         type_id,
         school_id,

@@ -88,7 +88,7 @@
       @cancel="datePickerShow = false"
       @confirm="handleDateChange"
       :value="currentDate"
-      :min-date="currentDate"
+      :max-date="currentDate"
     >
     </DatePicker>
 

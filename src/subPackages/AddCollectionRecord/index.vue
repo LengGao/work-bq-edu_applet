@@ -82,8 +82,8 @@
 
     <view class="footer">
       <view class="footer-submit">
-        <van-button round @click="toPrev">上一步</van-button>
-        <van-button round type="primary" :loading="saveLoading" @click="toNext">下一步</van-button>
+        <van-button round @click="toPrev">取消</van-button>
+        <van-button round type="primary" @click="toNext">下一步</van-button>
       </view>
     </view>
 
@@ -156,7 +156,6 @@ export default {
   },
   data() {
     return {
-      saveLoading: false,
       datePickerShow: false,
       yearPickerShow: false,
       currentDate: new Date().getTime(),
@@ -441,6 +440,15 @@ page {
   font-size: @font-size-md;
 }
 
+/deep/.drawer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .payment-plan {
   width: 100%;
   overflow: hidden;
@@ -509,7 +517,6 @@ page {
   }
   
   .footer {
-    position: static;
     margin-top: 100rpx;
 
     &-submit {
@@ -518,8 +525,12 @@ page {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 0 60rpx 60rpx;
+      padding: 0 60rpx;
       background-color: #fff;
+
+      /deep/.van-button {
+        width: 300rpx;
+      }
     }
   }
 }
@@ -528,14 +539,5 @@ page {
   width: 100%;;
   height: 30rpx;
   background-color: @background-color;
-}
-
-/deep/.drawer {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  overflow: hidden;
 }
 </style>

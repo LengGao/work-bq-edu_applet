@@ -390,7 +390,7 @@ export default {
         url: `${url}${params}`,
         events: {
           updateData() {
-            console.log("tex updateData");
+            console.log("tex  ");
             _this.getCrmOrderDetail(true)
             _this.getOrderTransactionList();
           }
