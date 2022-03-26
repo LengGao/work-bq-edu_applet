@@ -209,3 +209,12 @@ export function payLogCreate(data) {
         data
     })
 }
+
+// 订单申请异动
+export function orderReshuffle(data) {
+    return http.request({
+        url: '/CrmOrder/reshuffle',
+        method: 'post',
+        data
+    })
+}

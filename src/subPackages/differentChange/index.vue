@@ -1,0 +1,234 @@
+<template>
+  <view class="different-change">
+    <van-tabs
+      animated
+      type="line"
+      color="#199fff"
+      title-active-color="#199fff"
+      tab-class="custom-tab"
+      :active="active"
+    >
+      <van-tab title="基本信息">
+        <CustomInfo
+            v-if="formData.order_id"
+            :data="formData" 
+            @input-blur="modifyUserInfo"
+            @dynamic-input="dynamicInput"
+        />
+      </van-tab>
+      <van-tab title="回款计划">
+        <ConfigPlan 
+            v-if="formData.pay_plan && formData.pay_plan.length > 0"
+            :list="formData.pay_plan"
+            @dynamic-input="dynamicInput"
+        />
+      </van-tab>
+      <van-tab title="回款记录">
+        <PlanInfo 
+            v-if="formData.pay_log && formData.pay_plan.length > 0"
+            :info="formData.pay_log"
+            :paylist="formData.pay_plan"
+            @dynamic-input="dynamicInput"
+        />
+      </van-tab>
+    </van-tabs>
+
+    <view class="footer" >
+      <view class="tags" v-if="action === 2" >
+        * 回款时必须保证回款金额等于所选回款计划的总金额，如不相等请先修改回款计划
+      </view>
+
+      <view class="footer-submit">
+        <van-button round @click.native="handleCancel">取消</van-button>
+        <van-button round type="primary" :loading="saveLoading" @click.native="handleSave">保存</van-button>
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+import CustomInfo from "./compents/customInfo.vue";
+import ConfigPlan from "./compents/configPlan.vue";
+import PlanInfo from "./compents/planInfo.vue";
+import { getCrmOrderDetail, orderReshuffle } from '@/api/order';
+import { mapGetters } from "vuex";
+
+export default {
+  components: {
+    CustomInfo,
+    ConfigPlan,
+    PlanInfo,
+  },
+  computed: {
+    ...mapGetters(["expenseType"]),
+  },
+  data() {
+    return {
+      active: 0,
+      formData: {},
+    };
+  },
+  onLoad(query) {
+      let order_id = query.order_id || 28881
+      this.getCrmOrderDetail(order_id)
+  },
+  methods: {
+    //  入户如
+    modifyUserInfo(newData) {
+        let data = { ...this.formData, ...newData }
+        this.formData = data
+    },
+    modifyPlanInfo() {
+
+    },
+    // 金额 等冬天输入
+    dynamicInput(key, val, index) {
+        if (key === 'projectData') {
+            this.formData.projectData[index].pay_money = val
+        } else if (key === 'planRecond') {
+            let _data = this.formData.pay_log[index] 
+            console.log("planRecond", _data, val);
+            _data = { ..._data, ...val }
+            this.formData.pay_log[index] = _data
+        } else if (key === 'configPlan') {
+            if (!Array.isArray(val)) {
+                let _data = this.formData.pay_plan[index] 
+                _data = { ..._data, ...val }
+                this.formData.pay_plan[index] = _data
+                this.formData.pay_plan = _data
+            } else {
+                this.formData.pay_plan = val
+            }
+            console.log("configPlan", _data, val);
+        }
+    },
+    handleTabClick() {},
+    // 取消 
+    handleCancel() { 
+        uni.navigateBack() 
+    },    
+    // 保存
+    resolveDataLos() {
+        
+    },
+    // 处理详情接口返回的项目数据
+    resolveProjectData(projectData) {
+        projectData = JSON.parse(projectData)
+        if (projectData && projectData.length) {
+            let _projectData = projectData.map(item => {
+                item.price = item.project_price
+                return item
+            })
+            return _projectData
+        } 
+        return []
+    },
+    // 处理
+    resolvePlanlog(planLog = [], payPlan = []) {
+        let types = this.expenseType, cacheName = '', cacheIndex = []
+
+        payPlan = payPlan.map(item => {
+            item.name = types[item.type]
+            return item
+        })
+        
+        planLog = planLog .map(item => {
+            let pay_plan_ids = item.pay_plan_id.split(',') || []
+
+            payPlan.map((plan, i) => {
+                let id = String(plan.id)
+                if (pay_plan_ids.indexOf(id) !== -1) {
+                    cacheName += cacheName ? `,${plan.name}` : plan.name
+                    cacheIndex.push(i)
+                }
+            })
+
+            item.planCheckedName = cacheName
+            item.planCheckedIndex = cacheIndex
+            console.log("planCheckedIndex", item.planCheckedIndex);
+            
+            item.receipt_file = item.receipt_file.map((file, index) => {
+                return { name:  "回款凭证" + (index + 1), url: file }
+            })
+
+            return item
+        })
+
+        return { planLog, payPlan }
+    },
+    // 确定
+    async handleSave() {
+        let formData = this.formData, param = {}
+        console.log("formDta", formData);
+        let res =  await orderReshuffle(param)
+    },
+    // 获取订单详情
+    async getCrmOrderDetail(order_id) {
+        let params = { order_id: order_id }
+        let res = await getCrmOrderDetail(params).catch(() => {})
+        let data = res.data
+        if (res.code == 0) {
+            let _data = Object.assign(
+                data,
+                {
+                    union_staff_id: (data.union_staff_id || []).join(','),
+                    source: data.source || "",
+                    type: data.type || 0,
+                }
+            )
+            _data.projectData = this.resolveProjectData(data.project)
+
+            let plan = this.resolvePlanlog(data.pay_log, data.pay_plan)
+
+            _data.pay_log = plan.planLog
+            _data.pay_plan = plan.payPlan
+
+            this.formData = _data
+            console.log("request:", this.formData, data);
+        }
+    },    
+  },
+};
+</script>
+
+<style lang="less" scoped>
+@import "@/styles/var";
+
+.different-change {
+    position: static;
+    width: 100%;
+    overflow: hidden;
+
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 999;
+        
+        .tags {
+            padding: 20rpx;
+            margin: 0 40rpx;
+            font-size: 24rpx;
+            color: #ff4b4b;
+            border: @border;
+        }
+
+        &-submit {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 40rpx;
+            padding: 0 60rpx 20rpx;
+            background-color: #fff;
+        }
+
+        /deep/.van-button {
+            width: 300rpx;
+        }
+    }
+
+}
+</style>

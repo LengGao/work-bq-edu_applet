@@ -116,6 +116,10 @@ export default {
     placeholder: {
       type: String,
       default: '请输入搜索关键词'
+    },
+    other: {
+        type: String,
+        default: ''
     }
   },
   data() {
@@ -132,13 +136,18 @@ export default {
   watch: {
     value: {
       handler(val) {
-        console.log('检测', val);
         // 多选回显
+        console.log('检测', val);
         if (Array.isArray(val) && val.length) {
-          this.checkedValue = val.map((item) => item[this.optionValue] + "");
-          this.prevCheckedValue = val.map(
-            (item) => item[this.optionValue] + ""
-          );
+            if (this.other === 'plan') {
+                this.checkedValue = val.map(item => item + '')
+                this.prevCheckedValue = val.map(item => item + '')
+            } else {
+                this.checkedValue = val.map((item) => item[this.optionValue] + "");
+                this.prevCheckedValue = val.map(
+                    (item) => item[this.optionValue] + ""
+                );
+            }
         }
       },
       immediate: true,
