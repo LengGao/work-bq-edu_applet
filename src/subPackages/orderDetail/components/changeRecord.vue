@@ -49,7 +49,7 @@
       v-for="(item, index) in data.pay_log"
       :key="index"
     >
-      <van-cell :title="`${item.pay_date} 回款`" title-class="title" />
+      <van-cell :title="`${item.pay_date} 回款`" title-class="bold-title" />
       <van-cell :border="false">
         <template #title>
           <text class="title">回款金额</text>
@@ -130,7 +130,7 @@
         <van-cell>
           <template #title>
             <!-- <text class="value">第{{ index + 1 }}期</text> -->
-            <text class="value">{{ expenseType[item.type] }} ( {{ item.year }} )</text>
+            <text class="bold-title">{{ expenseType[item.type] }} ( {{ item.year }} )</text>
             <text class="title">计划 {{ item.day }} 回款</text>
           </template>
         </van-cell>
@@ -241,6 +241,14 @@ export default {
   /deep/.center {
     text-align: center;
     color: #ccc;
+  }
+  /deep/.bold-title {
+    flex: inherit;
+    flex-shrink: 0;
+    font-size: @font-size-sm;
+    color: @text-color;
+    font-weight: 700;
+    margin-right: 20rpx;
   }
 }
 </style>
