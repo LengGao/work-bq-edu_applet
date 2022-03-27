@@ -69,10 +69,13 @@ export default {
     return {
       active: 0,
       formData: {},
+      eventChannel: ''
     };
   },
   onLoad(query) {
       let order_id = query.order_id || 28890
+      const eventChannel = this.getOpenerEventChannel()
+      this.eventChannel = eventChannel
       this.getCrmOrderDetail(order_id)
   },
   methods: {
@@ -183,8 +186,10 @@ export default {
         if (this.validator(param)) {
           let res =  await orderReshuffle(param)
           if (res.code === 0) {
-            uni.navigateBack({})
             uni.showToast({ icon: 'none', title: '申请成功' })
+            uni.navigateBack().then(() => {
+              this.eventChannel.emit('updateData', {})
+            })
           }
         }
     },

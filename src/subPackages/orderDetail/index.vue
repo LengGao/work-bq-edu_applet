@@ -501,6 +501,7 @@ export default {
       this.rejectReason = "";
     },
     handleTabbarChange({ detail }) {
+      let _this = this
       const {
         order_no,
         create_time,
@@ -552,7 +553,15 @@ export default {
           });
           break;
           case "8": 
-          uni.navigateTo({ url: `/subPackages/differentChange/index?order_id=${order_id}`})
+          uni.navigateTo({ 
+            url: `/subPackages/differentChange/index?order_id=${order_id}`,
+            events: {
+              updateData() {
+                _this.getCrmOrderDetail(true)
+                _this.getOrderTransactionList();
+              }
+            }
+          })
           break;
       }
     },
