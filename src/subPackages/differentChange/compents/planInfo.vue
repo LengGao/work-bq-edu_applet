@@ -183,13 +183,15 @@ export default {
       item.planCheckedName = `${names[0]} (${names.length})` 
       item.planCheckedIndex = indexs
       item.pay_plan_id = ids
-      this.data[currentIndex] = item
+      this.data[index] = item
       this.$emit('dynamic-input', 'planRecond', { pay_plan_id: ids }, index)
     },
     // 回款日期
     handleDateChange(day) {
       this.datePickerShow = false;
-      this.formData.pay_day = day;
+      let item = this.currentItem, index = this.currentIndex
+      item.pay_date = day
+      this.data[index] = item
       this.$emit('dynamic-input', 'planRecond', { pay_date: day }, index)
     },
     handleCancel() {
@@ -259,8 +261,6 @@ export default {
       let _data = this.data[index].receipt_file
       _data.splice(detail.index, 1)
       this.data[index].receipt_file = _data
-      console.log("dal");
-      this.data = this.data    
       this.$emit('dynamic-input', 'planRecond', { receipt_file: _data }, index)
     },
     // 上传凭证

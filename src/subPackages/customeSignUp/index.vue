@@ -575,8 +575,4 @@ page {
   font-size: @font-size-md;
 }
 
-/deep/.super-input {
-
-}
-
 </style>

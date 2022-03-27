@@ -94,8 +94,9 @@
         "
       />
       <van-cell
-        title="订单来源"
+        required
         is-link
+        title="订单来源"
         title-width="200rpx"
         :value="formData.source || '请选择'"
         @click="openSheet('fromOptions')"
@@ -114,8 +115,8 @@
             :value="formData.online_course" 
             @change="({ detail }) => (formData.online_course = detail)"
           >
-            <van-radio name="1">是</van-radio>
-            <van-radio name="0">否</van-radio>
+            <van-radio :name="1">是</van-radio>
+            <van-radio :name="0">否</van-radio>
           </van-radio-group>
         </template>
       </van-cell>
@@ -169,12 +170,12 @@
             :cursor-spacing="1"
             :value="item.must_money"
             :label="`${item.project_name}-实收金额`"
-            @input="({ detail }) => (formData.projectData[index].must_money = detail)"
             @blur="({ detail }) => 
               detail.value !== item.must_money && 
               $emit('dynamic-input', 'projectData', detail.value, index)
             "
           />
+          <!-- @input="({ detail }) => (formData.projectData[index].must_money = detail)" -->
         </view>
       </template>
 
@@ -219,8 +220,12 @@
             confirm-type=“确定”
             :value="item.must_money"
             :label="`${item.major_name || item.major.value  }-实收金额`"
-            @input="({ detail }) => (formData.projectData[index].must_money = detail)"
+            @blur="({ detail }) => 
+              detail.value !== item.must_money && 
+              $emit('dynamic-input', 'projectData', detail.value, index)
+            "
           />
+          <!-- @input="({ detail }) => (formData.projectData[index].must_money = detail)" -->
         </view>
       </template>
 

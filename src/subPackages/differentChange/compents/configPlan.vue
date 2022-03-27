@@ -175,7 +175,7 @@ export default {
       let val = detail.value
       item.money = val
       this.payList[index] = item
-      this.$emit('dynamic-input', 'planRecond', {money: val}, index)
+      this.$emit('dynamic-input', 'configPlan', {money: val}, index)
     },
     // 多选 新增 删除 更新 diff
     handleChecked({ detail }) {
