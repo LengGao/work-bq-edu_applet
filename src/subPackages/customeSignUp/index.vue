@@ -297,6 +297,7 @@ export default {
   },
   onLoad(query) {
     console.log("customeSignUp:", query);
+    
     this.formData.id = query.userId;
     this.formData.surname = query.userName;
     this.formData.mobile = query.userMobile;
@@ -308,15 +309,16 @@ export default {
     // 打开选择客户回款日期、支付方式
     openSheet(key) {
       this.sheetChecked = key;
-      this.sheetShow = true; 
       if (key === 'gradeOptions') {
         if (!this.formData.projectData.length) {
           uni.showToast({ icon: "none", title: "请先选择项目" });
           return undefined;
         } else if (this.formData.type == 0) {
+          this.sheetShow = true; 
           return undefined;
         }
       }
+      this.sheetShow = true; 
       this.sheetActions = this[key];
     },
     onSheetSelect({ detail }) {

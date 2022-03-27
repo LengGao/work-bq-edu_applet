@@ -70,7 +70,7 @@ export default {
     };
   },
   onLoad(query) {
-      let order_id = query.order_id || 28881
+      let order_id = query.order_id || 28890
       this.getCrmOrderDetail(order_id)
   },
   methods: {
@@ -117,7 +117,7 @@ export default {
         projectData = JSON.parse(projectData)
         if (projectData && projectData.length) {
             let _projectData = projectData.map(item => {
-                item.price = item.project_price
+                item.price = item.project_price || item.total_money
                 return item
             })
             return _projectData
@@ -159,9 +159,21 @@ export default {
     },
     // 确定
     async handleSave() {
-        let formData = this.formData, param = {}
+        let formData = this.formData
         console.log("formDta", formData);
+        let param = {
+          ...formData,
+          pay_plan: formData.pay_plan,
+          pay_log: formData.pay_log,
+          project: JSON.stringify(formData.projectData)
+        }
+
         let res =  await orderReshuffle(param)
+        if (res.code === 0) {
+          uni.showToast({ icon: 'none', title: '申请成功' })
+          uni.navigateBack()
+        }
+
     },
     // 获取订单详情
     async getCrmOrderDetail(order_id) {
@@ -172,7 +184,7 @@ export default {
             let _data = Object.assign(
                 data,
                 {
-                    union_staff_id: (data.union_staff_id || []).join(','),
+                    union_staff_id: data.union_staff_id,
                     source: data.source || "",
                     type: data.type || 0,
                 }

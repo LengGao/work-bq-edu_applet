@@ -11,8 +11,7 @@
       <view class="select-project-header">
         <view>已选项目数：{{ checkedValue.length }}</view>
         <view class="back-level" v-if="optionsLevel" @click="handleBackLevel">
-          返回上一级</view
-        >
+          返回上一级</view>
       </view>
       <view class="select-project-container">
         <van-checkbox-group :value="checkedValue" @change="onChange">
@@ -85,6 +84,14 @@ export default {
       type: [String, Number],
       default: 1,
     },
+    auto: {
+      type: Boolean,
+      default: false
+    },
+    autoData: {
+      type: Array,
+      default: []
+    }
   },
   data() {
     return {
@@ -98,6 +105,9 @@ export default {
   created() {
     this.getUniversityMajorDetailList();
   },
+  mounted() {
+    // let data = this.autoData
+  },
   methods: {
     resset() {
       this.checkedValue = [];
@@ -106,7 +116,7 @@ export default {
     handleBackLevel() {
       this.projectOptions = this.cacheListMap[--this.optionsLevel];
     },
-    handleNextLevel(data) {
+    handleNextLevel(data) {      
       this.cacheListMap[this.optionsLevel] = [...this.projectOptions];
       this.getUniversityMajorDetailList(data);
       this.optionsLevel++;
@@ -157,6 +167,7 @@ export default {
   },
 };
 </script>
+
 
 <style lang="less" scoped>
 @import "@/styles/var";

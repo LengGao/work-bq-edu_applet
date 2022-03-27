@@ -45,7 +45,6 @@
         :value="formData.id_card_number"
         @blur="
           ({ detail }) =>
-            detail.value !== formData.id_card_number &&
             $emit('input-blur', { id_card_number: detail.value })
         "
       />
@@ -95,16 +94,8 @@
 
     <van-cell-group custom-class="group-cell">
       <van-cell title="报名类型" title-class="label" value-class="input">
-        <template #right-icon>
-          <van-radio-group
-            direction="horizontal"
-            :value="formData.type"
-            @change="handleTypeChange"
-          >
-            <van-radio :name="0" label-class="input">职业教育</van-radio>
-            <van-radio :name="1" label-clas="input">学历教育</van-radio>
-          </van-radio-group>
-        </template>
+        <text v-if="formData.type == 0">职业教育</text>
+        <text v-else>学历教育</text>
       </van-cell>
       
       <template v-if="formData.type == 0">
@@ -147,11 +138,11 @@
             placeholder="请输入实收金额"
             :adjust-position="undefined"
             :cursor-spacing="1"
-            :value="item.pay_money"
+            :value="item.must_money"
             :label="`${item.project_name}-实收金额`"
-            @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
+            @input="({ detail }) => (formData.projectData[index].must_money = detail)"
             @blur="({ detail }) => 
-              detail.value !== item.pay_money && 
+              detail.value !== item.must_money && 
               $emit('dynamic-input', 'projectData', detail.value, index)
             "
           />
@@ -173,7 +164,7 @@
           is-link
           title="届别名称"
           title-width="200rpx"
-          :value="gradeCheckedName || '请选择'"
+          :value="formData.jiebie_name || '请选择'"
           @click="openSheet('gradeOptions')"
         />
 
@@ -197,9 +188,9 @@
             input-align="right"
             title-width="400rpx"
             confirm-type=“确定”
-            :value="item.pay_money"
-            :label="`${item.project_name}-实收金额`"
-            @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
+            :value="item.must_money"
+            :label="`${item.major_name || item.major.value  }-实收金额`"
+            @input="({ detail }) => (formData.projectData[index].must_money = detail)"
           />
         </view>
       </template>
@@ -242,13 +233,17 @@
     />
 
     <SelectProject
+      v-if="formData.type == 0"
       :show="selectProjectShow"
       @close="selectProjectShow = false"
       @confirm="handleSelectProjectChange"
       ref="selectProject"
+      :auto="true"
+      :autoData="formData.projectData"
     />
 
     <SelectEduProject
+      v-if="formData.type == 1"
       ref="selectEduProject"
       :show="selectEduProjectShow"
       @close="selectEduProjectShow = false"
@@ -324,13 +319,13 @@ export default {
     ...mapGetters(["staffOptions", "payTypeOptions", 'gradeOptions', 'fromOptions']),
   },
   mounted() {
-    console.log("2", this.data);
+    console.log("1", this.data);
     this.formData = this.data
-    
     this.resolveSaffData(this.data)
   },
   methods: {
     resolveSaffData(data) {
+      // 处理 业绩共i相认
       let saffName = data.staff_name || '',
           staffId = data.union_staff_id || ''
       let list_1 = saffName.split(',')
@@ -346,19 +341,29 @@ export default {
         this.currentStaffs = current
         this.handleSelectChange(current)
       }
+
+      // 处理当前项目
+      let checkedProjectName = data.project
+      let _checkedProjectName = JSON.parse(checkedProjectName) || []
+      if (data.type == 0) {
+        this.checkedProjectName =  _checkedProjectName.map(item => item.project_name).join(',')
+      } else {
+        this.checkedProjectName =  _checkedProjectName.map(item => item.major.value).join(',')
+      }
     },
     // 打开选择客户回款日期、支付方式
     openSheet(key) {
       this.sheetChecked = key;
-      this.sheetShow = true; 
       if (key === 'gradeOptions') {
         if (this.formData.projectData && !this.formData.projectData.length) {
           uni.showToast({ icon: "none", title: "请先选择项目" });
           return undefined;
         } else if (this.formData.type == 0) {
+          this.sheetShow = true; 
           return undefined;
         }
       }
+      this.sheetShow = true;
       this.sheetActions = this[key];
     },
     onSheetSelect({ detail }) {
@@ -398,16 +403,15 @@ export default {
     // 选择学历项目
     handleSelectEduProjectChange(project = []) {
       this.checkedProjectName = project.map((item) => {
-        return `${item.school_name}-${item.level_name}-${item.major_name}`
+        return `${item.major_name}`
       }).join(",")
   
       let _project = project.map(item => {
-        item.pay_money = ''
+        item.must_money = ''
         return item
       })
       
       this.formData.projectData = _project
-      
       this.selectEduProjectShow = false;
       this.$emit('input-blur', { projectData: _project })
     },
@@ -416,7 +420,7 @@ export default {
       let idStr = project.map(item => item.value).join(',')
       this.checkedProjectName = project.map(item => item.name).join(',')
       this.selectProjectShow = false;
-      this.getCateProjectDetail(idStr);x
+      this.getCateProjectDetail(idStr);
     },
     // 选择业绩共享人
     handleSelectChange(checked) {
@@ -452,6 +456,7 @@ export default {
 
       this.validate(validator, callback)
     },
+    // 表单校验
     validate(arr, cb) {
       for (const item of arr) {
         if (!this.formData[item.key]) {
@@ -472,9 +477,9 @@ export default {
         }
         if (item.key === 'projectData') {
           this.formData[item.key].forEach(ele => {
-            if (!ele.pay_money) {
+            if (!ele.must_money) {
               uni.showToast({ icon: 'none', title: `请输入 ${item.project_name} 的实收金额` })
-              throw new Error("pay_money is null");
+              throw new Error("must_money is null");
             }
           })
         }
@@ -482,6 +487,8 @@ export default {
       
       if (cb) cb();
     },
+
+    // 获取传递参数
     getParams() {
       let formData = this.formData,
       data = {
@@ -502,7 +509,7 @@ export default {
       };
 
       data.project = formData.projectData.map((item) => {
-        data.project_pay_money[item.id] = item.pay_money;
+        data.project_pay_money[item.id] = item.must_money;
         return item.id;
       })
 
@@ -525,7 +532,7 @@ export default {
 
       if (res.code === 0) {
         let _project = res.data.map(item => {
-          item.pay_money = ''
+          item.must_money = ''
           return item
         });
         

@@ -7,7 +7,7 @@
         required
         title-class="label"
         value-class="input"
-        :value="item.pay_day || '请选择'"
+        :value="item.pay_date || '请选择'"
         @click="handleDataSelect(item, index)"
       />
 

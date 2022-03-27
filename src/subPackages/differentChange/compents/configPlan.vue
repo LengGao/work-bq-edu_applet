@@ -125,7 +125,7 @@ export default {
     };
   },
   mounted() {
-    console.log("1", this.data);
+    console.log("2", this.data);
     this.payList = this.list
     let cacheType = []
      this.list.filter(item => {

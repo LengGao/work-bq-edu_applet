@@ -60,6 +60,14 @@ export default {
       type: [String, Number],
       default: 1,
     },
+    auto: {
+      type: Boolean,
+      default: false
+    },
+    autoData: {
+      type: Array,
+      default: []
+    }
   },
   data() {
     return {
@@ -72,6 +80,19 @@ export default {
   },
   created() {
     this.getCateProjectOption();
+  },
+  mounted() {
+    console.log("prject mounted", this.auto, this.autoData);
+  },
+  watch: {
+    'autoData': function (newVal) {
+      console.log("prject autoData", newVal, this.checkedValue, this.projectOptions);
+      if (newVal && newVal.length > 0) {
+        this.checkedValue = newVal.map(item => {
+          return `${item.project_name},${item.id}`
+        })
+      }
+    }
   },
   methods: {
     resset() {
@@ -90,6 +111,7 @@ export default {
       this.checkedValue.splice(index, 1);
     },
     onChange({ detail }) {
+      console.log("project checked ", this.checkedValue);
       this.checkedValue = detail;
     },
     handleConfirm() {
