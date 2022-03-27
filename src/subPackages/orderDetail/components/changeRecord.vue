@@ -60,8 +60,8 @@
       </van-cell>
       <van-cell :border="false">
         <template #title>
-          <text class="title">关联期次</text>
-          <text class="value">{{ item.pay_plan_sort || "无" }}</text>
+          <text class="title">回款计划</text>
+          <text class="value">{{ item.relation_plan || "无" }}</text>
         </template>
         <text class="title">入账状态</text>
         <text class="value">{{
@@ -100,7 +100,7 @@
           title-class="title"
           value-class="value"
           title="项目价格"
-          :value="item.project_price | moneyFormat"
+          :value="item.total_money | moneyFormat"
         >
         </van-cell>
       </van-cell-group>
@@ -129,7 +129,8 @@
       >
         <van-cell>
           <template #title>
-            <text class="value">第{{ index + 1 }}期</text>
+            <!-- <text class="value">第{{ index + 1 }}期</text> -->
+            <text class="value">{{ expenseType[item.type] }} ( {{ item.year }} )</text>
             <text class="title">计划 {{ item.day }} 回款</text>
           </template>
         </van-cell>
@@ -165,6 +166,7 @@
 
 <script>
 import Title from "@/components/title/index.vue";
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -179,6 +181,9 @@ export default {
   },
   components: {
     Title,
+  },
+  computed: {
+    ...mapGetters(['expenseType'])
   },
   data() {
     return {
