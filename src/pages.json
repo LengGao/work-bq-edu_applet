@@ -171,23 +171,16 @@
 					}
 				},
 				{
-					"path": "AddCollectionPlan/index",
+					"path": "customeAddPayPlan/index",
 					"style": {
 						"navigationBarTitleText": "配置回款计划",
 						"usingComponents": {}
 					}
 				},
 				{
-					"path": "AddCollectionRecord/index",
+					"path": "customeAddPayRecord/index",
 					"style": {
 						"navigationBarTitleText": "添加回款记录",
-						"usingComponents": {}
-					}
-				},
-				{
-					"path": "AddCollectionMessage/index",
-					"style": {
-						"navigationBarTitleText": "添加回款信息",
 						"usingComponents": {}
 					}
 				},
@@ -220,7 +213,7 @@
 					}
 				}, 
 				{
-					"path": "paymentPlan/index",
+					"path": "customeSignPayPlan/index",
 					"style": {
 						"navigationBarTitleText": "配置回款计划",
 						"usingComponents": {
@@ -228,7 +221,7 @@
 					}
 				}, 
 				{
-					"path": "signSubmit/index",
+					"path": "customeSignPayRecond/index",
 					"style": {
 						"navigationBarTitleText": "回款信息",
 						"usingComponents": {

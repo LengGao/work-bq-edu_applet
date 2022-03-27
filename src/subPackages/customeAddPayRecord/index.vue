@@ -73,7 +73,7 @@
             label-class="label-class"
             input-class="input-class"
             :value="item.money"
-            @input="(e) => handleInputMoney(e, index, item)"
+            @input="({ detail }) => handleInputMoney(detail, index, item)"
           />
         </view>  
 
@@ -83,7 +83,7 @@
     <view class="footer">
       <view class="footer-submit">
         <van-button round @click="toPrev">取消</van-button>
-        <van-button round type="primary" :loading="saveLoading" @click="toNext">确定</van-button>
+        <van-button round type="primary" @click="toNext">下一步</van-button>
       </view>
     </view>
 
@@ -102,12 +102,38 @@
       :value="currentDate"
       :min-date="currentDate"
     />
+
+    <van-action-sheet
+      :show="sheetShow"
+      :actions="sheetActions"
+      @close="sheetShow = false"
+      @select="onSheetSelect"
+    />
+
+    <van-popup
+      :show="popupShow"
+      position="right"
+      custom-class="drawer"
+      @close="popupShow = false"
+    >
+      <view class="drawer-content">
+        <AddPayMessage
+          v-if="popupShow"
+          :orderId="formData.order_id"
+          :payList="payList"
+          @cancel="handleDrawerReset"
+          @confirm="handleDrawerConfirm"
+        />
+      </view>
+    </van-popup>
+    
   </view>
 </template>
 
 <script>
 import Title from "@/components/title/index2";
 import DatePicker from "@/components/datePicker/index.vue";
+import { AddPayMessage } from "./components/AddPayMessage"
 import { getPlanTypeList, createOrderPayPlan } from '@/api/order'
 import { getPlanYearOptions, currentYear } from "@/utils/date"
 
@@ -115,89 +141,39 @@ export default {
   components: {
     Title,
     DatePicker,
+    AddPayMessage
   },
   data() {
     return {
-      saveLoading: false,
       datePickerShow: false,
       yearPickerShow: false,
       currentDate: new Date().getTime(),
       sheetActions: [],
       expenseType: {},
-      // 提交表单
-      formData: {
-        type: [],
-        payList: [],
-      },
-      order_id: '',
       // 年份
       planYearOptions: [],
       // 多项列表
       currentCheckeds: [],
       prevCheckeds: [],
+      formData: {
+        order_id: '',
+      },
       payList: [],
       currentItem: {},
       currentIndex: 0,
-      eventChannel: ''
+      eventChannel: '',
+      popupShow: false,
     };
   },
   onLoad(query) {
-    this.order_id = query.orderId
+    this.formData.order_id = query.orderId    
     const eventChannel = this.getOpenerEventChannel()
     this.eventChannel = eventChannel
-    console.log("paymentPlan", query, eventChannel);
     this.getPlanTypeList()
     this.getPlanYearOptions()
   },
   methods: {
-    // 上一步
-    toPrev() {
-        uni.navigateBack()
-    },
-   toNext() {
-      let payList = this.payList.map(item => {
-        return {
-          type: item.type,
-          day: item.day,
-          year: item.year,
-          money: item.money
-        }
-      })
-      let data = {
-          data: JSON.stringify(payList),
-          order_id: this.order_id
-        }
-      let _this = this
-      
-        this.validator(
-          [
-            {
-              fileld: "year",
-              message: '请选择年份'
-            },
-            {
-              fileld: "day",
-              message: '请选择日期'
-            },
-            {
-              fileld: "money",
-              message: '请输入回款金额'
-            }
-          ],
-          async () => {
-            const res = await createOrderPayPlan(data).catch(() => {})
-            if (res.code == 0) {
-              uni.showToast({ icon: 'none', title: '创建成功' })
-              uni.navigateBack({
-                success() {
-                  _this.eventChannel.emit('updateData', {})
-                }
-              })
-            }
-          }
-        )
-    },
-    openPicker(key, index, item) {      
+    openPicker(key, index, item) {
       if (key == 'date') {
         this.datePickerShow = true
         this.currentItem = item
@@ -218,7 +194,6 @@ export default {
     },
     // 回款日期选择
     handleDateChange(val) {
-      // console.log("currentDate", val, this.currentDate);
       let payList = this.payList, index = this.currentIndex
       this.currentItem.day = val
       this.datePickerShow = false
@@ -226,13 +201,26 @@ export default {
       this.payList = payList
     },
     // 实收金额输入
-    handleInputMoney(e, index, item) {
-      // console.log('handleInputMone',e, index, item);
-      let val = e.detail
+    handleInputMoney(val, index, item) {
       item.money = val
       this.payList[index] = item
     },
-    
+    // 多选 新增 删除 更新 diff
+    handleChecked({ detail }) {
+      let prev = this.currentCheckeds,
+          curr = detail,
+          isAdd = prev.length < curr.length,
+          isDel = prev.length > curr.length,
+          list  = [];
+          
+      if (isAdd) {
+        list = this.handleAdd(prev, curr)
+      } else if (isDel) {
+        list = this.handleDel(prev, curr)
+      }
+      this.payList = list
+      this.currentCheckeds = curr
+    },
     // 添加逻辑
     handleAdd(prev, curr) {
       let type = ''
@@ -253,6 +241,16 @@ export default {
       }
       return this.handleReplace('del', type)
     },
+    // 复制
+    handleCopy(type, index) {
+      let item = this.creataItem(type, index)
+      this.payList.splice(index + 1, 0, item)
+    },
+    // 删除
+    handleDelete(index) {
+      this.payList.splice(index, 1)
+      this.checkPayList()
+    },
     // 更新列表
     handleReplace(action ,type) {
       let payList = this.payList
@@ -270,14 +268,23 @@ export default {
 
       return payList;
     },
-    // 从后找，目的要插在后面
-    handleFindLast(arr, callback) {
-      for(let i = arr.length - 1; i >= 0; i--) {
-        if (callback(arr[i], i, arr)) {
-          return i;
-        }
+    // 构造插入对象
+    creataItem(type, index) {
+      let typs = this.expenseType, 
+          _currentYear = currentYear,
+          payList = this.payList, 
+          len = payList.length, 
+          lastItem = payList[len -1],
+          startId = 0
+
+      if (index == -1) {
+        startId = lastItem ? (lastItem.id / 100) + 1 : 100
+      } else {
+        let lastindex = this.handleFindLast(payList, (item) => item.type = type)
+        startId = (+payList[lastindex].id) + 1
       }
-      return -1
+
+      return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
     },
     // 检查选中状态
     checkPayList() {
@@ -286,58 +293,69 @@ export default {
           filter = payList.filter(item => curr.includes(item.type)).map(item => item.type)
       this.currentCheckeds = Array.from(new Set(filter))
     },
-    // 多选
-    handleChecked({ detail }) {
-      // console.log("detail", detail);
-      let prev = this.currentCheckeds,
-          curr = detail,
-          isAdd = prev.length < curr.length,
-          isDel = prev.length > curr.length,
-          list  = [];
-          
-      if (isAdd) {
-        list = this.handleAdd(prev, curr)
-      } else if (isDel) {
-        list = this.handleDel(prev, curr)
+    // 从后找，目的要插在后面
+    handleFindLast(arr, callback) {
+      for(let i = arr.length - 1; i >= 0; i--) {
+        if (callback(arr[i], i)) {
+          return i;
+        }
       }
-      this.payList = list
-      this.currentCheckeds = curr
+      return -1
     },
-    // 复制
-    handleCopy(type, index) {
-      let item = this.creataItem(type, index)
-      this.payList.splice(index + 1, 0, item)
+    // 上一步 下一步
+    toPrev() {
+        uni.navigateBack()
     },
-    // 删除
-    handleDelete(index) {
-      this.payList.splice(index, 1)
-      this.checkPayList()
+    toNext() {
+      let payList = this.payList
+      let planParam = payList.map(item => ({ type: item.type, day: item.day, year: item.year, money: item.money }))
+      let data = {
+        order_id: this.order_id,
+        data: JSON.stringify(planParam)
+      }
+      let validator = [
+        { fileld: "year", message: '请选择年份' },
+        { fileld: "day", message: '请选择日期' },
+        { fileld: "money", message: '请输入回款金额' }
+      ]
+      const callback = async () => {
+        const res = await createOrderPayPlan(data).catch(() => {})
+        if (res.code == 0) {
+          this.popupShow = true
+        }
+      }
+      this.validate(validator, callback)
     },
-    // 构造插入对象
-    creataItem(type, index) {
-      let typs = this.expenseType, _currentYear = currentYear
-      let payList = this.payList, len = payList.length
-      let startId = ''
-      if (index == -1) {
-        startId = `${type}-${len + 100}`
+    // 校验
+    validate(err, callback) {
+      let payList = this.payList, flag = true
+      if (payList.length > 0) {
+        payList.forEach(item => {
+          err.forEach(eitem => {
+            if (!item[eitem.fileld] && item[eitem.fileld].length == 0) {
+              uni.showToast({ icon: 'none', title: eitem.message })
+              flag = false
+            }
+          })
+        })
       } else {
-        let lastindex = this.handleFindLast(payList, (item) => item.type = type)
-        let ids = payList[lastindex].id.split('-')     
-        startId = `${ids[0]}-${Number(ids[1]) + 1}`
+        uni.showToast({ icon: "none", title: '请配置回款计划' })
+        flag = false
       }
 
-      return  {
-        id: startId, 
-        type, 
-        name: typs[type],
-        year: _currentYear,
-        day: '', 
-        money: '',
-      }
+      if (flag && callback) callback();
     },
-    // 冒泡
-    bubbling(arr) {
-        return arr.sort((a, b) => a.id - b.id)
+    // 取消记录创建
+    handleDrawerReset() {
+      this.popupShow = false
+    },
+    // 创建订单记录
+    async handleDrawerConfirm() {
+      this.popupShow = false
+      uni.showToast({ icon: 'none', title: '创建成功' })
+      uni.navigateBack().then(() => {
+        this.eventChannel.emit('updateData', {})
+      })
     },
     // 获取年份
     getPlanYearOptions() {
@@ -348,34 +366,6 @@ export default {
     async getPlanTypeList() {
       let res = await getPlanTypeList().catch(() => {})
       this.expenseType = res.data
-    },
-
-    validator(err, callback) {
-      let payList = this.payList, flag = true
-      if (payList.length > 0) {
-        payList.forEach(item => {
-          err.forEach(eitem => {
-            if (!item[eitem.fileld] && item[eitem.fileld].length == 0) {
-              uni.showToast({
-                icon: 'none',
-                title: eitem.message
-              })
-              flag = false
-            }
-          })
-        })
-      } else {
-        uni.showToast({
-          icon: "none",
-          title: '请配置回款计划',
-        })
-        flag = false
-      }
-
-      if (flag && callback) {
-        callback()
-      }
-
     },
   }
 };
@@ -394,6 +384,15 @@ page {
 
 /deep/.input-class {
   font-size: @font-size-md;
+}
+
+/deep/.drawer {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  // display: flex;
+  // justify-content: space-between;
+  // flex-direction: column;
 }
 
 .payment-plan {
@@ -464,7 +463,6 @@ page {
   }
   
   .footer {
-    position: static;
     margin-top: 100rpx;
 
     &-submit {
@@ -473,12 +471,12 @@ page {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 0 60rpx 60rpx;
+      padding: 0 60rpx;
       background-color: #fff;
-    }
 
-    /deep/.van-button {
-      width: 300rpx;
+      /deep/.van-button {
+        width: 300rpx;
+      }
     }
   }
 }

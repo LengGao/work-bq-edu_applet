@@ -54,7 +54,7 @@
         <view class="item-desc">
           <text>订单总金额{{ item.order_money | moneyFormat }}</text>
           <text style="margin-left: 20rpx">
-            实收金额{{ ((+item.pay_money) + (+item.other_money)) | moneyFormat }}
+            实收金额{{ accAdd(item.pay_money, item.other_money) | moneyFormat }}
           </text>
         </view>
       </view>
@@ -72,6 +72,7 @@ import SearchBar from "@/components/searchBar/index.vue";
 import LoadMore from "@/components/loadMore/index.vue";
 import SearchDrawer from "./components/searchDrawer.vue";
 import { getCrmApproveOrder } from "@/api/order";
+import { accAdd } from '@/utils/index';
 
 export default {
   components: {
@@ -104,6 +105,7 @@ export default {
     this.getCrmApproveOrder();
   },
   methods: {
+    accAdd: accAdd,
     // 更新查看详情的那条数据（用于详情发生变化）
     updateItem(data) {
       if (data && this.checkedIndex !== null) {

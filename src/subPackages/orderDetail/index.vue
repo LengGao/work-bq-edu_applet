@@ -140,6 +140,12 @@
             name="7"
             >退款作废</van-tabbar-item
           >
+          <van-tabbar-item
+            icon="orders-o"
+            v-if="detailData.refund_button"
+            name="8"
+            >申请异动</van-tabbar-item
+          >
         </van-tabbar>
       </template>
     </template>
@@ -282,6 +288,7 @@ import {
 } from "@/api/order";
 import { uploadImage } from "@/api/customer";
 import Dialog from "@/wxcomponents/vant/dialog/dialog";
+
 export default {
   components: {
     OrderInfo,
@@ -367,7 +374,7 @@ export default {
   },
   methods: {
     onAdd() {
-      let url = '/subPackages/AddCollectionRecord/index',
+      let url = '/subPackages/customeAddPayRecord/index',
           params = '?orderId=' + this.orderId,
           _this = this
 
@@ -382,7 +389,7 @@ export default {
       })
     },
     onSetting() {
-      let url = '/subPackages/AddCollectionPlan/index',
+      let url = '/subPackages/customeAddPayPlan/index',
           params = '?orderId=' + this.orderId,
           _this = this
 
@@ -494,6 +501,15 @@ export default {
       this.rejectReason = "";
     },
     handleTabbarChange({ detail }) {
+      const {
+        order_no,
+        create_time,
+        surname,
+        order_money,
+        pay_money,
+        overdue_money,
+        order_id,
+      } = this.detailData;
       switch (detail) {
         case "1":
           this.hurryUp();
@@ -523,15 +539,6 @@ export default {
           this.orderUnusualApprove(1);
           break;
         case "7":
-          const {
-            order_no,
-            create_time,
-            surname,
-            order_money,
-            pay_money,
-            overdue_money,
-            order_id,
-          } = this.detailData;
           uni.navigateTo({
             url: `/subPackages/applyRefund/index?orderData=${JSON.stringify({
               order_no,
@@ -543,6 +550,9 @@ export default {
               order_id,
             })}`,
           });
+          break;
+          case "8": 
+          uni.navigateTo({ url: `/subPackages/differentChange/index?order_id=${order_id}`})
           break;
       }
     },

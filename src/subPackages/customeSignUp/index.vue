@@ -178,7 +178,7 @@
             title-width="400rpx"
             confirm-type=“确定”
             :value="item.pay_money"
-            :label="`${item.project_name}-实收金额`"
+            :label="`${item.major_name}-实收金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
           />
         </view>
@@ -286,7 +286,7 @@ export default {
         union_staff_id: '',  // 共享业绩
         type: 0,  // 报名类型 
         jiebie_id: "",  // 届别
-        is_new: '2',  // 1，新客户 2，就客户 
+        is_new: '2',  // 1，新客户 2，旧客户 
         tips: "",  // 备注信息
         projectData: [], // 职称项目/学历专业 数据
       },
@@ -297,13 +297,12 @@ export default {
   },
   onLoad(query) {
     console.log("customeSignUp:", query);
-    
     this.formData.id = query.userId;
     this.formData.surname = query.userName;
     this.formData.mobile = query.userMobile;
     this.formData.id_card_number = query.userIdCard;
     this.formData.source = query.source
-    this.formData.is_new = query.is_new
+    this.formData.is_new = query.is_new || '0'
   },
   methods: {
     // 打开选择客户回款日期、支付方式
@@ -354,7 +353,7 @@ export default {
     // 选择学历项目
     handleSelectEduProjectChange(project = []) {
       this.checkedProjectName = project.map((item) => {
-        return `${item.school_name}-${item.level_name}-${item.major_name}`
+        return `${item.major_name}`
       }).join(",")
   
       this.formData.projectData = project.map(item => {
@@ -395,7 +394,7 @@ export default {
       const callback = () => {
         let params = this.getParams()
         uni.navigateTo({
-          url: '/subPackages/paymentPlan/index?params=' + encodeURIComponent(JSON.stringify(params))
+          url: '/subPackages/customeSignPayPlan/index?params=' + encodeURIComponent(JSON.stringify(params))
         })
       }
 
@@ -420,9 +419,13 @@ export default {
           }
         }
         if (item.key === 'projectData') {
-          this.formData[item.key].forEach(ele => {
+          this.formData['projectData'].forEach(ele => {
             if (!ele.pay_money) {
-              uni.showToast({ icon: 'none', title: `请输入 ${item.project_name} 的实收金额` })
+              if (this.formData.type == 0) {
+                uni.showToast({ icon: 'none', title: `请输入 ${ele.project_name} 的实收金额` })
+              } else {
+                uni.showToast({ icon: 'none', title: `请输入 ${ele.major_name} 的实收金额` })
+              }
               throw new Error("pay_money is null");
             }
           })

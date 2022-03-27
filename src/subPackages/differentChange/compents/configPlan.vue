@@ -290,7 +290,7 @@ export default {
       ]
       const callback = () => {
         uni.navigateTo({
-            url: '/subPackages/signSubmit/index?params=' + encodeURIComponent(JSON.stringify(this.formData))
+            url: '/subPackages/customeSignPayRecond/index?params=' + encodeURIComponent(JSON.stringify(this.formData))
         })
       }
       this.validate(validator, callback)

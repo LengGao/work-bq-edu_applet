@@ -58,13 +58,12 @@ export function accSub(arg1, arg2) {
     n = (r1 >= r2) ? r1 : r2;
     return ((arg1 * m - arg2 * m) / m).toFixed(n);
   }
-  // 加法函数
+  
+  // 加法
   export function accAdd(arg1, arg2) {
     var r1, r2, m;
     try {
       r1 = arg1.toString().split(".")[1].length
-      console.log(arg1.toString().split(".")[0]);
-      console.log(arg1.toString().split(".")[1]);
     } catch (e) {
       r1 = 0
     }

@@ -72,25 +72,37 @@
       title="订单编号"
       title-class="title"
       value-class="value"
-      :value="data.order_no"
+      :value="data.order_no || '--'"
     />
     <van-cell
       title="订单时间"
       title-class="title"
       value-class="value"
-      :value="data.create_time"
+      :value="data.create_time || '--'"
     />
     <van-cell
       title="客户姓名"
       title-class="title"
       value-class="value"
-      :value="data.surname"
+      :value="data.surname || '--'"
+    />
+    <van-cell
+      title="订单来源"
+      title-class="title"
+      value-class="value"
+      :value="data.source || '--'"
+    />
+    <van-cell
+      title="审批类型"
+      title-class="title"
+      value-class="value"
+      :value="data.is_new == 1 ? '新客户' : '老客户'"
     />
     <van-cell
       title="业绩归属"
       title-class="title"
       value-class="value"
-      :value="data.staff_name"
+      :value="data.staff_name || '--'"
     />
     <van-cell
       title="报名类型"
@@ -102,14 +114,14 @@
       title="报名项目"
       title-class="title"
       value-class="value"
-      :value="data.project_name"
+      :value="data.project_name || '--'"
     />
     
     <van-cell
       title="届别名称"
       title-class="title"
       value-class="value"
-      :value="data.jiebie_name"
+      :value="data.jiebie_name || '--'"
     />
     <van-cell
       title="订单金额"
@@ -153,7 +165,7 @@
       </template>
       <text v-else>--</text>
     </van-cell>
-    <template v-if="data.type === 1">
+    <!-- <template v-if="data.type === 1">
       <van-cell
         title="考前辅导费"
         title-class="title"
@@ -196,7 +208,7 @@
         value-class="value"
         :value="data.others | moneyFormat"
       />
-    </template>
+    </template> -->
     <van-cell
       title="备注信息"
       title-class="title"

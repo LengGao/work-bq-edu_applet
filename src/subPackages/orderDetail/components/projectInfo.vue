@@ -118,6 +118,7 @@
 </template>
 
 <script>
+
 import Title from "@/components/title/index.vue";
 export default {
   props: {

@@ -17,7 +17,13 @@
       v-for="(item, index) in data.pay_log"
       :key="index"
     >
-      <van-cell :title="`${item.pay_date || '--'} 回款`" title-class="title" />
+      <van-cell :title="`${item.pay_date || '--'} 回款`" title-class="bold-title" />
+      <van-cell :border="false">
+        <template #title>
+          <text class="title">入账状态</text>
+          <text class="value">{{ payStatusMap[item.verify_status] || "--"}}</text>
+        </template>
+      </van-cell>
       <van-cell :border="false">
         <template #title>
           <text class="title">回款金额</text>
@@ -28,23 +34,9 @@
       </van-cell>
       <van-cell :border="false">
         <template #title>
-          <text class="title">关联计划</text>
-          <text class="value">{{ item.relation_plan || "无" }}</text>
+          <text class="title">回款计划</text>
         </template>
-        <text class="title">入账状态</text>
-        <text class="value">{{
-          payStatusMap[item.verify_status] || "--"
-        }}</text>
-      </van-cell>
-      <van-cell :border="false">
-        <template #title>
-          <text class="title">关联计划</text>
-          <text class="value">{{ item.relation_plan || "无" }}</text>
-        </template>
-        <text class="title">入账状态</text>
-        <text class="value">{{
-          payStatusMap[item.verify_status] || "--"
-        }}</text>
+        <text class="value">{{ item.relation_plan || "无" }}</text>
       </van-cell>
       <van-cell :border="false">
         <template #title>
@@ -94,7 +86,8 @@
       >
         <van-cell>
           <template #title>
-            <text class="value">第{{ index + 1 }}期</text>
+            <!-- <text class="bold-title">第{{ index + 1 }}期</text> -->
+            <text class="bold-title">{{ expenseType[item.type] }} ( {{ item.year }} )</text>
             <text class="title">计划 {{ item.day }} 回款</text>
           </template>
         </van-cell>
@@ -130,6 +123,7 @@
 
 <script>
 import Title from "@/components/title/index.vue";
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -148,6 +142,9 @@ export default {
   },
   components: {
     Title,
+  },
+  computed: {
+    ...mapGetters(['expenseType'])
   },
   data() {
     return {
@@ -189,7 +186,8 @@ export default {
   /deep/.title {
     flex: inherit;
     flex-shrink: 0;
-    color: #969799;
+    font-size: @font-size-sm;
+    color: @text-color-grey;
     margin-right: 20rpx;
   }
   /deep/.value {
@@ -197,14 +195,23 @@ export default {
     display: inline-block;
     min-width: 100rpx;
     text-align: left;
+    font-size: @font-size-sm;
   }
   .progress {
     color: #fd7b18;
-    font-size: @font-size-md;
+    font-size: @font-size-sm;
   }
   /deep/.center {
     text-align: center;
     color: #ccc;
+  }
+  /deep/.bold-title {
+    flex: inherit;
+    flex-shrink: 0;
+    font-size: @font-size-sm;
+    color: @text-color;
+    font-weight: 700;
+    margin-right: 20rpx;
   }
 }
 </style>

@@ -44,10 +44,10 @@
       />
       <van-cell title="回款凭证" title-width="160rpx" :border="false">
         <van-uploader
-          :file-list="fileList"
+          :file-list="formData.receipt_file"
           @after-read="handleAfterRead"
           deletable
-          @delete="({ detail }) => fileList.splice(detail.index, 1)"
+          @delete="({ detail }) => formData.receipt_file.splice(detail.index, 1)"
         />
       </van-cell>
     </van-cell-group>
@@ -88,18 +88,18 @@
       @confirm="handleDateChange"
       :value="currentDate"
       :min-date="currentDate"
-    >
-    </DatePicker>
+    />
 
 
 </view>
 </template>
 
 <script>
-import { uploadImage } from "@/api/customer";
 import Select from "@/components/select/index.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
+import { uploadImage } from "@/api/customer";
+import { payLogCreate } from '@/api/order'
 
 export default {
   components: {
@@ -121,20 +121,18 @@ export default {
   },
   data() {
     return {
-      selectShow: false, // 选择
-      showPlan: false,
-      // 回款日期
-      datePickerShow: false,
+      saveLoading: false, // 板寸按钮加载状态
+      // 日期选择
+      datePickerShow: false, // 回款日期
       currentDate: new Date().getTime(),
-      // 上传
-      fileList: [],
-      //回款计划
-      planData: [],
-      planOptions: [],
-      planCheckedName: "",
-      planCheckedIndex: 0,
+      // 回款计划
+      selectShow: false, // 选择回款计划
+      planData: [], // 回款计划数据
+      planOptions: [], // 回款计划选项
+      planCheckedName: "", // 当前选择的会跨计划
+      planCheckedIndex: [], // 当前选择的会跨计划索引
       // 选择支付方式
-      sheetShow: false,
+      sheetShow: false, 
       sheetActions: [],
       sheetChecked: "",
       // 提交表单
@@ -142,113 +140,57 @@ export default {
         pay_day: '',      // 回款日期
         pay_money: '',    // 回款金额
         pay_type: '',     // 支付方式
-        pay_plan_id: '',
+        pay_plan_id: '', // 选择回款计划id
         receipt_file: []
-      }
+      },
     };
   },
   mounted() {
-    console.log("payList", this.payList, this.orderId);
     this.getPlanData(this.payList)
   },
   methods: {
-    // 获取配置好的计划
-    getPlanData(data) {
-      this.planData = data;
-      this.planOptions = data.map((item, index) => ({
-        name: `${item.year} ${item.name} ￥${item.money}`,
-        value: index,
-        id: item.id
-      }));
-    },
-    toConfigPlan() {
-      uni.navigateTo({
-        url: "/subPackages/payPlanConfig/index",
-      });
-    },
+    // 支付方式
     onSheetSelect({ detail }) {
-      if (this.sheetChecked === "payTypeOptions") {
-        this.formData.pay_type = detail.name;
-        return;
-      }
+      this.formData.pay_type = detail.name;
     },
     // 打开选择客户回款日期、支付方式
     openSheet(key) {
-      if (key === "planOptions" && !this.planOptions.length) {
-        uni.showToast({
-          icon: "none",
-          title: "请先配置",
-        });
-        return;
-      }
       this.sheetChecked = key;
       this.sheetActions = this[key];
       this.sheetShow = true;
     },
     // 胡款计划
     handleSelectChange(detail) {
-      console.log("detail", detail);
+      this.selectShow = false
       let names = detail.map(item => item.name)
       let indexs = detail.map(item => item.value)
-      let ids = detail.map(item => item.id.split('-')[1] ).join(',')
+      let ids = detail.map(item => item.id).join(',')
       this.planCheckedName = `${names[0]} (${names.length})` 
       this.planCheckedIndex = indexs
       this.formData.pay_plan_id = ids
-      this.selectShow = false
     },
     // 回款日期
     handleDateChange(day) {
-      this.formData.pay_day = day;
       this.datePickerShow = false;
-    },
-    // 上传凭证
-    async handleAfterRead({ detail }) {
-      const { file } = detail;
-      const { url } = await uploadImage(file);
-      this.fileList.push({ url, isImage: true });
-    },
-    // 报名缴费
-    async createCrmOrder() {
-      let data = {
-        order_id: this.formData.order_id,
-        pay_date: this.formData.pay_day,
-        pay_money: this.formData.pay_money,
-        pay_type: this.formData.pay_type,
-        plan_id: this.formData.pay_plan_id,
-        receipt_file: this.fileList.map((item) => item.url),
-        order_id: this.orderId
-      };
-      
-      this.$emit("confirm", data)
+      this.formData.pay_day = day;
     },
     handleCancel() {
       this.$emit('cancel')
     },
     // 保存
     handleSave() {
-      this.validate(
-        [
-          {
-            key: 'pay_plan_id',
-            errmsg: '请选择回款计划'
-          },
-          {
-            key: "pay_money",
-            errmsg: "请输入回款金额",
-          },
-          {
-            key: "pay_type",
-            errmsg: "请选择支付方式",
-          },
-          {
-            key: "pay_day",
-            errmsg: "请选择回款日期",
-          },
-        ],
-        () => {
-          this.createCrmOrder();
-        }
-      );
+      let validator = [
+          { key: "pay_plan_id", errmsg: "请配置回款计划" },
+          { key: "pay_money", errmsg: "请输入回款金额" },
+          { key: "pay_type", errmsg: "请选择支付方式" },
+          { key: "pay_day", errmsg: "请选择回款日期" },
+      ]
+
+      const callback = () => {
+        this.payLogCreate()
+      }
+
+      this.validate(validator, callback)
     },
     validate(arr, cb) {
       for (const item of arr) {
@@ -278,8 +220,41 @@ export default {
           }
         }
       }
-      cb && cb();
+      
+      if (cb) cb();
     },
+    // 获取配置好的计划
+    getPlanData(data) {
+      this.planData = data;
+      this.planOptions = data.map((item, index) => ({
+        name: `${item.year} ${item.name} ￥${item.money}`,
+        value: index,
+        id: item.id
+      }))
+    },
+    // 上传凭证
+    async handleAfterRead({ detail }) {
+      const { file } = detail;
+      const { url } = await uploadImage(file);
+      this.formData.receipt_file.push({ url, isImage: true });
+    },
+    // 创建回款记录
+    async payLogCreate() {
+      let formData = this.formData
+      let data = { 
+            order_id: this.orderId,
+            pay_date: formData.pay_day,
+            plan_id: formData.pay_plan_id,
+            pay_money: formData.pay_money,
+            pay_type: formData.pay_type,
+            receipt_file: formData.receipt_file.map(item => item.url)
+          }
+      let res = await payLogCreate(data).catch(() => {})
+      if (res.code == 0) {
+        uni.showToast({ icon: 'none', title: '创建成功' })
+        this.$emit("confirm")
+      }
+    }
   }
 }
 </script>

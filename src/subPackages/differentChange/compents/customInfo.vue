@@ -1,7 +1,7 @@
 <template>
   <view class="add-curtomer">
     <van-cell-group custom-class="group-cell">
-      <van-field
+      <!-- <van-field
         required
         :value="formData.surname"
         label="客户姓名"
@@ -10,6 +10,7 @@
         input-class="input"
         title-width="200rpx"
         placeholder="请输入客户姓名"
+        
         @blur="
           ({ detail }) =>
             detail.value !== formData.surname &&
@@ -47,7 +48,35 @@
           ({ detail }) =>
             $emit('input-blur', { id_card_number: detail.value })
         "
+      /> -->
+      <van-cell
+        required
+        title="客户姓名"
+        input-align="right"
+        label-class="label"
+        input-class="input"
+        title-width="200rpx"
+        :value="formData.surname"
       />
+      <van-cell
+        required
+        title="手机号码"
+        input-align="right"
+        label-class="label"
+        input-class="input"
+        title-width="200rpx"
+        :value="formData.mobile | phoneFormat"
+      >
+        <template #right-icon>
+          <van-icon
+            custom-style="margin-left: 20rpx;"
+            name="phone-o" 
+            size="38rpx"
+            color="#199fff" 
+            @click="onPhoneCall(item.telphone)"
+          />
+        </template>
+      </van-cell>
       <van-field
         :value="formData.order_money"
         required
@@ -324,6 +353,11 @@ export default {
     this.resolveSaffData(this.data)
   },
   methods: {
+    // 拨号
+    onPhoneCall(phoneNumber) {
+      uni.makePhoneCall({ phoneNumber})
+    },
+    // 处理业绩
     resolveSaffData(data) {
       // 处理 业绩共i相认
       let saffName = data.staff_name || '',
@@ -440,7 +474,7 @@ export default {
     handleSave() {
       const validator = [
         { key: "surname", errmsg: "客户姓名不能为空" },
-        { key: "id_card_number", errmsg: "请输入正确的身份证号码", minLength: 18 },
+        // { key: "id_card_number", errmsg: "请输入正确的身份证号码", minLength: 18 },
         { key: "mobile", errmsg: "请输入正确的手机号", reg: /^1[3-9]\d{9}$/ },
         { key: "projectData", errmsg: "请选择报名项目或专业", minLength: 1, },
         { key: "order_money", errmsg: "请输入学费金额" },
@@ -450,7 +484,7 @@ export default {
       const callback = () => {
         let params = this.getParams()
         uni.navigateTo({
-          url: '/subPackages/paymentPlan/index?params=' + encodeURIComponent(JSON.stringify(params))
+          url: '/subPackages/customeSignPayPlan/index?params=' + encodeURIComponent(JSON.stringify(params))
         })
       }
 
@@ -497,7 +531,7 @@ export default {
         order_money: formData.order_money,
         surname: formData.surname,
         mobile: formData.mobile,
-        id_card_number: formData.id_card_number,
+        // id_card_number: formData.id_card_number,
         tips: formData.tips,
         union_staff_id: formData.union_staff_id,
         type: formData.type,

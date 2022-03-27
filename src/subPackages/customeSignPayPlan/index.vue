@@ -58,7 +58,7 @@
             label-class="label-class"
             input-class="input-class"
             :value="item.money"
-            @input="(e) => handleInputMoney(e, index, item)"
+            @input="({ detail }) => handleInputMoney(e, index, item)"
           />
         </view>  
 
@@ -151,8 +151,7 @@ export default {
       this.payList = payList
     },
     // 实收金额输入
-    handleInputMoney(e, index, item) {      
-      let val = e.detail
+    handleInputMoney(val, index, item) {      
       item.money = val
       this.payList[index] = item
     },
@@ -247,7 +246,7 @@ export default {
     // 从后找，目的要插在后面
     handleFindLast(arr, callback) {
       for(let i = arr.length - 1; i >= 0; i--) {
-        if (callback(arr[i], i, arr)) {
+        if (callback(arr[i], i)) {
           return i;
         }
       }
@@ -266,7 +265,7 @@ export default {
       ]
       const callback = () => {
         uni.navigateTo({
-            url: '/subPackages/signSubmit/index?params=' + encodeURIComponent(JSON.stringify(this.formData))
+            url: '/subPackages/customeSignPayRecond/index?params=' + encodeURIComponent(JSON.stringify(this.formData))
         })
       }
       this.validate(validator, callback)

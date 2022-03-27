@@ -34,7 +34,7 @@
           </view>
           <view class="item-info-money">
             订单总金额 {{ item.total_money | moneyFormat }} 
-            / 实收金额 {{ ((+item.pay_money) + (+item.other_money)) | moneyFormat }}
+            / 实收金额 {{ accAdd(item.pay_money, item.other_money) | moneyFormat }}
           </view>
           <!-- <view class="item-info-money"
             >应收 {{ item.order_money | moneyFormat }} / 已收
@@ -61,6 +61,8 @@ import LoadMore from "@/components/loadMore/index.vue";
 import SearchBar from "@/components/searchBar/index.vue";
 import SearchDrawer from "./components/searchDrawer.vue";
 import { getCrmOrderList } from "@/api/order";
+import { accAdd } from '@/utils/index';
+
 export default {
   components: {
     SearchBar,
@@ -91,6 +93,7 @@ export default {
     this.getCrmOrderList();
   },
   methods: {
+    accAdd: accAdd,
     handleListTypeChange() {
       this.pageNum = 1;
       this.skeletonLoading = true;
