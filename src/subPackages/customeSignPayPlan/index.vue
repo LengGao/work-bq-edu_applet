@@ -357,7 +357,7 @@ export default {
   }
 
   .pay-list {
-    min-height: 50vh;
+    min-height: 65vh;
     padding: 20rpx;
   }
 
@@ -396,7 +396,8 @@ export default {
   }
   
   .footer {
-    margin: 60rpx 0rpx 30rpx;
+    position: relative;
+    margin: 40rpx 0rpx;
 
     &-submit {
       display: flex;
@@ -404,7 +405,7 @@ export default {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 0 40rpx;
+      padding: 0 50rpx;
       background-color: #fff;
     }
 
