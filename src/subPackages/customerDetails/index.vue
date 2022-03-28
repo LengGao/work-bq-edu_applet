@@ -44,8 +44,7 @@
         <van-tab title="证件资料">
           <CertificateInformation 
             :uid="uid"
-             @openEdit="openEdit"
-            >
+             @openEdit="openEdit">
           </CertificateInformation>
         </van-tab>
         <van-tab title="订单记录">

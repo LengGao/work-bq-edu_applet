@@ -52,6 +52,12 @@
       <van-cell :title="`${item.pay_date} 回款`" title-class="bold-title" />
       <van-cell :border="false">
         <template #title>
+          <text class="title">入账状态</text>
+          <text class="value">{{ payStatusMap[item.verify_status] || "--"}}</text>
+        </template>
+      </van-cell>
+      <van-cell :border="false">
+        <template #title>
           <text class="title">回款金额</text>
           <text class="value">{{ item.pay_money | moneyFormat }}</text>
         </template>
@@ -61,18 +67,14 @@
       <van-cell :border="false">
         <template #title>
           <text class="title">回款计划</text>
-          <text class="value">{{ item.relation_plan || "无" }}</text>
-        </template>
-        <text class="title">入账状态</text>
-        <text class="value">{{
-          payStatusMap[item.verify_status] || "--"
-        }}</text>
+        </template> 
+        <text class="value" decode>{{ item.relation_plan.replaceAll(',', ',  ') || "无" }}</text>
       </van-cell>
       <van-cell :border="false">
         <template #title>
           <text class="title">备注信息</text>
-          <text class="value">{{ item.tips || "无" }}</text>
         </template>
+        <text class="value">{{ item.tips || "无" }}</text>
       </van-cell>
     </van-cell-group>
     <view class="change-record-title">
@@ -129,7 +131,6 @@
       >
         <van-cell>
           <template #title>
-            <!-- <text class="value">第{{ index + 1 }}期</text> -->
             <text class="bold-title">{{ expenseType[item.type] }} ( {{ item.year }} )</text>
             <text class="title">计划 {{ item.day }} 回款</text>
           </template>
@@ -226,9 +227,9 @@ export default {
     margin-right: 20rpx;
   }
   /deep/.value {
-    color: @text-color;
-    display: inline-block;
     min-width: 100rpx;
+    display: inline-block;
+    color: @text-color;
     text-align: left;
     &.right {
       text-align: right;

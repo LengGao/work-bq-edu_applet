@@ -37,18 +37,7 @@
         :value="formData.id_card_number"
         @input="({ detail }) => (formData.id_card_number = detail)"
       />
-      <van-field
-        :value="formData.order_money"
-        required
-        type="number"
-        label="学费金额"
-        label-class="label"
-        input-class="input"
-        title-width="200rpx"
-        placeholder="请输入订单金额"
-        @input="({ detail }) => (formData.order_money = detail)"
-        input-align="right"
-      />
+
       <van-cell
         title="订单来源"
         is-link
@@ -132,7 +121,7 @@
             :adjust-position="undefined"
             :cursor-spacing="1"
             :value="item.pay_money"
-            :label="`${item.project_name}-实收金额`"
+            :label="`${item.project_name}-实收学费金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
           />
         </view>
@@ -178,7 +167,7 @@
             title-width="400rpx"
             confirm-type=“确定”
             :value="item.pay_money"
-            :label="`${item.major_name}-实收金额`"
+            :label="`${item.major_name}-实收学费金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
           />
         </view>
@@ -280,7 +269,6 @@ export default {
         surname: "", // 用户名
         mobile: "",  // 手机号
         id_card_number: "", // 身份证
-        order_money: "",  // 学费金额
         source: '', // 客户来源
         online_course: '', // 是否开通网课
         union_staff_id: '',  // 共享业绩
@@ -387,7 +375,6 @@ export default {
         { key: "id_card_number", errmsg: "请输入正确的身份证号码", minLength: 18 },
         { key: "mobile", errmsg: "请输入正确的手机号", reg: /^1[3-9]\d{9}$/ },
         { key: "projectData", errmsg: "请选择报名项目或专业", minLength: 1, },
-        { key: "order_money", errmsg: "请输入学费金额" },
         { key: "online_course", errmsg: "请选择是否开通网课" },
       ]
 
@@ -439,7 +426,6 @@ export default {
       data = {
         order_token: Date.now(),
         id: formData.id,
-        order_money: formData.order_money,
         surname: formData.surname,
         mobile: formData.mobile,
         id_card_number: formData.id_card_number,
@@ -526,11 +512,11 @@ page {
   }
 
   &-submit {
-    padding-bottom: 40rpx;
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
+    padding-bottom: 40rpx;
     text-align: center;
     background-color: #fff;
     z-index: 100;

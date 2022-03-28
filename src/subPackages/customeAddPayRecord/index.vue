@@ -332,7 +332,8 @@ export default {
       if (payList.length > 0) {
         payList.forEach(item => {
           err.forEach(eitem => {
-            if (!item[eitem.fileld] && item[eitem.fileld].length == 0) {
+            let val = item[eitem.fileld]
+            if (`${val}`.length <= 0) { 
               uni.showToast({ icon: 'none', title: eitem.message })
               flag = false
             }
@@ -373,7 +374,9 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
-page {
+
+/deep/.drawer {
+  width: 100%;
   height: 100%;
   overflow: hidden;
 }
@@ -386,14 +389,6 @@ page {
   font-size: @font-size-md;
 }
 
-/deep/.drawer {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  // display: flex;
-  // justify-content: space-between;
-  // flex-direction: column;
-}
 
 .payment-plan {
   width: 100%;
@@ -471,7 +466,7 @@ page {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 0 60rpx;
+      padding: 0 40rpx;
       background-color: #fff;
 
       /deep/.van-button {

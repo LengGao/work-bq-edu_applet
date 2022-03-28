@@ -32,11 +32,11 @@
         <text class="title">支付方式</text>
         <text class="value">{{ item.pay_type }}</text>
       </van-cell>
-      <van-cell :border="false">
+      <van-cell :border="false" title-width="130rpx">
         <template #title>
           <text class="title">回款计划</text>
         </template>
-        <text class="value">{{ item.relation_plan || "无" }}</text>
+        <text class="value" decode>{{ item.relation_plan.replaceAll(',', ',  ') || "无" }}</text>
       </van-cell>
       <van-cell :border="false">
         <template #title>
@@ -86,7 +86,6 @@
       >
         <van-cell>
           <template #title>
-            <!-- <text class="bold-title">第{{ index + 1 }}期</text> -->
             <text class="bold-title">{{ expenseType[item.type] }} ( {{ item.year }} )</text>
             <text class="title">计划 {{ item.day }} 回款</text>
           </template>
@@ -191,11 +190,11 @@ export default {
     margin-right: 20rpx;
   }
   /deep/.value {
-    color: @text-color;
     display: inline-block;
     min-width: 100rpx;
-    text-align: left;
+    color: @text-color;
     font-size: @font-size-sm;
+    text-align: left;
   }
   .progress {
     color: #fd7b18;

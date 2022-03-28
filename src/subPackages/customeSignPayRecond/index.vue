@@ -1,6 +1,32 @@
 <template>
   <view class="sign-submit">
     <van-cell-group custom-class="group-cell">
+      <van-cell 
+        :border="false"
+        title="订单总额"
+        title-class=“label“
+        value-class="input"
+        :value="orderMoney"
+      />
+      <van-cell 
+        :border="false"
+        title="学费金额"
+        title-class=“label“
+        value-class="input"
+        :value="totalMoney"
+      />
+      <van-cell 
+        :border="false"
+        title="其他金额 "
+        title-class=“label“
+        value-class="input"
+        :value="otherMoney"
+      />
+    </van-cell-group>
+
+    <view class="hr"></view>
+
+    <van-cell-group custom-class="group-cell">
       <van-cell
         title="回款日期"
         is-link
@@ -105,6 +131,7 @@ import { createCrmOrder, uploadImage } from "@/api/customer";
 import Select from "@/components/select/index.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
+import { accAdd } from "@/utils/index"
 
 export default {
   components: {
@@ -130,6 +157,11 @@ export default {
       sheetShow: false, 
       sheetActions: [],
       sheetChecked: "",
+
+      orderMoney: '0.00', // 订单金额
+      totalMoney: '0.00', // 总报名项目金额
+      otherMoney: '0.00', // 其他费用 也就是回款计划中已选择的总额
+      
       // 提交表单
       formData: {
         pay_day: '',      // 回款日期
@@ -143,10 +175,39 @@ export default {
   onLoad(query) {
     let q = JSON.parse(decodeURIComponent(query.params))    
     this.formData = Object.assign(this.formData, q)
-    this.planData = this.formData.payList
-    this.getPlanData(this.formData.payList)
+    console.log("q:", q);
+    let payList = q.payList,
+        totalMoney = this.computeTotalMoney(q.project_pay_money),
+        otherMoney = this.computeOherMoney(payList),
+        orderMoney = accAdd(otherMoney, totalMoney)
+
+    this.totalMoney = totalMoney
+    this.otherMoney = otherMoney
+    this.orderMoney = orderMoney
+    this.getPlanData(payList)
   },
   methods: {
+    // 计算项目总额
+    computeTotalMoney(map) {
+      let val = 0
+      for(let k in map) {
+        let _val = map[k]
+        val = accAdd(val, _val)
+      }
+      return val ? `${val}` : '0'
+    },
+    computeOherMoney(arr) {
+      let val = 0
+      for (let i = arr.length - 1; i >= 0; i--) {
+        let _val = arr[i].money
+        val = accAdd(val, _val)
+      }
+      return val ? `${val}` : '0'
+    },
+    computeOrderMoney(otherMoney) {
+      let val = accAdd(otherMoney, this.totalMoney)
+      return val ? `${val}` : `0`
+    },
     // 支付方式
     onSheetSelect({ detail }) {
       this.formData.pay_type = detail.name;
@@ -166,6 +227,13 @@ export default {
       this.planCheckedName = `${names[0]} (${names.length})` 
       this.planCheckedIndex = indexs
       this.formData.pay_plan_ids = ids
+      let money = names.map(name => name.split(' ')[2].replace('￥', ''))
+      let val = 0;
+      for(let i = money.length - 1; i >=0; i--) {
+        let _val = money[i] 
+        val = accAdd(val, _val)
+      }
+      this.formData.pay_money = val 
     },
     // 回款日期
     handleDateChange(day) {
@@ -231,7 +299,7 @@ export default {
       this.planOptions = data.map((item, index) => ({
         name: `${item.year} ${item.name} ￥${item.money}`,
         value: index,
-        id: item.id
+        id: item.id,
       }))
     },
     // 上传凭证
@@ -242,13 +310,13 @@ export default {
     },
     // 报名缴费
     async createCrmOrder() {
-      let formData = this.formData,
+      let formData = this.formData, order_money = this.orderMoney
           receipt_file = formData.receipt_file.map((item) => item.url)
       
       let data = {
         order_token: Date.now(),
         id: formData.id,
-        order_money: formData.order_money,
+        order_money: order_money,
         surname: formData.surname,
         mobile: formData.mobile,
         id_card_number: formData.id_card_number,
@@ -326,12 +394,17 @@ export default {
     align-items: center;
     width: 100%;
     margin-top: 40rpx;
-    padding: 0 60rpx 20rpx;
+    padding: 0 40rpx 20rpx;
     background-color: #fff;
   }
 
   /deep/.van-button {
     width: 300rpx;
   }
+}
+.hr {
+  width: 100%;;
+  height: 20rpx;
+  background-color: @background-color;
 }
 </style>

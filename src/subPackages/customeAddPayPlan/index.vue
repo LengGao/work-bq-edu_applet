@@ -138,6 +138,7 @@ export default {
     this.getPlanYearOptions()
   },
   methods: {
+    // 日期玄额
     openPicker(key, index, item) {
       if (key == 'date') {
         this.datePickerShow = true
@@ -300,7 +301,8 @@ export default {
       if (payList.length > 0) {
         payList.forEach(item => {
           err.forEach(eitem => {
-            if (!item[eitem.fileld] && item[eitem.fileld].length == 0) {
+            let val = item[eitem.fileld]
+            if (`${val}`.length <= 0) { 
               uni.showToast({ icon: 'none', title: eitem.message })
               flag = false
             }
@@ -419,7 +421,7 @@ page {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 0 60rpx 60rpx;
+      padding: 0 40rpx 60rpx;
       background-color: #fff;
     }
 

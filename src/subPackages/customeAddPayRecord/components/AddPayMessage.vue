@@ -293,7 +293,7 @@ export default {
       align-items: center;
       width: 100%;
       margin-top: 40rpx;
-      padding: 0 60rpx;
+      padding: 0 40rpx;
       background-color: #fff;
     }
   }

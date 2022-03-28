@@ -26,7 +26,7 @@
             <van-button plain icon="newspaper-o" size="small" custom-class="header-btn" @click="handleCopy(item.type, index)">
               复制
             </van-button>
-            <van-button plain size="small" icon="delete-o" custom-class="header-btn" @click="handleDelete(index)">
+            <van-button plain size="small" icon="delete-o" custom-class="header-btn" @click="handleDelete(item,index)">
               删除
             </van-button>
           </view>
@@ -58,7 +58,7 @@
             label-class="label-class"
             input-class="input-class"
             :value="item.money"
-            @input="({ detail }) => handleInputMoney(e, index, item)"
+            @input="({ detail }) => handleInputMoney(detail, index, item)"
           />
         </view>  
 
@@ -123,6 +123,7 @@ export default {
     this.getPlanYearOptions()
   },
   methods: {
+    // 日期选择
     openPicker(key, index, item) {
       if (key == 'date') {
         this.datePickerShow = true
@@ -195,11 +196,21 @@ export default {
     handleCopy(type, index) {
       let item = this.creataItem(type, index)
       this.payList.splice(index + 1, 0, item)
+      uni.showToast({ icon: 'none', title: '复制陈工' })
     },
     // 删除
-    handleDelete(index) {
-      this.payList.splice(index, 1)
-      this.checkPayList()
+    handleDelete(item, index) {
+      console.log("handleDelete", item, index, this.payList);
+      let modalOption = { title: "", content: "确定要删除此计划吗?", showCancel: true, cancelColor: "#199fff", confirmColor: "#199fff" };
+      let payList = this.payList
+      let _index = payList.findIndex(i => i.id == item.id)
+      uni.showModal(modalOption).then(modal => {
+        if (modal[1].confirm) {
+          payList.splice(_index, 1)
+          this.payList = payList
+          this.checkPayList()
+        }
+      })
     },
     // 更新列表
     handleReplace(action ,type) {
@@ -228,10 +239,12 @@ export default {
           startId = 0
 
       if (index == -1) {
-        startId = lastItem ? (lastItem.id / 100) + 1 : 100
+        startId = lastItem ? ((lastItem.id / 100) + 1) * 100 : 100
+        console.log('creataItem', lastItem, startId);
       } else {
         let lastindex = this.handleFindLast(payList, (item) => item.type = type)
         startId = (+payList[lastindex].id) + 1
+        console.log('creataItem', lastindex, type, payList, startId);
       }
 
       return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
@@ -257,7 +270,10 @@ export default {
         uni.navigateBack()
     },
     toNext() {
-      this.formData.payList = this.payList
+      let query = this.formData
+      query.payList = this.payList
+      this.formData = query
+      
       let validator = [
         { fileld: "year", message: '请选择年份' },
         { fileld: "day", message: '请选择日期' },
@@ -265,7 +281,7 @@ export default {
       ]
       const callback = () => {
         uni.navigateTo({
-            url: '/subPackages/customeSignPayRecond/index?params=' + encodeURIComponent(JSON.stringify(this.formData))
+            url: '/subPackages/customeSignPayRecond/index?params=' + encodeURIComponent(JSON.stringify(query))
         })
       }
       this.validate(validator, callback)
@@ -276,7 +292,8 @@ export default {
       if (payList.length > 0) {
         payList.forEach(item => {
           err.forEach(eitem => {
-            if (!item[eitem.fileld] && item[eitem.fileld].length == 0) {
+            let val = item[eitem.fileld]
+            if (`${val}`.length <= 0) { 
               uni.showToast({ icon: 'none', title: eitem.message })
               flag = false
             }
@@ -305,20 +322,6 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
-.payment-plan {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-/deep/.label-class {
-  font-size: @font-size-md;
-}
-
-/deep/.input-class {
-  font-size: @font-size-md;
-}
-
 .payment-plan {
   width: 100%;
   overflow: hidden;
@@ -387,9 +390,7 @@ export default {
   }
   
   .footer {
-    position: absolute;
-    bottom: 40rpx;
-    left: 0;
+    margin: 60rpx 0rpx 30rpx;
 
     &-submit {
       display: flex;
@@ -397,13 +398,21 @@ export default {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 0 60rpx;
+      padding: 0 40rpx;
       background-color: #fff;
     }
 
     /deep/.van-button {
       width: 300rpx;
     }
+  }
+
+  /deep/.label-class {
+    font-size: @font-size-md;
+  }
+
+  /deep/.input-class {
+    font-size: @font-size-md;
   }
 }
 
