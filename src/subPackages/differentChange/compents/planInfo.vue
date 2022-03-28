@@ -1,6 +1,31 @@
 <template>
   <view class="sign-submit">
-    
+    <view class="hr"></view>
+    <van-cell-group custom-class="group-cell">
+      <van-cell 
+        :border="false"
+        title="订单总额"
+        title-class=“label“
+        value-class="input"
+        :value="orderMoney"
+      />
+      <van-cell 
+        :border="false"
+        title="学费金额"
+        title-class=“label“
+        value-class="input"
+        :value="totalMoney"
+      />
+      <van-cell 
+        :border="false"
+        title="其他金额 "
+        title-class=“label“
+        value-class="input"
+        :value="otherMoney"
+      />
+    </van-cell-group>
+
+    <view class="hr"></view>
     <van-cell-group custom-class="group-cell" v-for="(item, index) in data" :key="item.id">
       <van-cell
         title="回款日期"
@@ -108,6 +133,29 @@ export default {
     paylist: {
       type: Array,
       default: []
+    },
+    orderMoney: {
+      type: [String, Number],
+      default: '0.00'
+    },
+    totalMoney: {
+      type: [String, Number],
+      default: '0.00'
+    },
+    otherMoney: {
+      type: [String, Number],
+      default: '0.00'   
+    }
+  },
+  watch: {
+    'orderMoney': function(newVal) {
+      console.log("orderMoney", newVal);
+    },
+    'totalMoney': function(newVal) {
+      console.log("totalMoney", newVal);
+    },
+    "otherMoney": function(newVal) {
+      console.log("otherMoney", newVal);
     }
   },
   data() {
@@ -340,5 +388,11 @@ export default {
 
 /deep/.input {
   font-size: @font-size-md;
+}
+
+.hr {
+  width: 100%;;
+  height: 30rpx;
+  background-color: @background-color;
 }
 </style>

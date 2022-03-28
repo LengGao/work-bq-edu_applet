@@ -130,8 +130,8 @@ export default {
     };
   },
   mounted() {
-    console.log("2", this.data);
-    this.payList = this.data
+    console.log("2", this.list);
+    this.payList = this.list
     let cacheType = []
      this.list.filter(item => {
       if (cacheType.indexOf(item.type) == -1) {

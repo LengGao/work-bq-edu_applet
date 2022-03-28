@@ -179,7 +179,7 @@ export default {
     console.log("q:", q);
     let payList = q.payList,
         totalMoney = this.computeTotalMoney(q.project_pay_money),
-        otherMoney = this.computeOherMoney(payList),
+        otherMoney = this.computeOtherMoney(payList),
         orderMoney = accAdd(otherMoney, totalMoney)
 
     this.totalMoney = totalMoney
@@ -198,7 +198,7 @@ export default {
       }
       return val ? `${val}` : '0'
     },
-    computeOherMoney(arr) {
+    computeOtherMoney(arr) {
       let val = 0
       for (let i = arr.length - 1; i >= 0; i--) {
         let _val = arr[i].money

@@ -1,54 +1,7 @@
 <template>
   <view class="add-curtomer">
+    <view class="hr"></view>
     <van-cell-group custom-class="group-cell">
-      <!-- <van-field
-        required
-        :value="formData.surname"
-        label="客户姓名"
-        input-align="right"
-        label-class="label"
-        input-class="input"
-        title-width="200rpx"
-        placeholder="请输入客户姓名"
-        
-        @blur="
-          ({ detail }) =>
-            detail.value !== formData.surname &&
-            $emit('input-blur', { surname: detail.value })
-        "
-      />
-      <van-field
-        :value="formData.mobile"
-        required
-        type="number"
-        :border="false"
-        label="手机号码"
-        label-class="label"
-        input-align="right"
-        input-class="input"
-        title-width="200rpx"
-        placeholder="请输入手机号码"
-        @blur="
-          ({ detail }) =>
-            detail.value !== formData.mobile &&
-            $emit('input-blur', { mobile: detail.value })
-        "
-      />
-      <van-field
-        required
-        type="idcard"
-        label="身份证号"
-        input-align="right"
-        label-class="label"
-        input-class="input"
-        title-width="200rpx"
-        placeholder="请输入身份证号"
-        :value="formData.id_card_number"
-        @blur="
-          ({ detail }) =>
-            $emit('input-blur', { id_card_number: detail.value })
-        "
-      /> -->
       <van-cell
         required
         title="客户姓名"
@@ -77,22 +30,6 @@
           />
         </template>
       </van-cell>
-      <van-field
-        :value="formData.order_money"
-        required
-        type="number"
-        label="学费金额"
-        label-class="label"
-        input-class="input"
-        title-width="200rpx"
-        placeholder="请输入订单金额"
-        input-align="right"
-        @blur="
-          ({ detail }) =>
-            detail.value !== formData.order_money &&
-            $emit('input-blur', { order_money: detail.value })
-        "
-      />
       <van-cell
         required
         is-link
@@ -175,7 +112,6 @@
               $emit('dynamic-input', 'projectData', detail.value, index)
             "
           />
-          <!-- @input="({ detail }) => (formData.projectData[index].must_money = detail)" -->
         </view>
       </template>
 
@@ -225,7 +161,6 @@
               $emit('dynamic-input', 'projectData', detail.value, index)
             "
           />
-          <!-- @input="({ detail }) => (formData.projectData[index].must_money = detail)" -->
         </view>
       </template>
 
@@ -606,10 +541,6 @@ export default {
   overflow: hidden;
   padding-bottom: 300rpx;
 
-  /deep/.group-cell {
-    border-top: 20rpx solid #f2f6fc;
-  }
-
   /deep/.title {
     font-size: @font-size-md;
   }
@@ -625,5 +556,11 @@ export default {
   /deep/.input {
     font-size: @font-size-md;
   }
+}
+
+.hr {
+  width: 100%;;
+  height: 30rpx;
+  background-color: @background-color;
 }
 </style>
