@@ -124,7 +124,12 @@ export default {
       currentCheckeds: [], // 学杂费选中列表
       planYearOptions: [],  // 年份
       payList: [], // 回款计划
-      currentItem: {}, // 正在输入的回款计划
+      currentItem: {
+        year: '',
+        day: '',
+        type: '',
+        money: '',
+      }, // 正在输入的回款计划
       currentIndex: 0, // 正在输入的回款计划索引
       // 提交表单
       formData: {},
@@ -152,19 +157,25 @@ export default {
     },
     // 年份选择
     handleYearChange({ detail }) {
-      let payList = this.payList, index = this.currentIndex
-      this.currentItem.year = detail.name
+      let index = this.currentIndex, currentItem = this.currentItem
+      currentItem.year = detail.name
+      this.currentItem = currentItem
+      this.payList[index] = currentItem
       this.yearPickerShow = false
-      payList[index] = this.currentItem
-      this.payList = payList
     },
     // 回款日期选择
     handleDateChange(val) {
-      let payList = this.payList, index = this.currentIndex
-      this.currentItem.day = val
+      let index = this.currentIndex, currentItem = this.currentItem
+      currentItem.day = val
+      this.currentItem = currentItem
+      this.payList[index] = currentItem
       this.datePickerShow = false
-      payList[index] = this.currentItem
-      this.payList = payList
+    },
+    // 实收金额输入
+    handleInputMoney(val, index, item) {      
+      item.money = val
+      this.currentItem = item
+      this.payList[index] = item
     },
     // 实收金额输入
     handleInputMoney(val, index, item) {      
@@ -211,11 +222,21 @@ export default {
     handleCopy(type, index) {
       let item = this.creataItem(type, index)
       this.payList.splice(index + 1, 0, item)
+      uni.showToast({ icon: 'none', title: '复制成功' })
     },
     // 删除
     handleDelete(index) {
-      this.payList.splice(index, 1)
-      this.checkPayList()
+      console.log("handleDelete", item, index, this.payList);
+      let modalOption = { title: "", content: "确定要删除此计划吗?", showCancel: true, cancelColor: "#199fff", confirmColor: "#199fff" };
+      let payList = this.payList
+      let _index = payList.findIndex(i => i.id == item.id)
+      uni.showModal(modalOption).then(modal => {
+        if (modal[1].confirm) {
+          payList.splice(_index, 1)
+          this.payList = payList
+          this.checkPayList()
+        }
+      })
     },
     // 更新列表
     handleReplace(action ,type) {
@@ -244,7 +265,7 @@ export default {
           startId = 0
 
       if (index == -1) {
-        startId = lastItem ? (lastItem.id / 100) + 1 : 100
+        startId = lastItem ? ((lastItem.id / 100) + 1) * 100 : 100
       } else {
         let lastindex = this.handleFindLast(payList, (item) => item.type = type)
         startId = (+payList[lastindex].id) + 1

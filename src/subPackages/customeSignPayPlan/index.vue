@@ -110,7 +110,12 @@ export default {
       currentCheckeds: [], // 学杂费选中列表
       planYearOptions: [],  // 年份
       payList: [], // 回款计划
-      currentItem: {}, // 正在输入的回款计划
+      currentItem: {
+        year: '',
+        day: '',
+        type: '',
+        money: '',
+      }, // 正在输入的回款计划
       currentIndex: 0, // 正在输入的回款计划索引
       // 提交表单
       formData: {},
@@ -137,23 +142,24 @@ export default {
     },
     // 年份选择
     handleYearChange({ detail }) {
-      let payList = this.payList, index = this.currentIndex
-      this.currentItem.year = detail.name
+      let index = this.currentIndex, currentItem = this.currentItem
+      currentItem.year = detail.name
+      this.currentItem = currentItem
+      this.payList[index] = currentItem
       this.yearPickerShow = false
-      payList[index] = this.currentItem
-      this.payList = payList
     },
     // 回款日期选择
     handleDateChange(val) {
-      let payList = this.payList, index = this.currentIndex
-      this.currentItem.day = val
+      let index = this.currentIndex, currentItem = this.currentItem
+      currentItem.day = val
+      this.currentItem = currentItem
+      this.payList[index] = currentItem
       this.datePickerShow = false
-      payList[index] = this.currentItem
-      this.payList = payList
     },
     // 实收金额输入
     handleInputMoney(val, index, item) {      
       item.money = val
+      this.currentItem = item
       this.payList[index] = item
     },
     // 多选 新增 删除 更新 diff
@@ -196,7 +202,7 @@ export default {
     handleCopy(type, index) {
       let item = this.creataItem(type, index)
       this.payList.splice(index + 1, 0, item)
-      uni.showToast({ icon: 'none', title: '复制陈工' })
+      uni.showToast({ icon: 'none', title: '复制成功' })
     },
     // 删除
     handleDelete(item, index) {

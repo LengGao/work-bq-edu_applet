@@ -1,5 +1,6 @@
 <template>
   <view class="sign-submit">
+    
     <van-cell-group custom-class="group-cell" v-for="(item, index) in data" :key="item.id">
       <van-cell
         title="回款日期"

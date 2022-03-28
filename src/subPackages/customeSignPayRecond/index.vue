@@ -1,5 +1,6 @@
 <template>
   <view class="sign-submit">
+    <view class="hr"></view>
     <van-cell-group custom-class="group-cell">
       <van-cell 
         :border="false"
@@ -70,7 +71,7 @@
       />
       <van-cell title="回款凭证" title-width="160rpx" :border="false">
         <van-uploader
-          :file-list="this.formData.receipt_file"
+          :file-list="formData.receipt_file"
           @after-read="handleAfterRead"
           deletable
           @delete="
@@ -184,6 +185,7 @@ export default {
     this.totalMoney = totalMoney
     this.otherMoney = otherMoney
     this.orderMoney = orderMoney
+    this.formData.order_money = orderMoney
     this.getPlanData(payList)
   },
   methods: {
@@ -250,7 +252,7 @@ export default {
           { key: "id_card_number", errmsg: "请输入正确的身份证号码", minLength: 18 },
           { key: "mobile", errmsg: "请输入正确的手机号", reg: /^1[3-9]\d{9}$/ },
           { key: "pay_plan_ids", errmsg: "请配置回款计划" },
-          { key: "order_money", errmsg: "请输入学费金额" },
+          { key: "order_money", errmsg: "请输入订单金额" },
           { key: "pay_money", errmsg: "请输入回款金额" },
           { key: "pay_type", errmsg: "请选择支付方式" },
           { key: "pay_day", errmsg: "请选择回款日期" },
@@ -310,13 +312,13 @@ export default {
     },
     // 报名缴费
     async createCrmOrder() {
-      let formData = this.formData, order_money = this.orderMoney
+      let formData = this.formData,
           receipt_file = formData.receipt_file.map((item) => item.url)
       
       let data = {
         order_token: Date.now(),
         id: formData.id,
-        order_money: order_money,
+        order_money: formData.order_money,
         surname: formData.surname,
         mobile: formData.mobile,
         id_card_number: formData.id_card_number,
@@ -338,8 +340,10 @@ export default {
       data.pay_plan = formData.payList.map((item, index) => {
         if (this.planCheckedIndex.indexOf(index) !== -1) {
           return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money }
+        } else {
+          return ''
         }
-      })
+      }).filter(i => (!!i))
       
       this.saveLoading = true;
       const res = await createCrmOrder(data).catch(() => { this.saveLoading = false; })
@@ -375,10 +379,7 @@ export default {
 }
 
 .footer {
-  position: absolute;
-  bottom: 20rpx;
-  left: 0;
-  
+   margin-top: 40rpx;
   .tags {
     padding: 20rpx;
     margin: 0 40rpx;

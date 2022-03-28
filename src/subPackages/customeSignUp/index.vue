@@ -37,7 +37,6 @@
         :value="formData.id_card_number"
         @input="({ detail }) => (formData.id_card_number = detail)"
       />
-
       <van-cell
         title="订单来源"
         is-link
