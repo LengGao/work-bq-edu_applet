@@ -32,7 +32,7 @@
             <van-button plain icon="newspaper-o" size="small" custom-class="header-btn" @click="handleCopy(item.type, index)">
               复制
             </van-button>
-            <van-button plain size="small" icon="delete-o" custom-class="header-btn" @click="handleDelete(index)">
+            <van-button plain size="small" icon="delete-o" custom-class="header-btn" @click="handleDelete(item, index)">
               删除
             </van-button>
           </view>
@@ -228,16 +228,17 @@ export default {
       this.$emit("dynamic-input", 'configPlan', this.payList)
     },
     // 删除
-    handleDelete(index) {
-      console.log("handleDelete", item, index, this.payList);
+    handleDelete(item, index) {
+      console.log("handleDelete",item, index, this.payList);
       let modalOption = { title: "", content: "确定要删除此计划吗?", showCancel: true, cancelColor: "#199fff", confirmColor: "#199fff" };
-      let payList = this.payList
+      let payList = JSON.parse(JSON.stringify(this.payList))
       let _index = payList.findIndex(i => i.id == item.id)
+      payList.splice(_index, 1)
+      console.log("find indew", _index, payList);
       uni.showModal(modalOption).then(modal => {
         if (modal[1].confirm) {
-          payList.splice(_index, 1)
           this.payList = payList
-          this.checkPayList()
+          this.checkPayList(payList)
           this.$emit("dynamic-input", 'configPlan', this.payList)
         }
       })
@@ -278,10 +279,10 @@ export default {
       return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
     },
     // 检查选中状态
-    checkPayList() {
+    checkPayList(payList) {
       let curr = this.currentCheckeds,
-          payList = this.payList,
-          filter = payList.filter(item => curr.includes(item.type)).map(item => item.type)
+          filter = payList.filter(item => curr.includes(`${item.type}`)).map(item => `${item.type}`)
+          console.log("curr", curr, filter, payList);
       this.currentCheckeds = Array.from(new Set(filter))
     },
     // 从后找，目的要插在后面

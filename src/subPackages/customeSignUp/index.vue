@@ -488,11 +488,6 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
-page {
-  height: 100%;
-  overflow: hidden;
-}
-
 .add-curtomer {
   height: 100%;
   overflow-y: scroll;

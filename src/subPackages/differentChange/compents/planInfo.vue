@@ -1,31 +1,30 @@
 <template>
   <view class="sign-submit">
     <view class="hr"></view>
+    <Title customStyle="padding: 30rpx;" title="订单小姐"></Title>
     <van-cell-group custom-class="group-cell">
       <van-cell 
-        :border="false"
-        title="订单总额"
-        title-class=“label“
-        value-class="input"
-        :value="orderMoney"
-      />
-      <van-cell 
-        :border="false"
         title="学费金额"
         title-class=“label“
         value-class="input"
         :value="totalMoney"
       />
       <van-cell 
-        :border="false"
         title="其他金额 "
         title-class=“label“
         value-class="input"
         :value="otherMoney"
       />
+      <van-cell 
+        title="订单总额"
+        title-class=“label“
+        value-class="input"
+        :value="orderMoney"
+      />
     </van-cell-group>
 
     <view class="hr"></view>
+    <Title customStyle="padding: 30rpx;" title="回款记录"></Title>
     <van-cell-group custom-class="group-cell" v-for="(item, index) in data" :key="item.id">
       <van-cell
         title="回款日期"
@@ -116,9 +115,11 @@ import { createCrmOrder, uploadImage } from "@/api/customer";
 import Select from "@/components/select/index3.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
+import Title from "@/components/title/index.vue";
 
 export default {
   components: {
+    Title,
     Select,
     DatePicker
   },

@@ -1,6 +1,6 @@
 <template>
   <view class="add-curtomer">
-    <view class="hr"></view>
+    <view class="hr"></view>    
     <van-cell-group custom-class="group-cell">
       <van-cell
         required
@@ -59,6 +59,7 @@
       </van-cell>
     </van-cell-group>
 
+    <view class="hr"></view>
     <van-cell-group custom-class="group-cell">
       <van-cell title="报名类型" title-class="label" value-class="input">
         <text v-if="formData.type == 0">职业教育</text>
@@ -217,6 +218,7 @@
       :show="selectEduProjectShow"
       @close="selectEduProjectShow = false"
       @confirm="handleSelectEduProjectChange"
+      :value="formData.project_projectData"
     />
   </view>
 </template>
@@ -232,10 +234,11 @@ import Select from "@/components/select/index.vue";
 import SelectProject from "./selectProject.vue";
 import SelectEduProject from "./selectEduProject.vue";
 import { mapGetters } from "vuex";
-
+import Title from "@/components/title/index.vue";
 
 export default {
   components: {
+    Title,
     Select,
     SelectProject,
     SelectEduProject,

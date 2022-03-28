@@ -97,36 +97,19 @@ export default {
     handldeTabChange({ detail }) {
       this.active = detail.name;
     },
-    // 计算项目总额
-    computeTotalMoney(map) {
-      console.log("map", map);
-      if (!map) return;
-      let _map = map.map(item => item.must_money)
-      let val = 0
-      for(let i = _map.length - 1; i >= 0; i--) {
-        let _val = _map[i]
-        val = accAdd(val, _val)
-      }
-      
-      return val ? `${val}` : '0'
-    },
-    computeOtherMoney(arr) {
-      console.log("arr", arr);
+    computeMoney(arr) {
+      let totalMoney = 0, otherMoney = 0, orderMoney = 0
       if (!arr) return;
-      let _arr = arr.map(item => item.money)
-      let val = 0
-      for (let i = _arr.length - 1; i >= 0; i--) {
-        let _val = _arr[i]
-        val = accAdd(val, _val)
+      for(let i = arr.length - 1; i >= 0; i--) {
+        let item = arr[i]
+        if (item.type == 1) {
+          totalMoney = accAdd(totalMoney, item.money)
+        } else {
+          otherMoney = accAdd(otherMoney, item.money)
+        }
       }
-      return val ? `${val}` : '0'
-    },
-    computeOrderMoney(otherMoney, totalMoney) {
-      console.log("arguments",...arguments);
-      if (!otherMoney || !totalMoney) return;
-      let val = accAdd(otherMoney, totalMoney)
-      this.formData.order_money = val
-      return val ? `${val}` : `0`
+      orderMoney = accAdd(totalMoney, otherMoney)
+      return { totalMoney, otherMoney, orderMoney }
     },
     // 输入修改
     modifyUserInfo(newData) {
@@ -139,9 +122,6 @@ export default {
       console.log("dynamicInput", key, val, index, this.formData.projectData);
       if (key === "projectData") {
         this.formData.projectData[index].must_money = val;
-        let totalMoney = this.computeTotalMoney(this.formData.projectData)
-        this.formData.orderMoney = this.computeOrderMoney(otherMoney, this.formData.totalMoney)
-        this.formData.totalMoney = totalMoney
 
       } else if (key === "planRecond") {
         let _data = this.formData.pay_log[index];
@@ -156,10 +136,10 @@ export default {
         } else {
           this.formData.pay_plan = val;
         }
-        let otherMoney = this.computeOtherMoney(this.formData.pay_plan)
-        this.formData.orderMoney = this.computeOrderMoney(otherMoney, this.formData.totalMoney)
-        this.formData.otherMoney = otherMoney 
-
+        let { totalMoney, orderMoney, otherMoney } = this.computeMoney(this.formData.pay_plan)
+        this.formData.otherMoney = otherMoney
+        this.formData.totalMoney = totalMoney
+        this.formData.orderMoney = orderMoney
       }
     },
     // 处理详情接口返回的项目数据
@@ -233,6 +213,7 @@ export default {
     // 保存
     async handleSave() {
       let formData = this.formData;
+      formData.order_money = this.formData.orderMoney
       let param = this.resolveSubmitData(formData);
       console.log("formDta", param);
       if (this.validator(param)) {
@@ -263,9 +244,10 @@ export default {
         _data.pay_log = plan.planLog;
         _data.pay_plan = plan.payPlan;
         // 统计数据处理
-        _data.totalMoney = this.computeTotalMoney(_data.projectData)
-        _data.otherMoney = this.computeOtherMoney(_data.pay_plan)
-        _data.orderMoney = this.computeOrderMoney(_data.otherMoney, _data.totalMoney)
+        let { totalMoney, orderMoney, otherMoney } = this.computeMoney(_data.pay_plan)
+        _data.totalMoney = totalMoney
+        _data.otherMoney = otherMoney
+        _data.orderMoney = orderMoney
 
         this.formData = _data;
       }

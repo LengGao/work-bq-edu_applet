@@ -259,7 +259,7 @@ export default {
     checkPayList() {
       let curr = this.currentCheckeds,
           payList = this.payList,
-          filter = payList.filter(item => curr.includes(item.type)).map(item => item.type)
+          filter = payList.filter(item => curr.includes(`${item.type}`)).map(item => `${item.type}`)
       this.currentCheckeds = Array.from(new Set(filter))
     },
     // 从后找，目的要插在后面

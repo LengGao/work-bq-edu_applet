@@ -84,6 +84,10 @@ export default {
       type: [String, Number],
       default: 1,
     },
+    value: {
+      type: [Array, Object],
+      default: []
+    },
     auto: {
       type: Boolean,
       default: false
@@ -105,8 +109,10 @@ export default {
   created() {
     this.getUniversityMajorDetailList();
   },
-  mounted() {
-    // let data = this.autoData
+  watch: {
+    "value": function (newVal) {
+      console.log("value", newVal);
+    }
   },
   methods: {
     resset() {

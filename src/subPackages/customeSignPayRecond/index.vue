@@ -1,32 +1,30 @@
 <template>
   <view class="sign-submit">
     <view class="hr"></view>
+    <Title customStyle="padding: 30rpx;" title="订单小结"></Title>
     <van-cell-group custom-class="group-cell">
       <van-cell 
-        :border="false"
-        title="订单总额"
-        title-class=“label“
-        value-class="input"
-        :value="orderMoney"
-      />
-      <van-cell 
-        :border="false"
         title="学费金额"
         title-class=“label“
         value-class="input"
         :value="totalMoney"
       />
       <van-cell 
-        :border="false"
         title="其他金额 "
         title-class=“label“
         value-class="input"
         :value="otherMoney"
       />
+      <van-cell 
+        title="订单总额"
+        title-class=“label“
+        value-class="input"
+        :value="orderMoney"
+      />
     </van-cell-group>
 
     <view class="hr"></view>
-
+    <Title customStyle="padding: 30rpx;" title="回款记录"></Title>
     <van-cell-group custom-class="group-cell">
       <van-cell
         title="回款日期"
@@ -178,37 +176,28 @@ export default {
     this.formData = Object.assign(this.formData, q)
     console.log("q:", q);
     let payList = q.payList,
-        totalMoney = this.computeTotalMoney(q.project_pay_money),
-        otherMoney = this.computeOtherMoney(payList),
-        orderMoney = accAdd(otherMoney, totalMoney)
+        money = this.computeMoney(payList)
 
-    this.totalMoney = totalMoney
-    this.otherMoney = otherMoney
-    this.orderMoney = orderMoney
-    this.formData.order_money = orderMoney
+    this.totalMoney = money.totalMoney 
+    this.otherMoney = money.otherMoney
+    this.orderMoney = money.orderMoney
+    this.formData.order_money = money.orderMoney
     this.getPlanData(payList)
   },
   methods: {
-    // 计算项目总额
-    computeTotalMoney(map) {
-      let val = 0
-      for(let k in map) {
-        let _val = map[k]
-        val = accAdd(val, _val)
+    // 订单小姐金额计算
+    computeMoney(arr) {
+      let totalMoney = 0, otherMoney = 0, orderMoney = 0
+      for(let i = arr.length - 1; i >= 0; i--) {
+        let item = arr[i]
+        if (item.type == 1) {
+          totalMoney = accAdd(totalMoney, item.money)
+        } else {
+          otherMoney = accAdd(otherMoney, item.money)
+        }
       }
-      return val ? `${val}` : '0'
-    },
-    computeOtherMoney(arr) {
-      let val = 0
-      for (let i = arr.length - 1; i >= 0; i--) {
-        let _val = arr[i].money
-        val = accAdd(val, _val)
-      }
-      return val ? `${val}` : '0'
-    },
-    computeOrderMoney(otherMoney) {
-      let val = accAdd(otherMoney, this.totalMoney)
-      return val ? `${val}` : `0`
+      orderMoney = accAdd(totalMoney, otherMoney)
+      return { totalMoney, otherMoney, orderMoney }
     },
     // 支付方式
     onSheetSelect({ detail }) {

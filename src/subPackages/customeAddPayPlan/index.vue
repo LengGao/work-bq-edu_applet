@@ -40,7 +40,7 @@
               size="small"
               icon="delete-o" 
               custom-class="header-btn" 
-              @click="handleDelete(index)">
+              @click="handleDelete(item, index)">
               删除
             </van-button>
           </view>
@@ -225,7 +225,7 @@ export default {
       uni.showToast({ icon: 'none', title: '复制成功' })
     },
     // 删除
-    handleDelete(index) {
+    handleDelete(item, index) {
       console.log("handleDelete", item, index, this.payList);
       let modalOption = { title: "", content: "确定要删除此计划吗?", showCancel: true, cancelColor: "#199fff", confirmColor: "#199fff" };
       let payList = this.payList
@@ -277,7 +277,7 @@ export default {
     checkPayList() {
       let curr = this.currentCheckeds,
           payList = this.payList,
-          filter = payList.filter(item => curr.includes(item.type)).map(item => item.type)
+          filter = payList.filter(item => curr.includes(`${item.type}`)).map(item => `${item.type}`)
       this.currentCheckeds = Array.from(new Set(filter))
     },
     // 从后找，目的要插在后面
