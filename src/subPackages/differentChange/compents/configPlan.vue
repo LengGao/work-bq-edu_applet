@@ -239,6 +239,7 @@ export default {
         if (modal[1].confirm) {
           this.payList = payList
           this.checkPayList(payList)
+          uni.showToast({ icon: 'none', title: '删除成功' })
           this.$emit("dynamic-input", 'configPlan', this.payList)
         }
       })
@@ -282,7 +283,6 @@ export default {
     checkPayList(payList) {
       let curr = this.currentCheckeds,
           filter = payList.filter(item => curr.includes(`${item.type}`)).map(item => `${item.type}`)
-          console.log("curr", curr, filter, payList);
       this.currentCheckeds = Array.from(new Set(filter))
     },
     // 从后找，目的要插在后面
@@ -350,7 +350,6 @@ export default {
 .payment-plan {
   width: 100%;
   overflow: hidden;
-  padding-bottom: 300rpx;
   
   .payment-check {
     padding: 0rpx 20rpx;

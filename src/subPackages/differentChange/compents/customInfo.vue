@@ -542,7 +542,6 @@ export default {
 .add-curtomer {
   width: 100%;
   overflow: hidden;
-  padding-bottom: 300rpx;
 
   /deep/.title {
     font-size: @font-size-md;

@@ -52,10 +52,10 @@
         label="回款金额"
         label-class="label"
         input-class="input"
-        :value="formData.pay_money"
-        placeholder="请输入回款金额"
-        @input="({ detail }) => (formData.pay_money = detail)"
         input-align="right"
+        placeholder="请输入回款金额"
+        :value="formData.pay_money"
+        @input="({ detail }) => (formData.pay_money = detail)"
       />
       <van-cell
         title="支付方式"
@@ -211,7 +211,7 @@ export default {
       let names = detail.map(item => item.name)
       let indexs = detail.map(item => item.value)
       let ids = detail.map(item => item.id).join(',')
-      this.planCheckedName = `${names[0]} (${names.length})` 
+      this.planCheckedName = names[0] ? `${names[0]} (${names.length})` : '请选择'
       this.planCheckedIndex = indexs
       this.formData.pay_plan_ids = ids
       let money = names.map(name => name.split(' ')[2].replace('￥', ''))
@@ -363,7 +363,7 @@ export default {
     position: fixed;
     bottom: 0;
     left: 0;
-    z-index: 999;
+    z-index: 99;
     width: 100%;
     background-color: #fff;
 

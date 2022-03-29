@@ -37,21 +37,16 @@
       </van-tab>
     </van-tabs>
 
+    <view style="display: block; height: 320rpx;"></view>
     <view class="footer">
       <view class="tags" v-if="active === 2">
-        *
-        回款时必须保证回款金额等于所选回款计划的总金额，如不相等请先修改回款计划
+        *回款时必须保证回款金额等于所选回款计划的总金额，如不相等请先修改回款计划
       </view>
 
       <view class="footer-submit">
         <van-button round @click.native="handleCancel">取消</van-button>
         <van-button
-          round
-          type="primary"
-          :loading="saveLoading"
-          @click.native="handleSave"
-          >保存</van-button
-        >
+          round type="primary" :loading="saveLoading" @click.native="handleSave">保存</van-button>
       </view>
     </view>
   </view>
@@ -333,12 +328,13 @@ export default {
     position: fixed;
     bottom: 0;
     left: 0;
-    z-index: 999;
+    z-index: 99;
+    width: 100%;
     background-color: #fff;
 
     .tags {
       padding: 20rpx;
-      margin: 0 40rpx;
+      margin: 20rpx 20rpx 40rpx;
       font-size: 24rpx;
       color: #ff4b4b;
       border: @border;
@@ -350,9 +346,7 @@ export default {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      margin-top: 40rpx;
-      padding: 0 60rpx 20rpx;
-      background-color: #fff;
+      padding: 0rpx 40rpx 20rpx;
     }
 
     /deep/.van-button {

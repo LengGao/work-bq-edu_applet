@@ -216,6 +216,7 @@ export default {
           payList.splice(_index, 1)
           this.payList = payList
           this.checkPayList()
+          uni.showToast({ icon: 'none', title: '删除成功' })
         }
       })
     },

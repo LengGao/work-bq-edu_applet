@@ -1,7 +1,7 @@
 <template>
   <view class="sign-submit">
     <view class="hr"></view>
-    <Title customStyle="padding: 30rpx;" title="订单小姐"></Title>
+    <Title customStyle="padding: 20rpx;" title="订单小结"></Title>
     <van-cell-group custom-class="group-cell">
       <van-cell 
         title="学费金额"
@@ -23,9 +23,9 @@
       />
     </van-cell-group>
 
-    <view class="hr"></view>
-    <Title customStyle="padding: 30rpx;" title="回款记录"></Title>
+    <Title customStyle="padding: 20rpx;" title="回款记录"></Title>
     <van-cell-group custom-class="group-cell" v-for="(item, index) in data" :key="item.id">
+      <view class="hr"></view>
       <van-cell
         title="回款日期"
         is-link
@@ -111,11 +111,12 @@
 </template>
 
 <script>
-import { createCrmOrder, uploadImage } from "@/api/customer";
+import Title from "@/components/title/index.vue";
 import Select from "@/components/select/index3.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
-import Title from "@/components/title/index.vue";
+import { accAdd } from "@/utils/index"
+import { createCrmOrder, uploadImage } from "@/api/customer";
 
 export default {
   components: {
@@ -148,17 +149,6 @@ export default {
       default: '0.00'   
     }
   },
-  watch: {
-    'orderMoney': function(newVal) {
-      console.log("orderMoney", newVal);
-    },
-    'totalMoney': function(newVal) {
-      console.log("totalMoney", newVal);
-    },
-    "otherMoney": function(newVal) {
-      console.log("otherMoney", newVal);
-    }
-  },
   data() {
     return {
       saveLoading: false, // 板寸按钮加载状态
@@ -181,14 +171,8 @@ export default {
       currentIndex: 0,
     };
   },
-  watch: {
-    'paylist': function(newVal) {
-      console.log("paylist", newVal);
-    }
-  },
   mounted() {
     this.data = this.info
-    console.log("3", this.data, this.paylist);
     this.getPlanData(this.paylist)
   },
   methods: {
@@ -202,7 +186,6 @@ export default {
     handlePlanSelect(item, index) {
       this.currentItem = item
       this.currentIndex = index
-      console.log("item", item);
       this.selectShow = true
     },
     handlePayTypeSelect(item, index) {
@@ -230,11 +213,20 @@ export default {
       let indexs = detail.map(item => item.value)
       let ids = detail.map(item => item.id).join(',')
       let item = this.currentItem, index = this.currentIndex
-      item.planCheckedName = `${names[0]} (${names.length})` 
+      item.planCheckedName = names[0] ? `${names[0]} (${names.length})` : '请选择'       
       item.planCheckedIndex = indexs
       item.pay_plan_id = ids
+
+      let money = names.map(name => name.split(' ')[2].replace('￥', ''))
+      let val = 0;
+      for(let i = money.length - 1; i >=0; i--) {
+        let _val = money[i] 
+        val = accAdd(val, _val)
+      }
+      item.pay_money = val 
+
       this.data[index] = item
-      this.$emit('dynamic-input', 'planRecond', { pay_plan_id: ids }, index)
+      this.$emit('dynamic-input', 'planRecond', { pay_money: val, pay_plan_id: ids }, index)
     },
     // 回款日期
     handleDateChange(day) {
@@ -320,7 +312,6 @@ export default {
       let _data = this.data[index].receipt_file
       _data.push({ url, isImage: true });
       this.data[index].receipt_file = _data
-      console.log("山川", url);
       this.$emit('dynamic-input', 'planRecond', {receipt_file: _data}, index)
     },
     // 报名缴费
@@ -376,11 +367,6 @@ export default {
 .sign-submit {
   width: 100%;
   overflow: hidden;
-  padding-bottom: 300rpx;
-}
-
-.group-cell {
-  height: 100%;
 }
 
 /depp/.label {
