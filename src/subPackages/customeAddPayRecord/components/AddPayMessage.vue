@@ -1,5 +1,30 @@
 <template>
 <view class="sign-submit">
+    <view class="hr"></view>
+    <Title customStyle="padding: 20rpx;" title="订单小结"></Title>
+    <van-cell-group custom-class="group-cell">
+      <van-cell 
+        title="学费金额"
+        title-class=“label“
+        value-class="input"
+        :value="totalMoney"
+      />
+      <van-cell 
+        title="其他金额 "
+        title-class=“label“
+        value-class="input"
+        :value="otherMoney"
+      />
+      <van-cell 
+        title="订单总额"
+        title-class=“label“
+        value-class="input"
+        :value="orderMoney"
+      />
+    </van-cell-group>
+
+    <view class="hr"></view>
+    <Title customStyle="padding: 20rpx;" title="回款记录"></Title>
     <van-cell-group custom-class="group-cell">
       <van-cell
         title="回款日期"
@@ -23,6 +48,7 @@
 
       <van-field
         required
+        readonly
         type="number"
         label="回款金额"
         label-class="label"
@@ -117,7 +143,7 @@ export default {
     payList: {
       type: Array,
       default: []
-    }
+    },
   },
   data() {
     return {
@@ -135,6 +161,10 @@ export default {
       sheetShow: false, 
       sheetActions: [],
       sheetChecked: "",
+
+      totalMoney: '0.00',
+      otherMoney: '0.00',
+      orderMoney: '0.00',
       // 提交表单
       formData: {
         pay_day: '',      // 回款日期
@@ -165,7 +195,7 @@ export default {
       let names = detail.map(item => item.name)
       let indexs = detail.map(item => item.value)
       let ids = detail.map(item => item.id).join(',')
-      this.planCheckedName = `${names[0]} (${names.length})` 
+      this.planCheckedName = names[0] ? `${names[0]} (${names.length})` : '请选择'
       this.planCheckedIndex = indexs
       this.formData.pay_plan_id = ids
     },

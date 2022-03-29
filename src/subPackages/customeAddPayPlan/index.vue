@@ -99,7 +99,6 @@
       @cancel="datePickerShow = false"
       @confirm="handleDateChange"
       :value="currentDate"
-      :min-date="currentDate"
     />
   </view>
 </template>
