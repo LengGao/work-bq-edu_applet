@@ -163,6 +163,30 @@
         >已通过</Seal
       >
     </template>
+  
+    <van-popup custom-class="pay-drawer" position="right" :show="settingPayPlanShow">
+    <SettingPayPlan
+      v-if="detailData.pay_plan && detailData.pay_plan.length > 0"
+      :orderId="orderId"
+      :list="detailData.pay_plan"
+      @close="cancelSetting"
+    />
+    </van-popup>
+    
+    <van-popup custom-class="pay-drawer" position="left" :show="addPayRecondShow">
+    <AddPayRecond 
+      v-if="detailData.pay_log && detailData.pay_plan.length > 0"
+      :orderId="orderId"
+      :info="detailData.pay_log"
+      :paylist="detailData.pay_plan"
+      :orderMoney="orderMoney"
+      :totalMoney="totalMoney"
+      :otherMoney="otherMoney"
+      @close="cancelAdd"
+    />
+    </van-popup>
+
+
     <van-dialog id="van-dialog" />
     <van-dialog
       use-slot
@@ -254,6 +278,7 @@
         >
       </view>
     </van-popup>
+
     <DatePicker
       :show="datePickerShow"
       @close="datePickerShow = false"
@@ -277,6 +302,8 @@ import PayRecord from "./components/payRecord.vue";
 import ChangeRecord from "./components/changeRecord.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import Seal from "@/components/seal/index.vue";
+import SettingPayPlan from './components/settingPayPlan.vue'
+import AddPayRecond from './components/addPayRecond.vue'
 import { mapGetters } from "vuex";
 import {
   getCrmOrderDetail,
@@ -287,7 +314,9 @@ import {
   getOrderTransactionList,
 } from "@/api/order";
 import { uploadImage } from "@/api/customer";
+import { accAdd } from "@/utils/index";
 import Dialog from "@/wxcomponents/vant/dialog/dialog";
+
 
 export default {
   components: {
@@ -298,6 +327,8 @@ export default {
     ChangeRecord,
     Seal,
     StudentStatusChangeRecord,
+    SettingPayPlan,
+    AddPayRecond,
   },
   data() {
     return {
@@ -329,12 +360,19 @@ export default {
       sheetChecked: "",
       datePickerShow: false,
       checkedPeriodName: "",
+      
+      addPayRecondShow: false,
+      settingPayPlanShow: false,
+
       formData: {
         plan_id: "",
         pay_date: "",
         pay_type: "",
         pay_money: "",
       },
+      orderMoney: "0.00",
+      totalMoney: "0.00",
+      otherMoney: "0.00",
       addLoading: false,
       // 上传
       fileList: [],
@@ -345,7 +383,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["payTypeOptions"]),
+    ...mapGetters(["payTypeOptions", 'expenseType']),
     periodOptions() {
       return this.detailData.pay_plan.map((item, index) => {
         return ({
@@ -374,35 +412,20 @@ export default {
   },
   methods: {
     onAdd() {
-      let url = '/subPackages/customeAddPayRecord/index',
-          params = '?orderId=' + this.orderId,
-          _this = this
-
-      uni.navigateTo({
-        url: `${url}${params}`,
-        events: {
-          updateData() {
-            _this.getCrmOrderDetail(true)
-            _this.getOrderTransactionList();
-          }
-        }
-      })
+      this.addPayRecondShow = true
     },
     onSetting() {
-      let url = '/subPackages/customeAddPayPlan/index',
-          params = '?orderId=' + this.orderId,
-          _this = this
-
-      uni.navigateTo({
-        url: `${url}${params}`,
-        events: {
-          updateData() {
-            console.log("tex  ");
-            _this.getCrmOrderDetail(true)
-            _this.getOrderTransactionList();
-          }
-        }
-      })
+      this.settingPayPlanShow = true
+    },
+    cancelAdd() {
+      this.addPayRecondShow = false
+      this.getCrmOrderDetail(true)
+      this.getOrderTransactionList();
+    },
+    cancelSetting() {
+      this.settingPayPlanShow = false
+      this.getCrmOrderDetail(true)
+      this.getOrderTransactionList();
     },
     async getOrderTransactionList() {
       const data = { order_id: this.orderId };
@@ -602,6 +625,69 @@ export default {
       const prevPage = pages[pages.length - 2];
       prevPage.$vm && prevPage.$vm.updateItem && prevPage.$vm.updateItem(data);
     },
+    // 金额计算
+    computeMoney(arr) {
+      let totalMoney = 0, otherMoney = 0, orderMoney = 0
+      if (!arr) return;
+      for(let i = arr.length - 1; i >= 0; i--) {
+        let item = arr[i]
+        if (item.type == 1) {
+          totalMoney = accAdd(totalMoney, item.money)
+        } else {
+          otherMoney = accAdd(otherMoney, item.money)
+        }
+      }
+      orderMoney = accAdd(totalMoney, otherMoney)
+      return { totalMoney, otherMoney, orderMoney }
+    },
+    // 处理详情接口返回的项目数据
+    resolveProjectData(projectData) {
+      projectData = JSON.parse(projectData);
+      if (projectData && projectData.length) {
+        let _projectData = projectData.map((item) => {
+          item.price = item.project_price || item.total_money;
+          return item;
+        });
+        return _projectData;
+      }
+      return [];
+    },
+    // 处理
+    resolvePlanlog(planLog = [], payPlan = []) {
+      let types = this.expenseType,
+        cacheName = "",
+        cacheIndex = [];
+
+      payPlan = payPlan.map((item) => {
+        item.name = types[item.type];
+        return item;
+      });
+
+      planLog = planLog.map((item) => {
+        let pay_plan_ids = item.pay_plan_id.split(",") || [];
+
+        payPlan.map((plan, i) => {
+          let id = String(plan.id);
+          if (pay_plan_ids.indexOf(id) !== -1) {
+            cacheName += cacheName ? `,${plan.name}` : plan.name;
+            cacheIndex.push(i);
+          }
+        });
+
+        item.planCheckedName = cacheName;
+        item.planCheckedIndex = cacheIndex;
+        console.log("planCheckedIndex", item.planCheckedIndex);
+
+        item.receipt_file = item.receipt_file.map((file, index) => {
+          return { name: "回款凭证" + (index + 1), url: file };
+        });
+
+        return item;
+      });
+
+      return { planLog, payPlan };
+    },
+
     // 获取详情
     async getCrmOrderDetail(isOnload) {
       const data = {
@@ -611,7 +697,21 @@ export default {
         data.verify_id = this.verifyId;
       }
       const res = await getCrmOrderDetail(data);
-      this.detailData = res.data;
+      let _data = res.data
+      // 处理已选项目数据
+      _data.projectData = this.resolveProjectData(_data.project);
+      // 处理回款计划与回款记录数据
+      let plan = this.resolvePlanlog(_data.pay_log, _data.pay_plan);
+      _data.pay_log = plan.planLog;
+      _data.pay_plan = plan.payPlan;
+      // 统计数据处理
+      // let { totalMoney, orderMoney, otherMoney } = this.computeMoney(_data.pay_plan)
+      this.totalMoney = _data.order_money
+      this.otherMoney = _data.other_money
+      this.orderMoney = accAdd(_data.other_money, _data.order_money)
+          
+      
+      this.detailData = _data;
       !isOnload && this.updateListItem(res.data);
       const approveStatusMap = {
         1: "待审核",
@@ -690,7 +790,7 @@ export default {
     min-height: 40rpx;
   }
   /deep/.drawer {
-    width: 90%;
+    width: 100%;
     height: 100%;
     display: flex;
     justify-content: space-between;
@@ -707,5 +807,10 @@ export default {
       }
     }
   }
+}
+
+/deep/.pay-drawer {
+  width: 100%;
+  height: 100%;
 }
 </style>

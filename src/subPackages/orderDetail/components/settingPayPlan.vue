@@ -7,12 +7,13 @@
       </view>
       <van-checkbox-group :value="currentCheckeds" @change="handleChecked">
         <view class="check-group">
-          <van-checkbox
-            v-for="(item, index) in expenseType"
-            shape="square"
-            :key="index"
-            :name="index"
-            >
+          <van-checkbox 
+            v-for="(item, index) in expenseType" 
+            :key="index" 
+            shape="square" 
+            :name="index" 
+            class="van-checkbox"
+          >
             {{ item }}
           </van-checkbox>
         </view>
@@ -20,6 +21,7 @@
     </view>
 
     <view class="hr"></view>
+
     <view class="pay-list">
       <view class="list-item" v-for="(item, index) in payList" :key="item.id">
         <view class="list-item-header">
@@ -27,20 +29,10 @@
               <Title :title="item.name" customStyle="padding-left: 10rpx;"></Title>
           </view>
           <view class="header-btns">
-            <van-button 
-              plain  
-              icon="newspaper-o" 
-              size="small" 
-              custom-class="header-btn" 
-              @click="handleCopy(item.type, index)">
+            <van-button plain icon="newspaper-o" size="small" custom-class="header-btn" @click="handleCopy(item.type, index)">
               复制
             </van-button>
-            <van-button 
-              plain  
-              size="small"
-              icon="delete-o" 
-              custom-class="header-btn" 
-              @click="handleDelete(item, index)">
+            <van-button plain size="small" icon="delete-o" custom-class="header-btn" @click="handleDelete(item, index)">
               删除
             </van-button>
           </view>
@@ -72,17 +64,21 @@
             label-class="label-class"
             input-class="input-class"
             :value="item.money"
-            @input="({ detail }) => handleInputMoney(detail, index, item)"
+            @blur="({ detail }) => 
+              detail.value !== item.money && 
+              handleInputMoney(detail, item, index)
+            "
           />
         </view>  
 
       </view>
     </view>
 
+    <view style="display: block; height: 320rpx;"></view>
     <view class="footer">
       <view class="footer-submit">
-        <van-button round @click="toPrev">取消</van-button>
-        <van-button round type="primary" @click="toNext">确定</van-button>
+        <van-button custom-style="width: 300rpx;" round @click="toPrev">取消</van-button>
+        <van-button custom-style="width: 300rpx;" round type="primary" @click="toNext">确定</van-button>
       </view>
     </view>
 
@@ -114,6 +110,16 @@ export default {
     Title,
     DatePicker,
   },
+  props: {
+    list: {
+      type: Array,
+      default: []
+    },
+    orderId: {
+      type: [String, Number],
+      default: ''
+    }
+  },
   data() {
     return {
       datePickerShow: false, 
@@ -134,15 +140,22 @@ export default {
       formData: {},
     };
   },
-  onLoad(query) {
-    this.order_id = query.orderId
-    const eventChannel = this.getOpenerEventChannel()
-    this.eventChannel = eventChannel
+  mounted() {
+    this.payList = this.list
+    console.log("seting", this.list);
     this.getPlanTypeList()
     this.getPlanYearOptions()
+    let cacheType = []
+     this.list.filter(item => {
+       if (cacheType.indexOf(item.type) == -1) {
+         cacheType.push(item.type)
+      }
+    })
+
+    this.currentCheckeds = cacheType.map(item => `${item}`)
+    console.log("currentCheckeds", this.currentCheckeds);
   },
   methods: {
-    // 日期玄额
     openPicker(key, index, item) {
       if (key == 'date') {
         this.datePickerShow = true
@@ -171,10 +184,12 @@ export default {
       this.datePickerShow = false
     },
     // 实收金额输入
-    handleInputMoney(val, index, item) {      
-      item.money = val
+    handleInputMoney(detail, item, index) {      
+      console.log("val", detail);
+      item.money = +detail.value
       this.currentItem = item
       this.payList[index] = item
+      
     },
     // 多选 新增 删除 更新 diff
     handleChecked({ detail }) {
@@ -220,15 +235,17 @@ export default {
     },
     // 删除
     handleDelete(item, index) {
-      console.log("handleDelete", item, index, this.payList);
+      console.log("handleDelete",item, index, this.payList);
       let modalOption = { title: "", content: "确定要删除此计划吗?", showCancel: true, cancelColor: "#199fff", confirmColor: "#199fff" };
-      let payList = this.payList
+      let payList = JSON.parse(JSON.stringify(this.payList))
       let _index = payList.findIndex(i => i.id == item.id)
+      payList.splice(_index, 1)
+      console.log("find indew", _index, payList);
       uni.showModal(modalOption).then(modal => {
         if (modal[1].confirm) {
-          payList.splice(_index, 1)
           this.payList = payList
-          this.checkPayList()
+          this.checkPayList(payList)
+          uni.showToast({ icon: 'none', title: '删除成功' })
         }
       })
     },
@@ -268,16 +285,15 @@ export default {
       return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
     },
     // 检查选中状态
-    checkPayList() {
+    checkPayList(payList) {
       let curr = this.currentCheckeds,
-          payList = this.payList,
           filter = payList.filter(item => curr.includes(`${item.type}`)).map(item => `${item.type}`)
       this.currentCheckeds = Array.from(new Set(filter))
     },
     // 从后找，目的要插在后面
     handleFindLast(arr, callback) {
       for(let i = arr.length - 1; i >= 0; i--) {
-        if (callback(arr[i], i)) {
+        if (callback(arr[i], i, arr)) {
           return i;
         }
       }
@@ -285,29 +301,30 @@ export default {
     },
     // 上一步 下一步
     toPrev() {
-        uni.navigateBack()
+        this.$emit("close")
     },
     toNext() {
       let payList = this.payList
       let planParam = payList.map(item => ({ type: item.type, day: item.day, year: item.year, money: item.money }))
       let data = {
-        order_id: this.order_id,
+        order_id: this.orderId,
         data: JSON.stringify(planParam)
       }
+
       let validator = [
         { fileld: "year", message: '请选择年份' },
         { fileld: "day", message: '请选择日期' },
         { fileld: "money", message: '请输入回款金额' }
       ]
+
       const callback = async () => {
         const res = await createOrderPayPlan(data).catch(() => {})
         if (res.code == 0) {
           uni.showToast({ icon: 'none', title: '创建成功' })
-          uni.navigateBack().then(() => {
-            this.eventChannel.emit('updateData', {})
-          })
+          this.$emit("close")
         }
       }
+
       this.validate(validator, callback)
     },
     // 校验
@@ -316,8 +333,7 @@ export default {
       if (payList.length > 0) {
         payList.forEach(item => {
           err.forEach(eitem => {
-            let val = item[eitem.fileld]
-            if (`${val}`.length <= 0) { 
+            if (!item[eitem.fileld] && item[eitem.fileld].length == 0) {
               uni.showToast({ icon: 'none', title: eitem.message })
               flag = false
             }
@@ -346,23 +362,10 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
-page {
-  height: 100%;
-  overflow: hidden;
-}
-
-/deep/.label-class {
-  font-size: @font-size-md;
-}
-
-/deep/.input-class {
-  font-size: @font-size-md;
-}
-
 .payment-plan {
   width: 100%;
   overflow: hidden;
-
+  
   .payment-check {
     padding: 0rpx 20rpx;
     .header {
@@ -378,6 +381,7 @@ page {
       justify-content: flex-start;
       align-items: center;
       flex-wrap: wrap;
+      -webkit-flex-wrap: wrap;
       padding: 20rpx 0rpx;
     }
 
@@ -388,7 +392,6 @@ page {
   }
 
   .pay-list {
-    min-height: 50vh;
     padding: 20rpx;
   }
 
@@ -427,8 +430,11 @@ page {
   }
   
   .footer {
-    position: static;
-    margin-top: 100rpx;
+    position: relative;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    width: 100%;
 
     &-submit {
       display: flex;
@@ -436,7 +442,7 @@ page {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 0 40rpx 60rpx;
+      padding: 0 40rpx 20rpx;
       background-color: #fff;
     }
 
@@ -446,9 +452,17 @@ page {
   }
 }
 
+/deep/.label-class {
+  font-size: @font-size-md;
+}
+
+/deep/.input-class {
+  font-size: @font-size-md;
+}
+
 .hr {
   width: 100%;;
   height: 30rpx;
   background-color: @background-color;
 }
-</style> 
+</style>

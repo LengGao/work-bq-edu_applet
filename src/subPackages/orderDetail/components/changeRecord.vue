@@ -64,7 +64,7 @@
         <text class="title">支付方式</text>
         <text class="value">{{ item.pay_type }}</text>
       </van-cell>
-      <van-cell :border="false">
+      <van-cell :border="false" title-width="130rpx">
         <template #title>
           <text class="title">回款计划</text>
         </template> 
@@ -223,13 +223,15 @@ export default {
   /deep/.title {
     flex: inherit;
     flex-shrink: 0;
-    color: #969799;
+    font-size: @font-size-sm;
+    color: @text-color-grey;
     margin-right: 20rpx;
   }
   /deep/.value {
     min-width: 100rpx;
     display: inline-block;
     color: @text-color;
+    font-size: @font-size-sm;
     text-align: left;
     &.right {
       text-align: right;

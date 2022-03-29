@@ -58,7 +58,7 @@ import ConfigPlan from "./compents/configPlan.vue";
 import PlanInfo from "./compents/planInfo.vue";
 import { getCrmOrderDetail, orderReshuffle } from "@/api/order";
 import { mapGetters } from "vuex";
-import { accAdd } from "@/utils/index"
+import { accAdd } from "@/utils/index";
 import Validator from "@/utils/validator";
 
 export default {

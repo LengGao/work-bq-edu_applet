@@ -63,7 +63,7 @@
             placeholder="请输入回款金额"
             label-class="label-class"
             input-class="input-class"
-            :value="item.money"
+            :value="Number(item.money)"
             @blur="({ detail }) => 
               detail.value !== item.money && 
               handleInputMoney(detail, item, index)

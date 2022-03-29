@@ -81,8 +81,8 @@
         custom-class="cell-group"
         inset
         :border="false"
-        v-for="(item, index) in data.pay_plan"
-        :key="index"
+        v-for="(item) in data.pay_plan"
+        :key="item.id"
       >
         <van-cell>
           <template #title>
