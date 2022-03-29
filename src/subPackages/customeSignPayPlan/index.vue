@@ -65,6 +65,7 @@
       </view>
     </view>
 
+    <view style="display: block; height: 320rpx;"></view>
     <view class="footer">
       <view class="footer-submit">
         <van-button round @click="toPrev">上一步</van-button>
@@ -396,8 +397,11 @@ export default {
   }
   
   .footer {
-    position: relative;
-    margin: 40rpx 0rpx;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    width: 100%;
 
     &-submit {
       display: flex;
@@ -405,7 +409,7 @@ export default {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 0 50rpx;
+      padding: 0 40rpx 20rpx;
       background-color: #fff;
     }
 

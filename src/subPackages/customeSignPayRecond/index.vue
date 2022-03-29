@@ -1,7 +1,7 @@
 <template>
   <view class="sign-submit">
     <view class="hr"></view>
-    <Title customStyle="padding: 30rpx;" title="订单小结"></Title>
+    <Title customStyle="padding: 20rpx;" title="订单小结"></Title>
     <van-cell-group custom-class="group-cell">
       <van-cell 
         title="学费金额"
@@ -24,7 +24,7 @@
     </van-cell-group>
 
     <view class="hr"></view>
-    <Title customStyle="padding: 30rpx;" title="回款记录"></Title>
+    <Title customStyle="padding: 20rpx;" title="回款记录"></Title>
     <van-cell-group custom-class="group-cell">
       <van-cell
         title="回款日期"
@@ -79,21 +79,15 @@
       </van-cell>
     </van-cell-group>
 
+    <view style="display: block; height: 320rpx;"></view>
     <view class="footer">
       <view class="tags">
-        *
-        回款时必须保证回款金额等于所选回款计划的总金额，如不相等请先修改回款计划
+        *回款时必须保证回款金额等于所选回款计划的总金额，如不相等请先修改回款计划
       </view>
 
       <view class="footer-submit">
         <van-button round @click="handleCancel">上一步</van-button>
-        <van-button
-          round
-          type="primary"
-          :loading="saveLoading"
-          @click="handleSave"
-          >保存</van-button
-        >
+        <van-button round type="primary" :loading="saveLoading" @click="handleSave">保存</van-button>
       </view>
     </view>
 
@@ -126,14 +120,16 @@
 </template>
 
 <script>
-import { createCrmOrder, uploadImage } from "@/api/customer";
+import Title from "@/components/title/index.vue";
 import Select from "@/components/select/index.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
 import { accAdd } from "@/utils/index"
+import { createCrmOrder, uploadImage } from "@/api/customer";
 
 export default {
   components: {
+    Title,
     Select,
     DatePicker
   },
@@ -356,10 +352,6 @@ export default {
   overflow: hidden;
 }
 
-.group-cell {
-  height: 80vh;
-}
-
 /depp/.label {
   font-size: @font-size-md;
 }
@@ -368,10 +360,16 @@ export default {
 }
 
 .footer {
-   margin-top: 40rpx;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    width: 100%;
+    background-color: #fff;
+
   .tags {
     padding: 20rpx;
-    margin: 0 40rpx;
+    margin: 20rpx 20rpx 40rpx;
     font-size: 24rpx;
     color: #ff4b4b;
     border: @border;
@@ -383,9 +381,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-top: 40rpx;
     padding: 0 40rpx 20rpx;
-    background-color: #fff;
   }
 
   /deep/.van-button {

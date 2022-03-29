@@ -115,10 +115,8 @@
             input-class="input"
             input-align="right"
             label-class="label"
-            title-width="400rpx"
             placeholder="请输入实收金额"
-            :adjust-position="undefined"
-            :cursor-spacing="1"
+            title-width="400rpx"
             :value="item.pay_money"
             :label="`${item.project_name}-实收学费金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
@@ -161,10 +159,9 @@
             type="number"
             label-class="label"
             input-class="input"
-            placeholder="请输入实收金额"
             input-align="right"
             title-width="400rpx"
-            confirm-type=“确定”
+            placeholder="请输入实收金额"
             :value="item.pay_money"
             :label="`${item.major_name}-实收学费金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
@@ -187,11 +184,13 @@
       </van-field>
     </van-cell-group>
 
-    <view class="line"></view>
+    <view style="display: block; height: 320rpx;"></view>
 
-    <view class="add-curtomer-submit add-curtomer-submit-flex">
-      <van-button round @click="handleCancel" style="margin-right: 30rpx;">取消</van-button>
-      <van-button round type="primary" @click="handleSave">下一步</van-button>
+    <view class="footer">
+      <view class="footer-submit">
+        <van-button round @click="handleCancel">取消</van-button>
+        <van-button round type="primary" @click="handleSave">下一步</van-button>
+      </view>
     </view>
 
     <van-action-sheet
@@ -489,55 +488,45 @@ export default {
 <style lang="less" scoped>
 @import "@/styles/var";
 .add-curtomer {
-  height: 100%;
-  overflow-y: scroll;
-  padding-bottom: 240rpx;
+  width: 100%;
+  overflow: hidden;
 
   /deep/.group-cell {
     border-top: 20rpx solid #f2f6fc;
   }
 
   /deep/.period {
-    .flex-c();
+    display: flex;
+    align-items: center;
+
     &-btn {
       color: @primary;
       margin-left: 10rpx;
     }
   }
 
-  &-submit {
-    position: absolute;
+
+  .footer {
+    position: fixed;
     bottom: 0;
     left: 0;
+    z-index: 999;
     width: 100%;
-    padding-bottom: 40rpx;
-    text-align: center;
-    background-color: #fff;
-    z-index: 100;
 
-    &-submit-flex {
+    &-submit {
       display: flex;
       flex-direction: row;
+      justify-content: space-between;
       align-items: center;
+      width: 100%;
+      padding: 0 40rpx 20rpx;
+      background-color: #fff;
     }
 
     /deep/.van-button {
-      width: 40%;
+      width: 300rpx;
     }
   }
-  .agreement-checkbox {
-    padding: 20rpx 0;
-    .flex-c-c();
-    .link {
-      color: @primary;
-    }
-  }
-}
-.line {
-  display: block;
-  width: 100%;
-  height: 100rpx;
-  margin-top: 500rpx;
 }
 
 /deep/.title {
