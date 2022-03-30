@@ -22,6 +22,7 @@
           v-if="formData.pay_plan && formData.pay_plan.length > 0"
           :list="formData.pay_plan"
           :projectOption="projectOption"
+          :totalMoney="formData.totalMoney"
           @dynamic-input="dynamicInput"
         />
       </van-tab>
@@ -193,6 +194,8 @@ export default {
             uni.showToast({ icon: "none", messages: "请选择计划回款日期" });
           } else if (`${v.money}`.length <= 0) {
             uni.showToast({ icon: "none", messages: "请填写计划回款金额" });
+          } else if (`${item.project_name}`.length <= 0) {
+            uni.showToast({ icon: "none", messages: "请输入所属项目" });
           }
         })
 
@@ -336,7 +339,7 @@ export default {
       data.project = JSON.stringify(formData.projectData);
       // 回款计划
       data.pay_plan = formData.pay_plan.map(item => {
-        item.edu_ids = item.project_ids
+        item.major_detail_ids = item.project_ids
         return item
       });
       // 回款记录信息处理

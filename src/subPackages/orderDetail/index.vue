@@ -1,11 +1,9 @@
 <template>
   <view class="order-detail">
-    <template
-      v-if="detailData.reshuffle_list && detailData.reshuffle_list.length"
-    >
+    <template v-if="detailData.reshuffle_list && detailData.reshuffle_list.length">
       <van-notice-bar
-        v-if="detailData.reshuffle_list[unusualIndex].status === 3"
         wrapable
+        v-if="detailData.reshuffle_list[unusualIndex].status === 3"
         left-icon="volume-o"
         :text="`驳回原因：${detailData.reshuffle_list[unusualIndex].tips || '无'}`"
       />
@@ -23,34 +21,22 @@
       left-icon="volume-o"
       :text="`驳回原因：${detailData.verify_step[0].tips || '无'}`"
     />
+
     <view class="order-detail-header">
       <view class="order-detail-header-title"
-        >{{ detailData.surname || "" }}-{{
-          detailData.project_name || ""
-        }}</view
-      >
+        >{{ detailData.surname || "" }}-{{detailData.project_name || ""}}
+      </view>
       <view class="order-detail-header-other"
         >{{ detailData.create_time || "" }} |
-        <text style="color: #fd6500; margin-left: 10rpx">{{
-          detailData.order_money | moneyFormat
-        }}</text></view
-      >
-    </view>
-    <view class="order-detail-steps" v-if="!isChange">
-      <van-steps
-        :steps="steps"
-        :active="stepActive"
-        :active-color="stepActiveColor"
-      />
+        <text style="color: #fd6500; margin-left: 10rpx">{{detailData.order_money | moneyFormat}}</text>
+      </view>
     </view>
 
-    <van-tabs
-      color="#199fff"
-      animated
-      swipeable
-      :ellipsis="false"
-      @change="handleTabsChange"
-    >
+    <view class="order-detail-steps" v-if="!isChange">
+      <van-steps :steps="steps" :active="stepActive" :active-color="stepActiveColor" />
+    </view>
+
+    <van-tabs animated swipeable color="#199fff" :ellipsis="false" @change="handleTabsChange">
       <van-tab title="订单信息">
         <OrderInfo :data="detailData" />
       </van-tab>
@@ -81,100 +67,66 @@
         <ChangeRecord :data="item.new_detail" />
       </van-tab>
     </van-tabs>
-    <!-- 异动相关操作 -->
-    <van-tabbar
-      v-if="
-        isApprove &&
-        isChange &&
-        detailData.reshuffle_list &&
-        detailData.reshuffle_list.length &&
-        detailData.reshuffle_list[0].my_reshuffle_review
-      "
-      @change="handleTabbarChange"
-      active-color="#43d100"
-      inactive-color="#fd6500"
-      active="6"
-    >
-      <van-tabbar-item icon="clear" name="5">驳回</van-tabbar-item>
-      <van-tabbar-item icon="checked" name="6">通过</van-tabbar-item>
-    </van-tabbar>
-    <!-- 订单相关操作 -->
-    <template v-if="!isChange">
-      <template v-if="detailData.is_my_review && isApprove">
-        <van-tabbar
-          @change="handleTabbarChange"
-          active-color="#43d100"
-          inactive-color="#fd6500"
-          active="4"
+
+    <!-- 是审批且异动的相关操作 -->
+
+    <template v-if="isApprove">
+      <van-tabbar
+        :active="isChange ? '6' : '4'"
+        active-color="#43d100"
+        inactive-color="#fd6500"
+        @change="handleTabbarChange"
+      >
+        <template v-if="
+          ( isChange && 
+            detailData.reshuffle_list.length && 
+            detailData.reshuffle_list[0].my_reshuffle_review ) || 
+            detailData.is_my_review"
         >
-          <van-tabbar-item icon="clear" name="3">驳回</van-tabbar-item>
-          <van-tabbar-item icon="checked" name="4">通过</van-tabbar-item>
-        </van-tabbar>
-      </template>
-      <template v-else>
-        <van-tabbar
-          @change="handleTabbarChange"
-          v-if="
-            detailData.verify_status < 3 ||
-            (detailData.verify_status === 1 && !detailData.reshuffle) ||
-            (detailData.refund_button && !isApprove)
-          "
-        >
-          <template v-if="detailData.is_my_review">
-            <van-tabbar-item
-              icon="smile-o"
-              v-if="detailData.verify_status < 3"
-              name="1"
-              >催办</van-tabbar-item
-            >
-            <van-tabbar-item
-              v-if="detailData.verify_status === 1 && !detailData.reshuffle"
-              icon="revoke"
-              name="2"
-              >撤回</van-tabbar-item
-            >
-          </template>
-          <van-tabbar-item
-            icon="failure"
-            v-if="detailData.refund_button"
-            name="7"
-            >退款作废</van-tabbar-item
-          >
-          <van-tabbar-item
-            icon="orders-o"
-            v-if="detailData.refund_button"
-            name="8"
-            >申请异动</van-tabbar-item
-          >
-        </van-tabbar>
-      </template>
+          <van-tabbar-item icon="clear" name="2">驳回</van-tabbar-item>
+          <van-tabbar-item icon="checked" name="1">通过</van-tabbar-item>
+        </template> 
+      </van-tabbar>
     </template>
-    <template
-      v-if="
-        isChange &&
-        detailData.reshuffle_list &&
-        detailData.reshuffle_list.length
-      "
-    >
-      <Seal type="warning" v-if="detailData.reshuffle_list[0].status === 3"
-        >已驳回</Seal
-      >
-      <Seal type="success" v-if="detailData.reshuffle_list[0].status === 2"
-        >已通过</Seal
-      >
+
+    <!-- 订单相关操作 -->
+    <template v-else>
+      <van-tabbar @change="handleTabbarChange">
+        <van-tabbar-item v-if="detailData.verify_status == 1 && !detailData.reshuffle" name="3" icon="smile-o">
+          撤回
+        </van-tabbar-item>  
+        <van-tabbar-item v-if="detailData.verify_status == 8 && !detailData.is_deleted" name="4" icon="smile-o">
+          删除
+        </van-tabbar-item>  
+        <van-tabbar-item v-if="detailData.refund_button" name="5" icon="smile-o">
+          退款作废
+        </van-tabbar-item>
+        <van-tabbar-item v-if="detailData.verify_status < 4 && !detailData.reshuffle" name="6" icon="smile-o">
+          申请异动
+        </van-tabbar-item>
+        <van-tabbar-item v-if="detailData.verify_status < 3" name="7" icon="smile-o">
+          催办
+        </van-tabbar-item>
+      </van-tabbar>
+    </template>
+
+    <template v-if="isChange && detailData.reshuffle_list && detailData.reshuffle_list.length">
+      <Seal type="warning" v-if="detailData.reshuffle_list[0].status === 3">已驳回</Seal>
+      <Seal type="success" v-if="detailData.reshuffle_list[0].status === 2">已通过</Seal>
     </template>
   
-    <van-popup custom-class="pay-drawer" position="right" :show="settingPayPlanShow">
+    <van-popup custom-class="pay-drawer" position="bottom" :show="settingPayPlanShow">
     <SettingPayPlan
       v-if="detailData.pay_plan && detailData.pay_plan.length > 0"
       :orderId="orderId"
       :type="detailData.type"
       :list="detailData.pay_plan"
+      :totalMoney="totalMoney"
       @close="cancelSetting"
     />
     </van-popup>
     
-    <van-popup custom-class="pay-drawer" position="left" :show="addPayRecondShow">
+    <van-popup custom-class="pay-drawer" position="bottom" :show="addPayRecondShow">
     <AddPayRecond 
       v-if="detailData.pay_log && detailData.pay_plan.length > 0"
       :orderId="orderId"
@@ -342,13 +294,18 @@ export default {
         pay_log: [],
         project: "[]",
         verify_step: [],
-        verify_status: 0,
+        verify_status: 0, // 审批状态，0：等待审批 ，1：已审批， 2：多人审批进行中 4：审批拒绝/驳回）
+        reshuffle: '',    // 是否异动 优质则为异动
+        is_my_review: '',  // 是否有审批权限 1，是 0，否
       },
       stepActive: 0,
       stepActiveColor: "#199fff",
       steps: [],
       isApprove: false, // 是否是审批
-      isChange: false, // 是否是异动
+      isChange: false,  // 是否是异动
+      isChannel: false, // 是否是渠道订单
+      isRecruit: false, // 是否是招生订单
+
       rejectDialog: false,
       rejectReason: "",
       orderId: "",
@@ -395,8 +352,11 @@ export default {
     },
   },
   onLoad({ orderId, approve, change, verifyId }) {
-    this.isApprove = approve == 1; // 是否审批 1 审批
+    this.isApprove = approve == 1; // 是否审批 1 审批, 2 招生订单，3渠道订单
     this.isChange = change == 1; // 是否异动 1 异动
+    this.isRecruit = approve == 2 
+    this.isChannel = approve == 3
+
     this.orderId = orderId;
     this.verifyId = verifyId;
     this.passParams = {
@@ -525,58 +485,31 @@ export default {
       this.rejectReason = "";
     },
     handleTabbarChange({ detail }) {
+      console.log('handleTabbarChange', detail);
       let _this = this
-      const {
-        order_no,
-        create_time,
-        surname,
-        order_money,
-        pay_money,
-        overdue_money,
-        order_id,
-      } = this.detailData;
+      const { order_no, create_time, surname, order_money, pay_money, overdue_money, order_id } = this.detailData;
       switch (detail) {
         case "1":
-          this.hurryUp();
-          break;
+          this.isImage ? this.orderUnusualApprove(detail) : this.crmOrderApprove(detail)
+        break;
         case "2":
-          Dialog.confirm({
-            title: "提醒",
-            message: "确定要撤回此订单吗？",
-          })
-            .then(() => {
-              this.crmOrderApprove(3);
-            })
-            .catch(() => {
-              // Sett cancel
-            });
-          break;
-        case "3":
           this.rejectDialog = true;
-          break;
+        break;
+        case '3':
+          Dialog.confirm({ title: "提醒", message: "确定要撤回此订单吗？" })
+          .then(() => { this.crmOrderApprove(detail) })
+          .catch(() => { });
+        break;
         case "4":
-          this.crmOrderApprove(1);
-          break;
+          Dialog.confirm({ title: "提醒", message: "确定要删除此订单吗？" })
+          .then(() => { this.crmOrderApprove(detail) })
+          .catch(() => { });
+        break;
         case "5":
-          this.rejectDialog = true;
+          let orderData = { order_no, create_time, surname, order_money, pay_money, overdue_money, order_id }
+          uni.navigateTo({ url: `/subPackages/applyRefund/index?orderData=${JSON.stringify(orderData)}`})
           break;
         case "6":
-          this.orderUnusualApprove(1);
-          break;
-        case "7":
-          uni.navigateTo({
-            url: `/subPackages/applyRefund/index?orderData=${JSON.stringify({
-              order_no,
-              create_time,
-              surname,
-              order_money,
-              pay_money,
-              overdue_money,
-              order_id,
-            })}`,
-          });
-          break;
-          case "8": 
           uni.navigateTo({ 
             url: `/subPackages/differentChange/index?order_id=${order_id}`,
             events: {
@@ -586,23 +519,23 @@ export default {
               }
             }
           })
-          break;
+        break;
+        case "7" :
+          this.hurryUp()
+        break;
       }
     },
     // 催办
     async hurryUp() {
-      const data = {
-        order_id: this.orderId,
-      };
-      await hurryUp(data);
+      const data = { order_id: this.orderId};
+      const res = await hurryUp(data);
+      if (res.code == 0) {
+        uni.showToast({ icon: 'none', title: '催办陈工' })
+      }
     },
     // 订单操作 1、通过，2：拒绝 , 3:撤销/作废订单，4、删除订单
-    async crmOrderApprove(action, tips) {
-      const data = {
-        order_id: this.orderId,
-        action,
-        tips,
-      };
+    async crmOrderApprove(action, tips = "") {
+      const data = { order_id: this.orderId, action, tips };
       const res = await crmOrderApprove(data);
       if (res.code === 0) {
         this.getCrmOrderDetail();
@@ -610,11 +543,7 @@ export default {
     },
     // 订单异动审批
     async orderUnusualApprove(action, tips = "") {
-      const data = {
-        id: this.detailData.reshuffle,
-        verify: action,
-        tips,
-      };
+      const data = { id: this.detailData.reshuffle, verify: action, tips };
       const res = await orderUnusualApprove(data);
       if (res.code === 0) {
         this.getCrmOrderDetail();
@@ -659,6 +588,7 @@ export default {
         cacheName = "",
         cacheIndex = [];
 
+      if (payPlan.length <= 0 || payPlan.length <= 0) return {}
       payPlan = payPlan.map((item) => {
         item.name = types[item.type];
         return item;

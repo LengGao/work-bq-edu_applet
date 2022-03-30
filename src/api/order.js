@@ -215,6 +215,7 @@ export function orderReshuffle(data) {
     return http.request({
         url: '/CrmOrder/reshuffle',
         method: 'post',
+        showToast: true,
         data
     })
 }

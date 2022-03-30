@@ -41,6 +41,7 @@
         <view class="list-item-slot">
           <van-cell
             v-if="item.type !== 1"
+            required
             title="所属项目"
             title-class="label-class"
             value-class="input-class"
@@ -111,8 +112,9 @@
 import Title from "@/components/title/index2";
 import DatePicker from "@/components/datePicker/index.vue";
 import Select from "@/components/select/index.vue";
-import { getPlanTypeList } from '@/api/order'
+import { mapGetters } from 'vuex'
 import { getPlanYearOptions, currentYear } from "@/utils/date"
+import { accAdd } from "@/utils/index";
 
 export default {
   components: {
@@ -128,7 +130,11 @@ export default {
     projectOption: {
       type: Array,
       default: []
-    }
+    },
+    totalMoney: {
+      type: [String, Number],
+      default: '0.00'
+    },
   },
   data() {
     return {
@@ -151,6 +157,9 @@ export default {
       formData: {},
     };
   },
+  computed: {
+    ...mapGetters(['expenseType'])    // 学杂费
+  },
   mounted() {
     console.log("2", this.list);
     this.payList = this.list
@@ -164,7 +173,6 @@ export default {
     this.currentCheckeds = cacheType.map(item => `${item}`)
     
     console.log("currentCheckeds", this.currentCheckeds);
-    this.getPlanTypeList()
     this.getPlanYearOptions()
   },
   methods: {
@@ -316,7 +324,11 @@ export default {
         startId = (+payList[lastindex].id) + 1
       }
 
-      return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '' }
+      if (type == 1 || type == '1') {
+        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
+      } else {
+        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '', major_detail_ids: '' } 
+      }
     },
     // 检查选中状态
     checkPayList(payList) {
@@ -333,52 +345,10 @@ export default {
       }
       return -1
     },
-    // 上一步 下一步
-    toPrev() {
-        uni.navigateBack()
-    },
-    toNext() {
-      this.formData.payList = this.payList
-      let validator = [
-        { fileld: "year", message: '请选择年份' },
-        { fileld: "day", message: '请选择日期' },
-        { fileld: "money", message: '请输入回款金额' }
-      ]
-      const callback = () => {
-        uni.navigateTo({
-            url: '/subPackages/customeSignPayRecond/index?params=' + encodeURIComponent(JSON.stringify(this.formData))
-        })
-      }
-      this.validate(validator, callback)
-    },
-    // 校验
-    validate(err, callback) {
-      let payList = this.payList, flag = true
-      if (payList.length > 0) {
-        payList.forEach(item => {
-          err.forEach(eitem => {
-            if (!item[eitem.fileld] && item[eitem.fileld].length == 0) {
-              uni.showToast({ icon: 'none', title: eitem.message })
-              flag = false
-            }
-          })
-        })
-      } else {
-        uni.showToast({ icon: "none", title: '请配置回款计划' })
-        flag = false
-      }
-
-      if (flag && callback) callback();
-    },
     // 获取年份
     getPlanYearOptions() {
       let planYearOptions = getPlanYearOptions().map(item => ({ name: item }))
       this.planYearOptions = planYearOptions
-    },
-    // 获取分类
-    async getPlanTypeList() {
-      let res = await getPlanTypeList().catch(() => {})
-      this.expenseType = res.data
     },
   }
 };
@@ -458,6 +428,7 @@ export default {
     position: absolute;
     bottom: 40rpx;
     left: 0;
+    z-index: 99;
 
     &-submit {
       display: flex;

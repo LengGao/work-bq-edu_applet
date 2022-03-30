@@ -324,7 +324,7 @@ export default {
           if (data.type == 0) {
             return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money, project_ids: item.project_ids || '' }
           } else {
-            return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money, edu_ids: item.project_ids || '' }
+            return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money, major_detail_ids: item.project_ids || '' }
           }
         } else {
           return ''

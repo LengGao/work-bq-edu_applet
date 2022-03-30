@@ -298,7 +298,7 @@ export default {
       if (type == 1 || type == '1') {
         return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
       } else {
-        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '', edu_ids: '' } 
+        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '', major_detail_ids: '' } 
       }
     },
     // 检查选中状态
@@ -347,7 +347,6 @@ export default {
           order_money = this.formData.order_money,
           cache = 0;
           
-
       // 校验必填参数
       if (len <= 0) {
         errList.push({ icon: "none", title: '请配置回款计划' })

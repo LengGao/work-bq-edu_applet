@@ -22,29 +22,24 @@
         class="item"
         v-for="(item, index) in listData"
         :key="item.order_id"
-        @click="toDetail(item.order_id, index)"
+        @click="toDetail(item.order_id, index, item.reshuffle)"
       >
         <view class="item-info">
           <view class="item-info-user">
-            {{ item.surname || ""
-            }}<span v-if="item.jiebie_name">-{{ item.jiebie_name }}</span
-            >-{{ item.project_name }}
-
+            {{ item.surname || "" }}
+            <span v-if="item.jiebie_name">-{{ item.jiebie_name }}</span>
+            -{{ item.project_name }}
             <text class="tag" v-if="item.reshuffle">异</text>
           </view>
           <view class="item-info-money">
             订单总金额 {{ item.total_money | moneyFormat }} 
             / 实收金额 {{ accAdd(item.pay_money, item.other_money) | moneyFormat }}
           </view>
-          <!-- <view class="item-info-money"
-            >应收 {{ item.order_money | moneyFormat }} / 已收
-            {{ item.pay_money | moneyFormat }}
-          </view> -->
         </view>
         <view class="item-status">
-          <van-tag plain :color="item.verify_status | orderApplyStatus">{{
-            item.verify_status | orderApplyStatus(true)
-          }}</van-tag>
+          <van-tag plain :color="item.verify_status | orderApplyStatus">
+            {{ item.verify_status | orderApplyStatus(true) }}
+          </van-tag>
         </view>
       </view>
     </LoadMore>
@@ -113,10 +108,11 @@ export default {
         this.listData[this.checkedIndex].pay_money = data.pay_money;
       }
     },
-    toDetail(orderId, index) {
+    toDetail(orderId, index, change) {
       this.checkedIndex = index;
+      let approve = this.listType == 2 ? 2 : 3 
       uni.navigateTo({
-        url: `/subPackages/orderDetail/index?orderId=${orderId}`,
+        url: `/subPackages/orderDetail/index?orderId=${orderId}&approve=${approve}&change=${change}`,
       });
     },
     handleSearch(val) {

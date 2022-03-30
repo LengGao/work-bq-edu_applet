@@ -144,10 +144,16 @@
         </van-cell>
         <van-cell :border="false">
           <template #title>
-            <text class="title">已回款金额</text>
+            <text class="title">实际回款金额</text>
             <text class="value">{{ item.pay_money | moneyFormat }}</text>
           </template>
           <text class="progress">{{ item.pay_progress }}</text>
+        </van-cell>
+        <van-cell :border="false" title-width="130rpx">
+          <template #title>
+            <text class="title">所属项目</text>
+          </template> 
+          <text class="value" decode>{{ (item.project_name || '').replaceAll(',', ',  ') || "无" }}</text>
         </van-cell>
       </van-cell-group>
     </template>
