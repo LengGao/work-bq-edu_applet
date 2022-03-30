@@ -94,16 +94,16 @@
     <!-- 订单相关操作 -->
     <template v-else>
       <van-tabbar @change="handleTabbarChange">
-        <van-tabbar-item v-if="detailData.verify_status == 1 && !detailData.reshuffle" name="3" icon="smile-o">
+        <van-tabbar-item v-if="detailData.verify_status == 1 && !detailData.reshuffle" name="3" icon="revoke">
           撤回
         </van-tabbar-item>  
-        <van-tabbar-item v-if="detailData.verify_status == 8 && !detailData.is_deleted" name="4" icon="smile-o">
+        <van-tabbar-item v-if="detailData.verify_status == 8 && !detailData.is_deleted" name="4" icon="delete-o">
           删除
         </van-tabbar-item>  
-        <van-tabbar-item v-if="detailData.refund_button" name="5" icon="smile-o">
+        <van-tabbar-item v-if="detailData.refund_button" name="5" icon="failure">
           退款作废
         </van-tabbar-item>
-        <van-tabbar-item v-if="detailData.verify_status < 4 || detailData.verify_status == 9 && !detailData.reshuffle" name="6" icon="smile-o">
+        <van-tabbar-item v-if="detailData.verify_status < 4 || detailData.verify_status == 9 && !detailData.reshuffle" name="6" icon="orders-o">
           申请异动
         </van-tabbar-item>
         <van-tabbar-item v-if="detailData.verify_status < 3" name="7" icon="smile-o">
