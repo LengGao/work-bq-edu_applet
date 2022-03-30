@@ -7,6 +7,7 @@
       </view>
       <van-checkbox-group :value="currentCheckeds" @change="handleChecked">
         <view class="check-group">
+          <!-- 这里是一个类数组对象 index起始为 1 -->
           <van-checkbox v-for="(item, index) in expenseType" :key="index" shape="square" :name="index">
             {{ item }}
           </van-checkbox>
@@ -15,12 +16,11 @@
     </view>
 
     <view class="hr"></view>
-
     <view class="pay-list">
       <view class="list-item" v-for="(item, index) in payList" :key="item.id">
         <view class="list-item-header">
           <view class="header-title">
-              <Title :title="item.name" customStyle="padding-left: 10rpx;"></Title>
+            <Title :title="item.name" customStyle="padding-left: 10rpx;"></Title>
           </view>
           <view class="header-btns">
             <van-button plain icon="newspaper-o" size="small" custom-class="header-btn" @click="handleCopy(item.type, index)">
@@ -34,19 +34,21 @@
 
         <view class="list-item-slot">
           <van-cell
-            v-if="item.type !== 1"
+            v-if="item.type != 1"
+            required
             title="所属项目"
             title-class="label-class"
             value-class="input-class"
             :value="item.project_name || '请选择所属项目'"
             @click="() => openPicker('project', index, item)"
           />
+
           <van-cell
             required
             title="所属年份"
             title-class="label-class"
             value-class="input-class"
-            :value="item.year || '请选择年份'"
+            :model:value="item.year || '请选择年份'"
             @click="() => openPicker('year', index, item)"
           />
           <van-cell
@@ -111,8 +113,9 @@
 import Title from "@/components/title/index2";
 import DatePicker from "@/components/datePicker/index.vue";
 import Select from "@/components/select/index.vue";
-import { getPlanTypeList } from '@/api/order'
 import { getPlanYearOptions, currentYear } from "@/utils/date"
+import { mapGetters } from 'vuex'
+import { accAdd } from "@/utils/index";
 
 export default {
   components: {
@@ -126,7 +129,6 @@ export default {
       datePickerShow: false, 
       yearPickerShow: false,
       currentDate: new Date().getTime(),
-      expenseType: {}, // 学杂费
       currentCheckeds: [], // 学杂费选中列表
       planYearOptions: [],  // 年份
       projectOption: [], // 所属项目
@@ -143,13 +145,15 @@ export default {
       formData: {},
     };
   },
+  computed: {
+    ...mapGetters(['expenseType'])    // 学杂费
+  },
   onLoad(query) {
     let q = JSON.parse(decodeURIComponent(query.params))
     console.log("customeSignPayPlan", q);
-    this.formData = Object.assign(this.formData, q)
-    this.getPlanTypeList()
+    this.formData = Object.assign({}, q)
     this.getPlanYearOptions()
-    this.getProjectOptions(this.formData.project)
+    this.getProjectOptions(q.projectData)
   },
   methods: {
     // 日期选择
@@ -291,8 +295,11 @@ export default {
         startId = (+payList[lastindex].id) + 1
         console.log('creataItem', lastindex, type, payList, startId);
       }
-
-      return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '', edu_ids: '' }
+      if (type == 1 || type == '1') {
+        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
+      } else {
+        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '', edu_ids: '' } 
+      }
     },
     // 检查选中状态
     checkPayList() {
@@ -317,39 +324,58 @@ export default {
     toNext() {
       let query = this.formData
       query.payList = this.payList
-      this.formData = query
       
       let validator = [
         { fileld: "year", message: '请选择年份' },
         { fileld: "day", message: '请选择日期' },
-        { fileld: "money", message: '请输入回款金额' }
+        { fileld: "money", message: '请输入回款金额' },
+        { fileld: "project_name", message: '请输入所属项目' }
       ]
+
       const callback = () => {
         uni.navigateTo({
             url: '/subPackages/customeSignPayRecond/index?params=' + encodeURIComponent(JSON.stringify(query))
         })
       }
-      this.validate(validator, callback)
+      this.validate(query, validator, callback)
     },
     // 校验
-    validate(err, callback) {
-      let payList = this.payList, flag = true
-      if (payList.length > 0) {
-        payList.forEach(item => {
-          err.forEach(eitem => {
-            let val = item[eitem.fileld]
-            if (`${val}`.length <= 0) { 
-              uni.showToast({ icon: 'none', title: eitem.message })
-              flag = false
+    validate(params, options, callback) {
+      let payList = params.payList, 
+          len = payList.length,
+          errList = [],
+          order_money = this.formData.order_money,
+          cache = 0;
+          
+
+      // 校验必填参数
+      if (len <= 0) {
+        errList.push({ icon: "none", title: '请配置回款计划' })
+      } else {
+        for(let i = len - 1; i>= 0; i--) {
+          let item = payList[i]
+          options.forEach(err => {
+            let key = err.fileld, message = err.message
+            if (`${item[key]}`.length <= 0) {
+              errList.push({ icon: "none", title: `${message}` })
             }
           })
-        })
-      } else {
-        uni.showToast({ icon: "none", title: '请配置回款计划' })
-        flag = false
+          if (item.type == 1 || item.type == '1') {
+            cache = accAdd(cache, item.money)
+          }
+        }
+      }
+      
+      // 校验总学费
+      if (parseFloat(cache) > parseInt(order_money || 0)) {
+        errList.push({ icon: "none", title: `回款计划中的学费金额总和不能大于报名项目实收金额总和` })
       }
 
-      if (flag && callback) callback();
+      if (errList.length > 0) {
+        uni.showToast(...errList[0])
+      } else {
+        callback()
+      }
     },
     // 获取年份
     getPlanYearOptions() {
@@ -361,15 +387,10 @@ export default {
       if (!arr) return [];
       let projectOption = arr.map(item => ({ 
         value: item.id, 
-        name: item.project_name + (item.major_name || ''), 
+        name: item.project_name || item.major_name || '', 
       }))
       console.log("projectOption", projectOption, arr);
       this.projectOption = projectOption
-    },
-    // 获取分类
-    async getPlanTypeList() {
-      let res = await getPlanTypeList().catch(() => {})
-      this.expenseType = res.data
     },
   }
 };

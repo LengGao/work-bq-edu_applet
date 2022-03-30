@@ -35,7 +35,6 @@
         :value="formData.pay_day || '请选择'"
         @click="datePickerShow = true"
       />
-
       <van-cell
         title="回款计划"
         is-link
@@ -45,7 +44,6 @@
         :value="planCheckedName || '请选择'"
         @click="selectShow = true"
       />
-
       <van-field
         required
         type="number"
@@ -124,7 +122,7 @@ import Title from "@/components/title/index.vue";
 import Select from "@/components/select/index.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
-import { accAdd } from "@/utils/index"
+import { accAdd } from "@/utils/index";
 import { createCrmOrder, uploadImage } from "@/api/customer";
 
 export default {
@@ -147,7 +145,7 @@ export default {
       planData: [], // 回款计划数据
       planOptions: [], // 回款计划选项
       planCheckedName: "", // 当前选择的会跨计划
-      planCheckedIndex: [], // 当前选择的会跨计划索引
+      planCheckedIndex: [], // 当前选择的回款计划索引
       // 选择支付方式
       sheetShow: false, 
       sheetActions: [],
@@ -170,15 +168,12 @@ export default {
   onLoad(query) {
     let q = JSON.parse(decodeURIComponent(query.params))    
     this.formData = Object.assign(this.formData, q)
-    console.log("q:", q);
-    let payList = q.payList,
-        money = this.computeMoney(payList)
+    console.log("customeSignPayRecond:", q);
+    let payList = q.payList, money = this.computeMoney(payList)
+    this.totalMoney = q.order_money                                 // 总学费
+    this.otherMoney = money.otherMoney                              // 防护学
+    this.orderMoney = accAdd(money.otherMoney, q.order_money)       // 订单总额
 
-    let tuituiMoney = this.computeTuitionMoney(q.project_pay_money) 
-    this.totalMoney = tuituiMoney
-    this.otherMoney = money.otherMoney
-    this.orderMoney = accAdd(money.orderMoney, tuituiMoney)
-    this.formData.order_money = money.orderMoney
     this.getPlanData(payList)
   },
   methods: {
@@ -187,6 +182,7 @@ export default {
       let totalMoney = 0, otherMoney = 0, orderMoney = 0
       for(let i = arr.length - 1; i >= 0; i--) {
         let item = arr[i]
+        console.log(item, item.type == 1);
         if (item.type == 1) {
           totalMoney = accAdd(totalMoney, item.money)
         } else {
@@ -195,13 +191,6 @@ export default {
       }
       orderMoney = accAdd(totalMoney, otherMoney)
       return { totalMoney, otherMoney, orderMoney }
-    },
-    computeTuitionMoney(obj) {
-      let cache = 0
-      for(let k in obj) {
-        cache = accAdd(cache, obj[k])
-      }
-      return cache
     },
     // 支付方式
     onSheetSelect({ detail }) {
@@ -330,14 +319,12 @@ export default {
         pay_plan: []
       };
 
-      data.project = formData.project.map(item => item.id) || []
-
       data.pay_plan = formData.payList.map((item, index) => {
         if (this.planCheckedIndex.indexOf(index) !== -1) {
           if (data.type == 0) {
-            return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money, project_ids: item.project_ids }
+            return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money, project_ids: item.project_ids || '' }
           } else {
-            return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money, edu_ids: item.project_ids }
+            return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money, edu_ids: item.project_ids || '' }
           }
         } else {
           return ''

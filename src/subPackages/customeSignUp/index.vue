@@ -38,8 +38,8 @@
         @input="({ detail }) => (formData.id_card_number = detail)"
       />
       <van-cell
-        title="订单来源"
         is-link
+        title="订单来源"
         title-width="200rpx"
         :value="formData.source || '请选择'"
         @click="openSheet('fromOptions')"
@@ -100,7 +100,6 @@
 
         <view v-for="(item, index) in formData.projectData" :key="item.id">
           <van-cell
-            is-link
             required
             title="项目价格"
             title-class="label"
@@ -117,7 +116,7 @@
             label-class="label"
             placeholder="请输入实收金额"
             title-width="400rpx"
-            :value="item.pay_money"
+            :model:value="item.pay_money"
             :label="`${item.project_name}-实收学费金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
           />
@@ -144,8 +143,7 @@
         />
 
         <view v-for="(item, index) in formData.projectData" :key="item.id">
-          <van-cell
-            is-link
+          <van-cell            
             required
             title="总学费"
             title-width="200rpx"
@@ -162,7 +160,7 @@
             input-align="right"
             title-width="400rpx"
             placeholder="请输入实收金额"
-            :value="item.pay_money"
+            :model:value="item.pay_money"
             :label="`${item.major_name}-实收学费金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
           />
@@ -177,7 +175,7 @@
         type="textarea"
         label-class="label"
         input-class="input"
-        :value="from.tips"
+        :value="formData.tips"
         placeholder="请输入备注"
         @input="({ detail }) => (formData.tips = detail)"
       >
@@ -227,30 +225,23 @@
 </template>
 
 <script>
-import {
-  categoryGetSessionList,
-  getCateProjectDetail,
-  uploadImage,
-} from "@/api/customer";
-import DatePicker from "@/components/datePicker/index.vue";
 import Select from "@/components/select/index.vue";
+import DatePicker from "@/components/datePicker/index.vue";
 import SelectProject from "./components/selectProject.vue";
 import SelectEduProject from "./components/selectEduProject.vue";
+import { categoryGetSessionList, getCateProjectDetail } from "@/api/customer";
 import { mapGetters } from "vuex";
+import { accAdd } from '@/utils/index'
 
 export default {
   components: {
     Select,
+    DatePicker,
     SelectProject,
     SelectEduProject,
-    DatePicker,
   },
   data() {
     return {
-      isFocus: false,
-      inputValue: '',
-      reasonHeight: 0,
-      // 选择支付方式
       sheetShow: false, // 是否显示面板
       sheetActions: [], // 当前面板数据
       sheetChecked: "", // 当前面板数据key
@@ -262,8 +253,9 @@ export default {
       checkedProjectName: "", // 当前报名职称项目/院校专业
       checkedStaffName: "", // 当前共享业绩人
       gradeCheckedName: "", // 当前届别名称
+      
       formData: {
-        id: "",
+        id: "",      // 用户Id
         surname: "", // 用户名
         mobile: "",  // 手机号
         id_card_number: "", // 身份证
@@ -272,14 +264,14 @@ export default {
         union_staff_id: '',  // 共享业绩
         type: 0,  // 报名类型 
         jiebie_id: "",  // 届别
-        is_new: '2',  // 1，新客户 2，旧客户 
+        is_new: '2',  // 1，新客户 2 || 其他，旧客户 
         tips: "",  // 备注信息
         projectData: [], // 职称项目/学历专业 数据
       },
     };
   },
   computed: {
-    ...mapGetters(["staffOptions", "payTypeOptions", 'gradeOptions', 'fromOptions']),
+    ...mapGetters(["staffOptions", 'gradeOptions', 'fromOptions']),
   },
   onLoad(query) {
     console.log("customeSignUp:", query);
@@ -299,25 +291,25 @@ export default {
           uni.showToast({ icon: "none", title: "请先选择项目" });
           return undefined;
         } else if (this.formData.type == 0) {
-          this.sheetShow = true; 
+          this.sheetShow = true;
           return undefined;
         }
       }
       this.sheetShow = true; 
       this.sheetActions = this[key];
     },
+    // 选择
     onSheetSelect({ detail }) {
-      if (this.sheetChecked === "payTypeOptions") {
-        this.formData.pay_type = detail.name;
-        return;
-      }
+      // 届别
       if (this.sheetChecked === "gradeOptions") {
         this.gradeCheckedName = detail.name;
         this.formData.jiebie_id = detail.value;
         return;
       }
+      // 来源
       if (this.sheetChecked === 'fromOptions') {
         this.formData.source = detail.name
+        return;
       }
     },
     // 打开报名项目弹窗
@@ -339,11 +331,11 @@ export default {
     // 选择学历项目
     handleSelectEduProjectChange(project = []) {
       this.checkedProjectName = project.map((item) => {
-        return `${item.major_name}`
+        return `${item.major_name}` // 专业名
       }).join(",")
   
       this.formData.projectData = project.map(item => {
-        item.pay_money = ''
+        item.pay_money = '' // 项目实收金额
         return item
       })
       
@@ -351,10 +343,10 @@ export default {
     },
     // 选择职称项目
     handleSelectProjectChange(project = []) {
-      let idStr = project.map(item => item.value).join(',')
-      this.checkedProjectName = project.map(item => item.name).join(',')
-      this.selectProjectShow = false;
+      let idStr = project.map(item => item.value).join(',')               // 项目id
+      this.checkedProjectName = project.map(item => item.name).join(',')  // 项目名
       this.getCateProjectDetail(idStr);
+      this.selectProjectShow = false;
     },
     // 选择业绩共享人
     handleSelectChange(checked) {
@@ -419,6 +411,7 @@ export default {
       
       if (cb) cb();
     },
+    // 综合处理要传递给下一个页面的参数
     getParams() {
       let formData = this.formData,
       data = {
@@ -427,28 +420,32 @@ export default {
         surname: formData.surname,
         mobile: formData.mobile,
         id_card_number: formData.id_card_number,
-        tips: formData.tips,
+        source: formData.source,
         union_staff_id: formData.union_staff_id,
+        online_course: formData.online_course,
         type: formData.type,
         jiebie_id: formData.jiebie_id,
-        source: formData.source,
         is_new: formData.is_new,
-        online_course: formData.online_course,
-        project_pay_money: {},
-      };
+        tips: formData.tips,
+        projectData: formData.projectData
+      }; 
 
-      data.project = formData.projectData.map((item) => {
-        data.project_pay_money[item.id] = item.pay_money;
-        return item
+      // 整合项目 以及实收金额数据, 此两项用于报名提交参数，projectData 为当前选择的项目数据
+      let project_pay_money = {}, project = []
+
+      project = formData.projectData.map((item) => {
+        project_pay_money[item.id] = item.pay_money;
+        return item.id
       })
+      data.project = project
+      data.project_pay_money
+
+      // 计算报名学费总额，
+      let order_money = 0
+      for(let k in project_pay_money) order_money = accAdd(order_money, project_pay_money[k]);
+      data.order_money = order_money
 
       return data
-    },
-    // 上传凭证
-    async handleAfterRead({ detail }) {
-      const { file } = detail;
-      const { url } = await uploadImage(file);
-      this.fileList.push({ url, isImage: true });
     },
     // 已选职称项目详情
     async getCateProjectDetail(idStr) {
@@ -456,15 +453,15 @@ export default {
         this.formData.projectData = [];
         return;
       }
-      const data = { id: idStr }
-      const res = await getCateProjectDetail(data);
-
+      
+      const res = await getCateProjectDetail({ id: idStr });
       if (res.code === 0) {
         this.formData.projectData = res.data.map(item => {
           item.pay_money = ''
           return item
         });
-
+        
+        // 只取第一个项目的届别
         this.getGradeOptions(res.data[0].category_id)
       }
     },
@@ -473,6 +470,7 @@ export default {
       let param = { category_id: data }
       const res = await categoryGetSessionList(param).catch(() => {})
       if (res.code == 0) {
+        // 构造届别选项
         let gradeOptions = res.data.map(item => ({ name: item.title, value: item.id }))
         if (gradeOptions.length > 0) {
           this.sheetActions = gradeOptions
