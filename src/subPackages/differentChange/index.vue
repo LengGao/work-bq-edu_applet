@@ -94,6 +94,7 @@ export default {
     handldeTabChange({ detail }) {
       this.active = detail.name;
     },
+    // 订单小结金额计算
     computeMoney(arr) {
       let totalMoney = 0, otherMoney = 0, orderMoney = 0
       if (!arr) return;
@@ -108,12 +109,12 @@ export default {
       orderMoney = accAdd(totalMoney, otherMoney)
       return { totalMoney, otherMoney, orderMoney }
     },
+    // 总学费金额计算
     computeTuitionMoney(arr) {
-      console.log("obj", arr);
+      console.log("computeTuitionMoney", arr);
       let cache = 0
-      arr.map(item => {
-        cache = accAdd(cache, item.must_money)
-      })
+      if (!arr) return 0
+      arr.map(item => { cache = accAdd(cache, item.must_money); })
       return cache
     },
     // 输入修改
@@ -122,16 +123,16 @@ export default {
       this.formData = data;
       this.projectOption = this.generatorrojectOption(data.projectData)
     },
-    modifyPlanInfo() {},
-    // 金额 等冬天输入
+    // 金额 等动态输入
     dynamicInput(key, val, index) {
       console.log("dynamicInput", key, val, index, this.formData.projectData);
       if (key === "projectData") {
         let projectData = this.formData.projectData
         this.formData.projectData[index].must_money = val;
-        projectData = [index].must_money = val;
+        projectData[index].must_money = val;
         let tuituiMoney = this.computeTuitionMoney(projectData)
         this.formData.totalMoney = tuituiMoney
+        this.formData.orderMoney = accAdd(this.formData.otherMoney, tuituiMoney)
 
       } else if (key === "planRecond") {
         let _data = this.formData.pay_log[index];
@@ -147,20 +148,136 @@ export default {
           this.formData.pay_plan = val;
         }
 
-        let { totalMoney, orderMoney, otherMoney } = this.computeMoney(this.formData.pay_plan)
+        let { otherMoney } = this.computeMoney(this.formData.pay_plan)
         this.formData.otherMoney = otherMoney
-        // this.formData.totalMoney = totalMoney
-        this.formData.orderMoney = orderMoney
+        this.formData.orderMoney = accAdd(otherMoney, this.formData.totalMoney)
+      }
+    },
+    // 取消
+    handleCancel() {
+      uni.navigateBack();
+    },
+    // 保存
+    async handleSave() {
+      let formData = this.formData;
+      formData.order_money = this.formData.totalMoney
+      let param = this.resolveSubmitData(formData);
+      console.log("formDta", param);
+      if (this.validator(param)) {
+        let res = await orderReshuffle(param);
+        if (res.code === 0) {
+          uni.showToast({ icon: "none", title: "申请成功" });
+          uni.navigateBack().then(() => {
+            this.eventChannel.emit("updateData", {});
+          });
+        }
+      }
+    },
+    // 校验
+    validator(param) {
+      let projectVali = (val, key) => {
+        let _val = JSON.parse(val);
+        let must_money = _val.every((v) => `${v.must_money}`.length > 0);
+        if (!must_money) {
+          uni.showToast({ icon: "none", title: "请填写项目价格或总学费" });
+        }
+        return must_money;
+      };
+
+      let payPlanVali = (val, key) => {
+        console.log("payPlanVali", val);
+        let plan = val.filter((v, i) => {
+          if (!v.year) {
+            uni.showToast({ icon: "none", messages: "请选择所属年份" });
+          } else if (!v.pay_day) {
+            uni.showToast({ icon: "none", messages: "请选择计划回款日期" });
+          } else if (`${v.money}`.length <= 0) {
+            uni.showToast({ icon: "none", messages: "请填写计划回款金额" });
+          }
+        })
+
+        return plan.length <= 0;
+      };
+
+      let payLog = (val, key) => {
+        let paylog = val.filter((v, i) => {
+          if (!v.pay_date) {
+            uni.showToast({ icon: "none", messages: "请选择回款记录回款日期" });
+          } else if (v.pay_plan_id <= 0) {
+            uni.showToast({ icon: "none", messages: "请选择回款记录回款计划" });
+          } else if (`${v.pay_money}`.length <= 0) {
+            uni.showToast({ icon: "none", messages: "请选择回款记录回款金额" });
+          } else if (!v.pay_type) {
+            uni.showToast({ icon: "none", messages: "请选择回款记录支付方式" });
+          }
+        })
+
+        return paylog.length <= 0;
+      };
+
+      let rules = [
+        { key: "order_id", type: "required" },
+        { key: "order_money", type: "required" },
+        { key: "source", type: "required" },
+        { key: "online_course", type: "required" },
+        { key: "project", validator: projectVali },
+        { key: "pay_plan", validator: payPlanVali },
+        { key: "pay_log", validator: payLog },
+      ];
+
+      let messages = [
+        { key: "order_id", message: "请填写订单号" },
+        { key: "order_money", message: "请输入学费金额" },
+        { key: "source", message: "请选择订单来源" },
+        { key: "online_course", message: "请选择是否开通网课" },
+        { key: "project", message: "请配置项目信息" },
+        { key: "pay_plan", message: "请详细配置回款计划" },
+        { key: "pay_log", message: "请配置回款记录" },
+      ];
+
+      let validator = new Validator(rules, messages);
+
+      return validator.checkFrom(param);
+    },
+    // 获取订单详情
+    async getCrmOrderDetail(order_id) {
+      let params = { order_id: order_id };
+      let res = await getCrmOrderDetail(params).catch(() => {});
+      let data = res.data;
+      if (res.code == 0) {
+        let _data = Object.assign(data, {
+          union_staff_id: data.union_staff_id,
+          source: data.source || "",
+          type: data.type || 0,
+        });
+        // 处理已选项目数据
+        _data.projectData = this.resolveProjectData(data.project);
+        // 处理回款计划与回款记录数据
+        let plan = this.resolvePlanlog(data.pay_log, data.pay_plan);
+        _data.pay_log = plan.planLog;
+        _data.pay_plan = plan.payPlan;
+
+        // 生成项目配置数据
+        this.projectOption = this.generatorrojectOption(_data.projectData)
+
+        // 统计数据处理
+        let { orderMoney, otherMoney } = this.computeMoney(_data.pay_plan)
+        // _data.totalMoney = totalMoney
+        _data.totalMoney = this.computeTuitionMoney(_data.projectData)
+        _data.otherMoney = otherMoney
+        _data.orderMoney = orderMoney
+
+        this.formData = _data;
       }
     },
     // 处理详情接口返回的项目数据
     resolveProjectData(projectData) {
       projectData = JSON.parse(projectData);
       if (projectData && projectData.length) {
-        let _projectData = projectData.map((item) => {
+        let _projectData = projectData.map(item => {
           item.price = item.project_price || item.total_money;
           return item;
-        });
+        })
         return _projectData;
       }
       return [];
@@ -230,122 +347,6 @@ export default {
       });
 
       return data;
-    },
-    // 取消
-    handleCancel() {
-      uni.navigateBack();
-    },
-    // 保存
-    async handleSave() {
-      let formData = this.formData;
-      formData.order_money = this.formData.orderMoney
-      let param = this.resolveSubmitData(formData);
-      console.log("formDta", param);
-      if (this.validator(param)) {
-        let res = await orderReshuffle(param);
-        if (res.code === 0) {
-          uni.showToast({ icon: "none", title: "申请成功" });
-          uni.navigateBack().then(() => {
-            this.eventChannel.emit("updateData", {});
-          });
-        }
-      }
-    },
-    // 获取订单详情
-    async getCrmOrderDetail(order_id) {
-      let params = { order_id: order_id };
-      let res = await getCrmOrderDetail(params).catch(() => {});
-      let data = res.data;
-      if (res.code == 0) {
-        let _data = Object.assign(data, {
-          union_staff_id: data.union_staff_id,
-          source: data.source || "",
-          type: data.type || 0,
-        });
-        // 处理已选项目数据
-        _data.projectData = this.resolveProjectData(data.project);
-        // 处理回款计划与回款记录数据
-        let plan = this.resolvePlanlog(data.pay_log, data.pay_plan);
-        _data.pay_log = plan.planLog;
-        _data.pay_plan = plan.payPlan;
-
-        // 生成项目配置数据
-        this.projectOption = this.generatorrojectOption(_data.projectData)
-
-        // 统计数据处理
-        let { totalMoney, orderMoney, otherMoney } = this.computeMoney(_data.pay_plan)
-        // _data.totalMoney = totalMoney
-        _data.totalMoney = this.computeTuitionMoney(_data.projectData)
-        _data.otherMoney = otherMoney
-        _data.orderMoney = orderMoney
-
-        this.formData = _data;
-      }
-    },
-    // 校验
-    validator(param) {
-      let projectVali = (val, key) => {
-        let _val = JSON.parse(val);
-        let must_money = _val.every((v) => `${v.must_money}`.length > 0);
-        if (!must_money) {
-          uni.showToast({ icon: "none", title: "请填写项目价格或总学费" });
-        }
-        return must_money;
-      };
-
-      let payPlanVali = (val, key) => {
-        let plan = val.filter((v, i) => {
-          if (!v.year) {
-            uni.showToast({ icon: "none", messages: "请选择所属年份" });
-          } else if (!v.pay_day) {
-            uni.showToast({ icon: "none", messages: "请选择计划回款日期" });
-          } else if (`${v.money}`.length <= 0) {
-            uni.showToast({ icon: "none", messages: "请填写计划回款金额" });
-          }
-        });
-
-        return plan.length <= 0;
-      };
-
-      let payLog = (val, key) => {
-        let paylog = val.filter((v, i) => {
-          if (!v.pay_date) {
-            uni.showToast({ icon: "none", messages: "请选择回款记录回款日期" });
-          } else if (v.pay_plan_id <= 0) {
-            uni.showToast({ icon: "none", messages: "请选择回款记录回款计划" });
-          } else if (`${v.pay_money}`.length <= 0) {
-            uni.showToast({ icon: "none", messages: "请选择回款记录回款金额" });
-          } else if (!v.pay_type) {
-            uni.showToast({ icon: "none", messages: "请选择回款记录支付方式" });
-          }
-        });
-
-        return paylog.length <= 0;
-      };
-
-      let rules = [
-        { key: "order_id", type: "required" },
-        { key: "order_money", type: "required" },
-        { key: "source", type: "required" },
-        { key: "online_course", type: "required" },
-        { key: "project", validator: projectVali },
-        { key: "pay_plan", validator: payPlanVali },
-        { key: "pay_log", validator: payLog },
-      ];
-
-      let messages = [
-        { key: "order_id", message: "请填写订单号" },
-        { key: "order_money", message: "请输入学费金额" },
-        { key: "source", message: "请选择订单来源" },
-        { key: "online_course", message: "请选择是否开通网课" },
-        { key: "project", message: "请配置项目信息" },
-        { key: "pay_plan", message: "请详细配置回款计划" },
-        { key: "pay_log", message: "请配置回款记录" },
-      ];
-
-      let validator = new Validator(rules, messages);
-
-      return validator.checkFrom(param);
     },
   },
 };

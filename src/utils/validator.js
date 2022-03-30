@@ -32,7 +32,7 @@ class Validator {
         for(let i = rules.length - 1; i >= 0; i--) {
             let rule = rules[i], key = rule.key, val = form[key], message = messages[i].message, type = rule.type
             if (rule.validator) {
-                if (!rule.validator(val, key)) {
+                if (!rule.validator(val, key, errorList)) {
                     errorList.push({ key: key, msg: message })
                 } 
             } else if (rule.regexp) {
