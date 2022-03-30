@@ -46,6 +46,7 @@
       />
       <van-field
         required
+        
         type="number"
         label="回款金额"
         label-class="label"

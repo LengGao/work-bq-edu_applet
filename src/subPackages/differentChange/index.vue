@@ -297,7 +297,7 @@ export default {
       console.log("projectOption", projectOption, arr);
       return projectOption
     },
-    // 处理
+    // 处理计划数据
     resolvePlanlog(planLog = [], payPlan = []) {
       let types = this.expenseType,
         cacheName = "",
