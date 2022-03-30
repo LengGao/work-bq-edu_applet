@@ -172,6 +172,11 @@ export default {
       currentIndex: 0,
     };
   },
+  watch: {
+    'paylist': function(newVal) {
+      this.getPlanData(newVal)
+    }
+  },
   mounted() {
     this.data = this.info
     this.getPlanData(this.paylist)

@@ -145,6 +145,7 @@ export default {
           let _data = this.formData.pay_plan[index];
           _data = { ..._data, ...val };
           this.formData.pay_plan[index] = _data;
+          console.log("configPlan", this.formData.pay_plan);
         } else {
           this.formData.pay_plan = val;
         }
@@ -194,7 +195,7 @@ export default {
             uni.showToast({ icon: "none", messages: "请选择计划回款日期" });
           } else if (`${v.money}`.length <= 0) {
             uni.showToast({ icon: "none", messages: "请填写计划回款金额" });
-          } else if (`${item.project_name}`.length <= 0) {
+          } else if (`${v.project_name}`.length <= 0) {
             uni.showToast({ icon: "none", messages: "请输入所属项目" });
           }
         })
@@ -304,7 +305,7 @@ export default {
 
       payPlan = payPlan.map((item) => {
         item.name = types[item.type];
-        item
+        item.project_ids = item.project_ids || item.major_detail_ids || ''
         return item;
       });
 
@@ -323,7 +324,7 @@ export default {
         item.planCheckedIndex = cacheIndex;
         console.log("planCheckedIndex", item.planCheckedIndex);
 
-        item.receipt_file = item.receipt_file.map((file, index) => {
+        item.receipt_file = (item.receipt_file || []).map((file, index) => {
           return { name: "回款凭证" + (index + 1), url: file };
         });
 
@@ -339,7 +340,7 @@ export default {
       data.project = JSON.stringify(formData.projectData);
       // 回款计划
       data.pay_plan = formData.pay_plan.map(item => {
-        item.major_detail_ids = item.project_ids
+        item.project_ids = item.project_ids || item.major_detail_ids || ''
         return item
       });
       // 回款记录信息处理

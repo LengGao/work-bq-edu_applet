@@ -534,7 +534,7 @@ export default {
       const data = { order_id: this.orderId};
       const res = await hurryUp(data);
       if (res.code == 0) {
-        uni.showToast({ icon: 'none', title: '催办陈工' })
+        uni.showToast({ icon: 'none', title: '催办成功' })
       }
     },
     // 订单操作 1、通过，2：拒绝 , 3:撤销/作废订单，4、删除订单
@@ -595,6 +595,7 @@ export default {
       if (payPlan.length <= 0 || payPlan.length <= 0) return {}
       payPlan = payPlan.map((item) => {
         item.name = types[item.type];
+        item.project_ids = item.project_ids || item.major_detail_ids || ''
         return item;
       });
 

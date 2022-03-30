@@ -126,7 +126,8 @@ import Select from "@/components/select/index3.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
 import { accAdd } from "@/utils/index"
-import { createCrmOrder, uploadImage } from "@/api/customer";
+import { uploadImage } from "@/api/customer";
+import { payLogCreate } from "@/api/order";
 
 export default {
   components: {
@@ -191,6 +192,12 @@ export default {
       }
     };
   },
+  watch: {
+    'paylist': function(newVal) {
+        let addRecondPlan = this.resolveRecondPlan(this.paylist)
+        this.getPlanData(addRecondPlan)
+    }
+  },
   mounted() {
     let addRecondPlan = this.resolveRecondPlan(this.paylist)
     console.log("3", addRecondPlan);
@@ -242,7 +249,7 @@ export default {
       ]
 
       const callback = () => {
-        this.payLogCreate()
+        this.createPayLog()
       }
 
       this.validate(validator, callback)
@@ -294,7 +301,7 @@ export default {
       this.formData.receipt_file.push({ url, isImage: true });
     },
     // 创建回款记录
-    async payLogCreate() {
+    async createPayLog() {
       let formData = this.formData
       let data = { 
             order_id: this.orderId,

@@ -177,17 +177,16 @@ export default {
     ...mapGetters(['expenseType'])    // 学杂费
   },
   mounted() {
-    this.payList = this.list
+    // this.payList = this.list
     console.log("seting", this.list);
     this.getPlanYearOptions()
-    let cacheType = []
-     this.list.filter(item => {
-       if (cacheType.indexOf(item.type) == -1) {
-         cacheType.push(item.type)
-      }
-    })
-
-    this.currentCheckeds = cacheType.map(item => `${item}`)
+    // let cacheType = []
+    //  this.list.filter(item => {
+    //    if (cacheType.indexOf(item.type) == -1) {
+    //      cacheType.push(item.type)
+    //   }
+    // })
+    // this.currentCheckeds = cacheType.map(item => `${item}`)
     console.log("currentCheckeds", this.currentCheckeds);
   },
   methods: {
@@ -334,7 +333,7 @@ export default {
       if (type == 1 || type == '1') {
         return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
       } else {
-        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '', major_detail_ids: '' } 
+        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '' } 
       }
     },
     // 检查选中状态
@@ -360,11 +359,11 @@ export default {
       let payList = this.payList
       let planParam = payList.map(item => {
         if (item.type == 1 || item.type == '1') {
-          return { type: item.type, day: item.day, year: item.year, money: item.mone }
+          return { type: item.type, day: item.day, year: item.year, money: item.money }
         } else if (`${this.type}` == '1') {
-          return { type: item.type, day: item.day, year: item.year, money: item.mone, major_detail_ids: item.project_ids, project_name: item.project_name || '' } 
+          return { type: item.type, day: item.day, year: item.year, money: item.money, project_ids: item.project_ids, project_name: item.project_name || '' } 
         } else if (`${this.type}` == '0') {
-          return { type: item.type, day: item.day, year: item.year, money: item.mone, project_ids: item.project_ids, project_name: item.project_name || '' } 
+          return { type: item.type, day: item.day, year: item.year, money: item.money, project_ids: item.project_ids, project_name: item.project_name || '' } 
         } else {
           return ''
         }
@@ -468,6 +467,7 @@ export default {
   }
 
   .pay-list {
+    min-height: 42vh;
     padding: 20rpx;
   }
 

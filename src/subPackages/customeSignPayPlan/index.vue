@@ -298,7 +298,7 @@ export default {
       if (type == 1 || type == '1') {
         return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
       } else {
-        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '', major_detail_ids: '' } 
+        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '' } 
       }
     },
     // 检查选中状态
