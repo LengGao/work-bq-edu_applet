@@ -439,7 +439,7 @@ export default {
 
       data.project = formData.projectData.map((item) => {
         data.project_pay_money[item.id] = item.pay_money;
-        return item.id;
+        return item
       })
 
       return data
@@ -510,7 +510,7 @@ export default {
     position: fixed;
     bottom: 0;
     left: 0;
-    z-index: 999;
+    z-index: 99;
     width: 100%;
 
     &-submit {

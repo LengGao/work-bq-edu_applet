@@ -40,6 +40,14 @@
 
         <view class="list-item-slot">
           <van-cell
+            v-if="item.type !== 1"
+            title="所属项目"
+            title-class="label-class"
+            value-class="input-class"
+            :value="item.project_name || '请选择所属项目'"
+            @click="() => openPicker('project', index, item)"
+          />
+          <van-cell
             required
             title="所属年份"
             title-class="label-class"
@@ -88,28 +96,43 @@
       @confirm="handleDateChange"
       :value="currentDate"
     />
+
+    <Select
+      :show="projectShow"
+      @close="projectShow = false"
+      @confirm="handleSelectChange"
+      :options="projectOption"
+      multiple
+    />
   </view>
 </template>
 
 <script>
 import Title from "@/components/title/index2";
 import DatePicker from "@/components/datePicker/index.vue";
+import Select from "@/components/select/index.vue";
 import { getPlanTypeList } from '@/api/order'
 import { getPlanYearOptions, currentYear } from "@/utils/date"
 
 export default {
   components: {
     Title,
+    Select,
     DatePicker,
   },
   props: {
     list: {
       type: Array,
       default: []
+    },
+    projectOption: {
+      type: Array,
+      default: []
     }
   },
   data() {
     return {
+      projectShow: false,
       datePickerShow: false, 
       yearPickerShow: false,
       currentDate: new Date().getTime(),
@@ -154,7 +177,24 @@ export default {
         this.yearPickerShow = true
         this.currentItem = item
         this.currentIndex = index
+      } else if (key == 'project') {
+        this.projectShow = true
+        this.currentItem = item
+        this.currentIndex = index
       }
+    },
+    // 项目选择
+    handleSelectChange(detail) {
+      console.log('detail', detail);
+      let index = this.currentIndex, currentItem = this.currentItem
+      let ids = detail.map(item => item.value).join(',')
+      let names = detail.map(item => item.name).join(',')
+      currentItem.project_ids = ids
+      currentItem.project_name = names
+      this.currentItem = currentItem
+      this.payList[index] = currentItem
+      this.projectShow = false
+      this.$emit("dynamic-input", 'configPlan', { project_ids: ids, project_name: names }, index)
     },
     // 年份选择
     handleYearChange({ detail }) {
@@ -276,7 +316,7 @@ export default {
         startId = (+payList[lastindex].id) + 1
       }
 
-      return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
+      return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '' }
     },
     // 检查选中状态
     checkPayList(payList) {

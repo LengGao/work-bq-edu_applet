@@ -174,9 +174,10 @@ export default {
     let payList = q.payList,
         money = this.computeMoney(payList)
 
-    this.totalMoney = money.totalMoney 
+    let tuituiMoney = this.computeTuitionMoney(q.project_pay_money) 
+    this.totalMoney = tuituiMoney
     this.otherMoney = money.otherMoney
-    this.orderMoney = money.orderMoney
+    this.orderMoney = accAdd(money.orderMoney, tuituiMoney)
     this.formData.order_money = money.orderMoney
     this.getPlanData(payList)
   },
@@ -194,6 +195,13 @@ export default {
       }
       orderMoney = accAdd(totalMoney, otherMoney)
       return { totalMoney, otherMoney, orderMoney }
+    },
+    computeTuitionMoney(obj) {
+      let cache = 0
+      for(let k in obj) {
+        cache = accAdd(cache, obj[k])
+      }
+      return cache
     },
     // 支付方式
     onSheetSelect({ detail }) {
@@ -322,9 +330,15 @@ export default {
         pay_plan: []
       };
 
+      data.project = formData.project.map(item => item.id) || []
+
       data.pay_plan = formData.payList.map((item, index) => {
         if (this.planCheckedIndex.indexOf(index) !== -1) {
-          return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money }
+          if (data.type == 0) {
+            return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money, project_ids: item.project_ids }
+          } else {
+            return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money, edu_ids: item.project_ids }
+          }
         } else {
           return ''
         }

@@ -168,6 +168,7 @@
     <SettingPayPlan
       v-if="detailData.pay_plan && detailData.pay_plan.length > 0"
       :orderId="orderId"
+      :type="detailData.type"
       :list="detailData.pay_plan"
       @close="cancelSetting"
     />

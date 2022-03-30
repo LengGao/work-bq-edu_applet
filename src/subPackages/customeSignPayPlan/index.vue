@@ -34,6 +34,14 @@
 
         <view class="list-item-slot">
           <van-cell
+            v-if="item.type !== 1"
+            title="所属项目"
+            title-class="label-class"
+            value-class="input-class"
+            :value="item.project_name || '请选择所属项目'"
+            @click="() => openPicker('project', index, item)"
+          />
+          <van-cell
             required
             title="所属年份"
             title-class="label-class"
@@ -87,34 +95,48 @@
       @confirm="handleDateChange"
       :value="currentDate"
     />
+
+    <Select
+      :show="projectShow"
+      @close="projectShow = false"
+      @confirm="handleSelectChange"
+      :options="projectOption"
+      multiple
+    />
+
   </view>
 </template>
 
 <script>
 import Title from "@/components/title/index2";
 import DatePicker from "@/components/datePicker/index.vue";
+import Select from "@/components/select/index.vue";
 import { getPlanTypeList } from '@/api/order'
 import { getPlanYearOptions, currentYear } from "@/utils/date"
 
 export default {
   components: {
     Title,
+    Select,
     DatePicker,
   },
   data() {
     return {
+      projectShow: false,
       datePickerShow: false, 
       yearPickerShow: false,
       currentDate: new Date().getTime(),
       expenseType: {}, // 学杂费
       currentCheckeds: [], // 学杂费选中列表
       planYearOptions: [],  // 年份
+      projectOption: [], // 所属项目
       payList: [], // 回款计划
       currentItem: {
         year: '',
         day: '',
         type: '',
         money: '',
+        project_ids: '',
       }, // 正在输入的回款计划
       currentIndex: 0, // 正在输入的回款计划索引
       // 提交表单
@@ -123,9 +145,11 @@ export default {
   },
   onLoad(query) {
     let q = JSON.parse(decodeURIComponent(query.params))
+    console.log("customeSignPayPlan", q);
     this.formData = Object.assign(this.formData, q)
     this.getPlanTypeList()
     this.getPlanYearOptions()
+    this.getProjectOptions(this.formData.project)
   },
   methods: {
     // 日期选择
@@ -138,7 +162,21 @@ export default {
         this.yearPickerShow = true
         this.currentItem = item
         this.currentIndex = index
+      } else if (key == 'project') {
+        this.projectShow = true
+        this.currentItem = item
+        this.currentIndex = index
       }
+    },
+    // 项目选择
+    handleSelectChange(detail) {
+      console.log('detail', detail);
+      let index = this.currentIndex, currentItem = this.currentItem
+      currentItem.project_ids = detail.map(item => item.value).join(',')
+      currentItem.project_name = detail.map(item => item.name).join(',')
+      this.currentItem = currentItem
+      this.payList[index] = currentItem
+      this.projectShow = false
     },
     // 年份选择
     handleYearChange({ detail }) {
@@ -254,7 +292,7 @@ export default {
         console.log('creataItem', lastindex, type, payList, startId);
       }
 
-      return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
+      return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '', edu_ids: '' }
     },
     // 检查选中状态
     checkPayList() {
@@ -317,6 +355,16 @@ export default {
     getPlanYearOptions() {
       let planYearOptions = getPlanYearOptions().map(item => ({ name: item }))
       this.planYearOptions = planYearOptions
+    },
+    // 获取所属项目选项
+    getProjectOptions(arr) {
+      if (!arr) return [];
+      let projectOption = arr.map(item => ({ 
+        value: item.id, 
+        name: item.project_name + (item.major_name || ''), 
+      }))
+      console.log("projectOption", projectOption, arr);
+      this.projectOption = projectOption
     },
     // 获取分类
     async getPlanTypeList() {
@@ -400,7 +448,7 @@ export default {
     position: fixed;
     bottom: 0;
     left: 0;
-    z-index: 999;
+    z-index: 99;
     width: 100%;
 
     &-submit {

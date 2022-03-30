@@ -40,6 +40,14 @@
 
         <view class="list-item-slot">
           <van-cell
+            v-if="item.type !== 1"
+            title="所属项目"
+            title-class="label-class"
+            value-class="input-class"
+            :value="item.project_name || '请选择所属项目'"
+            @click="() => openPicker('project', index, item)"
+          />
+          <van-cell
             required
             title="所属年份"
             title-class="label-class"
@@ -96,6 +104,14 @@
       @confirm="handleDateChange"
       :value="currentDate"
     />
+
+    <Select
+      :show="projectShow"
+      @close="projectShow = false"
+      @confirm="handleSelectChange"
+      :options="projectOption"
+      multiple
+    />
   </view>
 </template>
 
@@ -118,10 +134,15 @@ export default {
     orderId: {
       type: [String, Number],
       default: ''
+    },
+    type: {
+      type: [String, Number],
+      default: ''
     }
   },
   data() {
     return {
+      projectShow: false,
       datePickerShow: false, 
       yearPickerShow: false,
       currentDate: new Date().getTime(),
@@ -165,7 +186,22 @@ export default {
         this.yearPickerShow = true
         this.currentItem = item
         this.currentIndex = index
+      } else if (key == 'project') {
+        this.projectShow = true
+        this.currentItem = item
+        this.currentIndex = index
       }
+    },
+    handleSelectChange(detail) {
+      console.log('detail', detail);
+      let index = this.currentIndex, currentItem = this.currentItem
+      let ids = detail.map(item => item.value).join(',')
+      let names = detail.map(item => item.name).join(',')
+      currentItem.project_ids = ids
+      currentItem.project_name = names
+      this.currentItem = currentItem
+      this.payList[index] = currentItem
+      this.projectShow = false
     },
     // 年份选择
     handleYearChange({ detail }) {
@@ -189,7 +225,6 @@ export default {
       item.money = +detail.value
       this.currentItem = item
       this.payList[index] = item
-      
     },
     // 多选 新增 删除 更新 diff
     handleChecked({ detail }) {
@@ -282,7 +317,7 @@ export default {
         startId = (+payList[lastindex].id) + 1
       }
 
-      return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
+      return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '' }
     },
     // 检查选中状态
     checkPayList(payList) {
@@ -305,11 +340,14 @@ export default {
     },
     toNext() {
       let payList = this.payList
-      let planParam = payList.map(item => ({ type: item.type, day: item.day, year: item.year, money: item.money }))
-      let data = {
-        order_id: this.orderId,
-        data: JSON.stringify(planParam)
-      }
+      let planParam = payList.map(item => { 
+        if (`${this.type}` == '1') {
+          return { type: item.type, day: item.day, year: item.year, money: item.mone , edu_ids: item.project_ids } 
+        } else {
+          return { type: item.type, day: item.day, year: item.year, money: item.mone , project_ids: item.project_ids } 
+        }
+      })
+      let data = { order_id: this.orderId, data: JSON.stringify(planParam) }
 
       let validator = [
         { fileld: "year", message: '请选择年份' },

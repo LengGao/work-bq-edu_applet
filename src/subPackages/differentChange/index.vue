@@ -21,6 +21,7 @@
         <ConfigPlan
           v-if="formData.pay_plan && formData.pay_plan.length > 0"
           :list="formData.pay_plan"
+          :projectOption="projectOption"
           @dynamic-input="dynamicInput"
         />
       </van-tab>
@@ -79,6 +80,7 @@ export default {
         otherMoney: '0.00', // 其他费用 也就是回款计划中已选择的总额
       },
       eventChannel: "",
+      projectOption: []
     };
   },
   onLoad(query) {
@@ -106,17 +108,30 @@ export default {
       orderMoney = accAdd(totalMoney, otherMoney)
       return { totalMoney, otherMoney, orderMoney }
     },
+    computeTuitionMoney(arr) {
+      console.log("obj", arr);
+      let cache = 0
+      arr.map(item => {
+        cache = accAdd(cache, item.must_money)
+      })
+      return cache
+    },
     // 输入修改
     modifyUserInfo(newData) {
       let data = { ...this.formData, ...newData };
       this.formData = data;
+      this.projectOption = this.generatorrojectOption(data.projectData)
     },
     modifyPlanInfo() {},
     // 金额 等冬天输入
     dynamicInput(key, val, index) {
       console.log("dynamicInput", key, val, index, this.formData.projectData);
       if (key === "projectData") {
+        let projectData = this.formData.projectData
         this.formData.projectData[index].must_money = val;
+        projectData = [index].must_money = val;
+        let tuituiMoney = this.computeTuitionMoney(projectData)
+        this.formData.totalMoney = tuituiMoney
 
       } else if (key === "planRecond") {
         let _data = this.formData.pay_log[index];
@@ -131,9 +146,10 @@ export default {
         } else {
           this.formData.pay_plan = val;
         }
+
         let { totalMoney, orderMoney, otherMoney } = this.computeMoney(this.formData.pay_plan)
         this.formData.otherMoney = otherMoney
-        this.formData.totalMoney = totalMoney
+        // this.formData.totalMoney = totalMoney
         this.formData.orderMoney = orderMoney
       }
     },
@@ -149,6 +165,17 @@ export default {
       }
       return [];
     },
+    // 生成项目配置数据
+    generatorrojectOption(arr) {
+    // 获取所属项目选项
+      if (!arr) return [];
+      let projectOption = arr.map(item => ({ 
+        value: item.id, 
+        name: item.project_name + (item.major?.value || '')
+      }))
+      console.log("projectOption", projectOption, arr);
+      return projectOption
+    },
     // 处理
     resolvePlanlog(planLog = [], payPlan = []) {
       let types = this.expenseType,
@@ -157,6 +184,7 @@ export default {
 
       payPlan = payPlan.map((item) => {
         item.name = types[item.type];
+        item
         return item;
       });
 
@@ -190,9 +218,11 @@ export default {
       // 项目信息
       data.project = JSON.stringify(formData.projectData);
       // 回款计划
-      data.pay_plan = formData.pay_plan;
+      data.pay_plan = formData.pay_plan.map(item => {
+        item.edu_ids = item.project_ids
+        return item
+      });
       // 回款记录信息处理
-
       data.pay_log = formData.pay_log.map((item) => {
         let _receipt_file = JSON.parse(JSON.stringify(item.receipt_file));
         item.receipt_file = _receipt_file.map((file) => file?.url);
@@ -238,9 +268,14 @@ export default {
         let plan = this.resolvePlanlog(data.pay_log, data.pay_plan);
         _data.pay_log = plan.planLog;
         _data.pay_plan = plan.payPlan;
+
+        // 生成项目配置数据
+        this.projectOption = this.generatorrojectOption(_data.projectData)
+
         // 统计数据处理
         let { totalMoney, orderMoney, otherMoney } = this.computeMoney(_data.pay_plan)
-        _data.totalMoney = totalMoney
+        // _data.totalMoney = totalMoney
+        _data.totalMoney = this.computeTuitionMoney(_data.projectData)
         _data.otherMoney = otherMoney
         _data.orderMoney = orderMoney
 
