@@ -4,7 +4,7 @@
       <Title title="回款记录"> </Title>
       <van-button
         type="primary"
-        v-if="!isApprove"
+        v-if="!isApprove && !isChannel"
         size="small"
         @click="$emit('add-click')"
         >添加回款记录</van-button
@@ -70,7 +70,7 @@
       <Title title="回款计划"> </Title>
       <van-button
         type="primary"
-        v-if="!isApprove"
+        v-if="!isApprove && !isChannel"
         @click="$emit('setting')"
         size="small"
         >配置回款计划</van-button
@@ -137,8 +137,12 @@ export default {
       default: () => ({}),
     },
     isApprove: {
-      type: Boolean,
+      type: [Boolean, Number],
       default: false,
+    },
+    isChannel: {
+      type: [Boolean, Number],
+      default: false
     },
     passParams: {
       type: Boolean,

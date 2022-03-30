@@ -1,9 +1,7 @@
 <template>
   <view class="collection-details">
     <view class="collection-details-header">
-      <view class="money"
-        >{{ data.org_name }}-回款{{ data.receivable_money }}元</view
-      >
+      <view class="money">{{ data.org_name }}-回款{{ data.receivable_money }}元</view>
       <view class="staff">{{ data.staff_name }} | {{ data.pay_date }}</view>
     </view>
     <van-tabs color="#199fff" animated swipeable :ellipsis="false">

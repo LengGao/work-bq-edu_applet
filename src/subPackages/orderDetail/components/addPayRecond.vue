@@ -338,7 +338,7 @@ export default {
       margin: 20rpx 20rpx 40rpx;
       font-size: 24rpx;
       color: #ff4b4b;
-      border: @border;
+      // border: @border;
     }
 
 

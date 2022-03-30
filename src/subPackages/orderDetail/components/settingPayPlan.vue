@@ -144,6 +144,10 @@ export default {
       type: [String, Number],
       default: ''
     },
+    projectOption: {
+      type: Array,
+      default: []
+    },
     totalMoney: {
       type: [String, Number],
       default: ''
@@ -155,7 +159,6 @@ export default {
       datePickerShow: false, 
       yearPickerShow: false,
       currentDate: new Date().getTime(),
-      expenseType: {}, // 学杂费
       currentCheckeds: [], // 学杂费选中列表
       planYearOptions: [],  // 年份
       payList: [], // 回款计划
@@ -167,7 +170,7 @@ export default {
       }, // 正在输入的回款计划
       currentIndex: 0, // 正在输入的回款计划索引
       // 提交表单
-      formData: {},
+      formData: {}      
     };
   },
   computed: {
@@ -389,8 +392,8 @@ export default {
     // 校验
     validate(options, callback) {
       let payList = this.payList, 
-          len = payList.length
-           order_money = this.totalMoney,
+          len = payList.length,
+          order_money = this.totalMoney,
           errList = [],
           cache = 0
 
@@ -403,8 +406,9 @@ export default {
           options.forEach(err => {
             let key = err.fileld, message = err.message
             if (`${item[key]}`.length <= 0) {
-              errList.push({ icon: "none", title: `${message}` })
-            }
+              if (key == 'project_name' && item.type != 1 || item.type != '1')
+                errList.push({ icon: "none", title: `${message}` })
+              }
           })
           if (item.type == 1 || item.type == '1') {
             cache = accAdd(cache, item.money)
@@ -418,7 +422,7 @@ export default {
       }
 
       if (errList.length > 0) {
-        uni.showToast(...errList[0])
+        uni.showToast(errList[0])
       } else {
         callback()
       }

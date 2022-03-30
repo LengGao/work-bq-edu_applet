@@ -142,7 +142,6 @@ export default {
       datePickerShow: false, 
       yearPickerShow: false,
       currentDate: new Date().getTime(),
-      expenseType: {}, // 学杂费
       currentCheckeds: [], // 学杂费选中列表
       planYearOptions: [],  // 年份
       payList: [], // 回款计划

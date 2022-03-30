@@ -46,6 +46,7 @@
       <van-tab title="回款记录">
         <PayRecord
           :isApprove="isApprove"
+          :isChannel="isChannel"
           :passParams="passParams"
           :data="detailData"
           @add-click="onAdd"
@@ -69,10 +70,11 @@
     </van-tabs>
 
     <!-- 是审批且异动的相关操作 -->
+    <template v-if="!isChannel">
 
     <template v-if="isApprove">
       <van-tabbar
-        :active="isChange ? '6' : '4'"
+        :active="1"
         active-color="#43d100"
         inactive-color="#fd6500"
         @change="handleTabbarChange"
@@ -101,7 +103,7 @@
         <van-tabbar-item v-if="detailData.refund_button" name="5" icon="smile-o">
           退款作废
         </van-tabbar-item>
-        <van-tabbar-item v-if="detailData.verify_status < 4 && !detailData.reshuffle" name="6" icon="smile-o">
+        <van-tabbar-item v-if="detailData.verify_status < 4 || detailData.verify_status == 9 && !detailData.reshuffle" name="6" icon="smile-o">
           申请异动
         </van-tabbar-item>
         <van-tabbar-item v-if="detailData.verify_status < 3" name="7" icon="smile-o">
@@ -110,6 +112,7 @@
       </van-tabbar>
     </template>
 
+    </template>
     <template v-if="isChange && detailData.reshuffle_list && detailData.reshuffle_list.length">
       <Seal type="warning" v-if="detailData.reshuffle_list[0].status === 3">已驳回</Seal>
       <Seal type="success" v-if="detailData.reshuffle_list[0].status === 2">已通过</Seal>
@@ -120,6 +123,7 @@
       v-if="detailData.pay_plan && detailData.pay_plan.length > 0"
       :orderId="orderId"
       :type="detailData.type"
+      :projectOption="projectOption"
       :list="detailData.pay_plan"
       :totalMoney="totalMoney"
       @close="cancelSetting"
@@ -337,7 +341,7 @@ export default {
       unusualIndex: 0,
       // 学籍异动
       orderTransactionData: [],
-      // 订单作废
+      projectOption: [],
     };
   },
   computed: {
@@ -609,16 +613,26 @@ export default {
         item.planCheckedIndex = cacheIndex;
         console.log("planCheckedIndex", item.planCheckedIndex);
 
-        item.receipt_file = item.receipt_file.map((file, index) => {
+        item.receipt_file = (item.receipt_file || []).map((file, index) => {
           return { name: "回款凭证" + (index + 1), url: file };
-        });
+        })
 
         return item;
       });
 
       return { planLog, payPlan };
     },
-
+    // 生成项目配置数据
+    generatorrojectOption(arr) {
+    // 获取所属项目选项
+      if (!arr) return [];
+      let projectOption = arr.map(item => ({ 
+        value: item.id, 
+        name: item.project_name + (item.major?.value || '')
+      }))
+      console.log("projectOption", projectOption, arr);
+      return projectOption
+    },
     // 获取详情
     async getCrmOrderDetail(isOnload) {
       const data = {
@@ -635,6 +649,10 @@ export default {
       let plan = this.resolvePlanlog(_data.pay_log, _data.pay_plan);
       _data.pay_log = plan.planLog;
       _data.pay_plan = plan.payPlan;
+
+      // 生成项目配置数据
+      this.projectOption = this.generatorrojectOption(_data.projectData)
+
       // 统计数据处理
       // let { totalMoney, orderMoney, otherMoney } = this.computeMoney(_data.pay_plan)
       this.totalMoney = _data.order_money

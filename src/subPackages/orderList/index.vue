@@ -110,7 +110,7 @@ export default {
     },
     toDetail(orderId, index, change) {
       this.checkedIndex = index;
-      let approve = this.listType == 2 ? 2 : 3 
+      let approve = this.listType == 2 ? 2 : 3       
       uni.navigateTo({
         url: `/subPackages/orderDetail/index?orderId=${orderId}&approve=${approve}&change=${change}`,
       });

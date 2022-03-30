@@ -23,9 +23,9 @@
       />
     </van-cell-group>
 
+    <view class="hr"></view>
     <Title customStyle="padding: 20rpx;" title="回款记录"></Title>
     <van-cell-group custom-class="group-cell" v-for="(item, index) in data" :key="item.id">
-      <view class="hr"></view>
       <van-cell
         title="回款日期"
         is-link
@@ -78,6 +78,7 @@
           @delete="({ detail }) => handleDeleteFile(detail, index)"
         />
       </van-cell>
+      <view class="hr"></view>
     </van-cell-group>
 
     <van-action-sheet

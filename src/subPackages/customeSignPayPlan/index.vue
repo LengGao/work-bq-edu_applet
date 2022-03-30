@@ -356,7 +356,9 @@ export default {
           options.forEach(err => {
             let key = err.fileld, message = err.message
             if (`${item[key]}`.length <= 0) {
-              errList.push({ icon: "none", title: `${message}` })
+              if (key == 'project_name' && item.type != 1 || item.type != '1') {
+                errList.push({ icon: "none", title: `${message}` })
+              }
             }
           })
           if (item.type == 1 || item.type == '1') {
@@ -371,7 +373,7 @@ export default {
       }
 
       if (errList.length > 0) {
-        uni.showToast(...errList[0])
+        uni.showToast(errList[0])
       } else {
         callback()
       }
