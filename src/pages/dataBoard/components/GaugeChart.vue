@@ -16,26 +16,26 @@
         >
       </view>
       <view class="gauge-chart-data-item">
-        <view class="gauge-chart-data-item-title">订单金额</view>
+        <view class="gauge-chart-data-item-title">订单总金额</view>
         <view class="gauge-chart-data-item-value">
           {{ priceFormat(data.orderMoney)
           }}<text class="unit">{{ unitFormat(data.orderMoney) }}</text></view
         >
       </view>
       <view class="gauge-chart-data-item">
-        <view class="gauge-chart-data-item-title">回款金额</view>
+        <view class="gauge-chart-data-item-title">回款总金额</view>
         <view class="gauge-chart-data-item-value">
           {{ priceFormat(data.payMoney)
           }}<text class="unit">{{ unitFormat(data.payMoney) }}</text></view
         >
       </view>
-      <view class="gauge-chart-data-item">
+      <!-- <view class="gauge-chart-data-item">
         <view class="gauge-chart-data-item-title">退款金额</view>
         <view class="gauge-chart-data-item-value"
           >{{ priceFormat(data.refundMoney)
           }}<text class="unit">{{ unitFormat(data.refundMoney) }}</text></view
         >
-      </view>
+      </view> -->
     </view>
   </view>
 </template>

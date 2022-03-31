@@ -11,7 +11,7 @@
     >
       <van-tab title="基本信息">
         <CustomInfo
-          v-if="formData.order_id"
+          v-if="formData.projectData && formData.order_id"
           :data="formData"
           @input-blur="modifyUserInfo"
           @dynamic-input="dynamicInput"
@@ -166,7 +166,9 @@ export default {
       let param = this.resolveSubmitData(formData);
       
       if (this.validator(param)) {
-        let res = await orderReshuffle(param).catch(() => {});
+        let res = await orderReshuffle(param).catch((err) => {
+          uni.showToast({ icon: 'none', title: `${err.message}` })
+        });
         if (res.code === 0) {
           uni.navigateBack().then(() => {
             uni.showToast({ icon: "none", title: `${res.message}`});
@@ -271,6 +273,7 @@ export default {
         _data.otherMoney = otherMoney
         _data.orderMoney = orderMoney
 
+        console.log("_data", _data);
         this.formData = _data;
       }
     },
@@ -282,6 +285,7 @@ export default {
           item.price = item.project_price || item.total_money;
           return item;
         })
+        console.log('resolveProjectData', projectData, _projectData);
         return _projectData;
       }
       return [];

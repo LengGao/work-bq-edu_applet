@@ -18,13 +18,12 @@
       :key="index"
     >
       <van-cell :title="`${item.pay_date || '--'} 回款`" title-class="bold-title" />
-      <van-cell :border="false">
+      <van-cell :border="false" custom-class="cell-item">
         <template #title>
-          <text class="title">入账状态</text>
-          <text class="value">{{ payStatusMap[item.verify_status] || "--"}}</text>
+
         </template>
       </van-cell>
-      <van-cell :border="false">
+      <van-cell :border="false" custom-class="cell-item">
         <template #title>
           <text class="title">回款金额</text>
           <text class="value">{{ item.pay_money | moneyFormat }}</text>
@@ -32,32 +31,28 @@
         <text class="title">支付方式</text>
         <text class="value">{{ item.pay_type }}</text>
       </van-cell>
-      <van-cell :border="false" title-width="130rpx">
-        <template #title>
-          <text class="title">回款计划</text>
-        </template>
-        <text class="value" decode>{{ item.relation_plan.replaceAll(',', ',  ') || "无" }}</text>
-      </van-cell>
-      <van-cell :border="false">
+      <van-cell :border="false" custom-class="cell-item-end">
         <template #title>
           <text class="title">回款凭证</text>
-          <template v-if="item.receipt_file && item.receipt_file.length">
-            <image
-              :src="src"
-              @click="() => previewImage(item.receipt_file, index)"
-              style="
-                width: 80rpx;
-                height: 60rpx;
-                margin-left: 10rpx;
-                vertical-align: top;
-              "
-              v-for="(src, index) in item.receipt_file"
-              :key="index"
-              alt=""
-            />
+          <template v-if="item.receipt_file && item .receipt_file.length">
+              <image
+                v-for="(src, index) in item.receipt_file"
+                :key="index"
+                :src="src.url || src"
+                @click="() => previewImage(item.receipt_file, index)"
+                style="width: 80rpx; height: 60rpx; margin-left: 10rpx;"
+              />
           </template>
           <text v-else>无</text>
         </template>
+          <text class="title">入账状态</text>
+          <text class="value">{{ payStatusMap[item.verify_status] || "--"}}</text>
+      </van-cell>
+      <van-cell :border="false" title-width="130rpx" custom-class="cell-item">
+        <template #title>
+          <text class="title">回款计划</text>
+        </template>
+          <text class="value" style="width: 100%;" decode>{{ item.relation_plan.replaceAll(',', ',  ') || "无" }}</text>
       </van-cell>
       <van-cell :border="false">
         <template #title>
@@ -90,21 +85,21 @@
             <text class="title">计划 {{ item.day }} 回款</text>
           </template>
         </van-cell>
-        <van-cell :border="false" title-class="title">
+        <van-cell :border="false" title-class="title" custom-class="cell-item">
           <template #title>
             <text class="title">计划回款金额</text>
             <text class="value">{{ item.money | moneyFormat }}</text>
           </template>
-          <text class="title">回款进度</text>
-        </van-cell>
-        <van-cell :border="false">
-          <template #title>
             <text class="title">实际回金额</text>
             <text class="value">{{ item.pay_money | moneyFormat }}</text>
-          </template>
-          <text class="progress">{{ item.pay_progress }}</text>
         </van-cell>
-        <van-cell :border="false" title-width="130rpx">
+        <van-cell :border="false" custom-class="cell-item">
+          <template #title>
+            <text class="title">回款进度</text>
+            <text class="progress">{{ item.pay_progress }}</text>
+          </template>
+        </van-cell>
+        <van-cell :border="false" title-width="130rpx" custom-class="cell-item">
           <template #title>
             <text class="title">所属项目</text>
           </template>
@@ -168,10 +163,12 @@ export default {
 
   methods: {
     previewImage(urls, index) {
-      uni.previewImage({
-        urls,
-        current: urls[index],
-      });
+      if (typeof urls[0] === 'object') {
+        let _urls = urls.map(item => { item.url })
+        uni.previewImage({ _urls, current: _urls[index] })
+      } else {
+        uni.previewImage({ urls, current: urls[index] })
+      }
     },
   },
 };
@@ -186,7 +183,7 @@ export default {
   min-height: 65vh;
   &-title {
     .flex-c-b();
-    padding: 0 20rpx 10rpx;
+    padding: 0 20rpx 4rpx;
   }
   /deep/.cell-group {
     margin-bottom: 20rpx;
@@ -206,13 +203,24 @@ export default {
     font-size: @font-size-sm;
     text-align: left;
   }
+  /deep/.cell-item {
+    display: flex;
+    flex-direction: row;
+    padding: 8rpx 16rpx;
+  }
+  /deep/.cell-item-end {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    padding: 8rpx 16rpx;
+  }
   .progress {
     color: #fd7b18;
     font-size: @font-size-sm;
   }
   /deep/.center {
     text-align: center;
-    color: #ccc;
+    color: #cccccc;
   }
   /deep/.bold-title {
     flex: inherit;

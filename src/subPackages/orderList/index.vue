@@ -81,6 +81,24 @@ export default {
       keyword: "",
       drawerShow: false,
       checkedIndex: null,
+      verifyTypeMap: {
+        0: {
+          text: "新订单",
+          type: "success",
+        },
+        1: {
+          text: "申请退款",
+          type: "warning",
+        },
+        2: {
+          text: "申请作废",
+          type: "danger",
+        },
+        3: {
+          text: "申请退差价",
+          type: "warning",
+        },
+      },
     };
   },
   onLoad() {

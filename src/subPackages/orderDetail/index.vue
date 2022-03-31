@@ -25,10 +25,13 @@
     <view class="order-detail-header">
       <view class="order-detail-header-title"
         >{{ detailData.surname || "" }}-{{detailData.project_name || ""}}
+          <van-tag :type="verifyTypeMaps[detailData.verify_type].type" plain>
+              {{ verifyTypeMaps[detailData.verify_type].text }}
+          </van-tag>
       </view>
       <view class="order-detail-header-other"
         >{{ detailData.create_time || "" }} |
-        <text style="color: #fd6500; margin-left: 10rpx">{{detailData.order_money | moneyFormat}}</text>
+        <text style="color: #fd6500; margin-left: 10rpx">{{detailData.total_money | moneyFormat}}</text>
       </view>
     </view>
 
@@ -85,9 +88,11 @@
             detailData.reshuffle_list.length && 
             detailData.reshuffle_list[0].my_reshuffle_review ) || 
             detailData.is_my_review"
-        >
+        > 
           <van-tabbar-item icon="clear" name="2">驳回</van-tabbar-item>
-          <van-tabbar-item icon="checked" name="1">通过</van-tabbar-item>
+          <van-tabbar-item icon="checked" name="1">
+            <text style="color: #59D234;"> 通过 </text>
+          </van-tabbar-item>
         </template> 
       </van-tabbar>
     </template>
@@ -97,12 +102,10 @@
       <van-tabbar @change="handleTabbarChange">
         <van-tabbar-item v-if="detailData.verify_status <= 1 && !detailData.reshuffle" name="3" icon="revoke">
           撤回
-        </van-tabbar-item>  
+        </van-tabbar-item>
         <van-tabbar-item v-if="(
-          detailData.verify_status <=1 ||
-          detailData.verify_status >= 8 ) && 
-          !detailData.is_deleted &&
-          !detailData.reshuffle
+          detailData.verify_status == 8 ) && 
+          !detailData.is_deleted
           " 
           name="4" icon="delete-o">
           删除
@@ -359,6 +362,24 @@ export default {
       // 学籍异动
       orderTransactionData: [],
       projectOption: [],
+      verifyTypeMaps: {
+        0: {
+          text: "新订单",
+          type: "success",
+        },
+        1: {
+          text: "申请退款",
+          type: "warning",
+        },
+        2: {
+          text: "申请作废",
+          type: "danger",
+        },
+        3: {
+          text: "申请退差价",
+          type: "warning",
+        },
+      },
     };
   },
   computed: {
@@ -511,7 +532,7 @@ export default {
       const { order_no, create_time, surname, order_money, pay_money, overdue_money, order_id } = this.detailData;
       switch (detail) {
         case "1":
-          this.isImage ? this.orderUnusualApprove(detail) : this.crmOrderApprove(detail)
+          this.detailData.reshuffle ? this.orderUnusualApprove(detail) : this.crmOrderApprove(detail) 
         break;
         case "2":
           this.rejectDialog = true;
@@ -682,9 +703,10 @@ export default {
       !isOnload && this.updateListItem(res.data);
       const approveStatusMap = {
         1: "待审核",
-        3: "已通过",
-        8: "已撤销",
-        9: "已驳回",
+        2: "（多人）审核中",
+        3: "审核通过",
+        8: "已撤销审核",
+        9: "驳回不通过",
       };
       const approveStatusIconMap = {
         3: "checked",
@@ -696,25 +718,40 @@ export default {
         9: "#f56c6c",
         3: "#59D234",
       };
-      const steps = [
+      let stspData = res.data.verify_step.map((item, index) => {
+        if (item.status) {
+          this.stepActive = index + 1;
+        }
+        if (approveStatusColorMap[item.status]) {
+          this.stepActiveColor = approveStatusColorMap[item.status];
+        }
+        return {
+          text: item.staff_name,
+          desc: approveStatusMap[item.status] || "待审核",
+          activeIcon: approveStatusIconMap[item.status],
+        };
+      })
+     
+      let steps = [
         {
           text: res.data.submit_name,
           desc: "提交审批",
-        },
-        ...res.data.verify_step.map((item, index) => {
-          if (item.status) {
-            this.stepActive = index + 1;
-          }
-          if (approveStatusColorMap[item.status]) {
-            this.stepActiveColor = approveStatusColorMap[item.status];
-          }
-          return {
-            text: item.staff_name,
-            desc: approveStatusMap[item.status] || "待审核",
-            activeIcon: approveStatusIconMap[item.status],
-          };
-        }),
+        }
       ];
+      if (stspData.length) {
+        steps = [
+          ...steps,
+          ...stspData
+        ]
+      } else {
+        steps = [
+          ...steps,
+          {
+            text: res.data.staff_name,
+            desc: "待审核",
+          }
+        ]
+      }
       // 拒绝，撤销不用加审核完成
       if (![8, 9].includes(res.data.verify_status)) {
         if (this.stepActive === res.data.verify_step.length) {
@@ -779,5 +816,9 @@ export default {
 /deep/.pay-drawer {
   width: 100%;
   height: 100%;
+}
+
+/deep/.van-icon-checked {
+  color: #59D234;
 }
 </style>

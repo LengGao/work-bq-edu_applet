@@ -45,7 +45,12 @@
             >
           </template>
           <view class="item-submit-time" v-else>{{ item.create_time }} </view>
+          
+          <van-tag :type="verifyTypeMaps[item.verify_type].type" plain>
+              {{ verifyTypeMaps[item.verify_type].text }}
+          </van-tag>
         </view>
+
         <view class="item-customer">
           {{ item.surname || ""
           }}<span v-if="item.jiebie_name">-{{ item.jiebie_name }}</span
@@ -97,6 +102,24 @@ export default {
         1: "订单退款",
         2: "订单作废",
         3: "订单退差价",
+      },
+      verifyTypeMaps: {
+        0: {
+          text: "新订单",
+          type: "success",
+        },
+        1: {
+          text: "申请退款",
+          type: "warning",
+        },
+        2: {
+          text: "申请作废",
+          type: "danger",
+        },
+        3: {
+          text: "申请退差价",
+          type: "warning",
+        },
       },
     };
   },

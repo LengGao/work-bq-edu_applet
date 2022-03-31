@@ -304,7 +304,7 @@ export default {
     // 报名缴费
     async createCrmOrder() {
       let formData = this.formData,
-          receipt_file = formData.receipt_file.map((item) => item.url)
+          receipt_file = formData.receipt_file.map(item => item.url)
       
       let data = {
         order_token: Date.now(),
@@ -346,7 +346,7 @@ export default {
       if (res.code === 0) {
         setTimeout(() => {
           this.saveLoading = false;          
-          uni.reLaunch({ url: '/subPackages/orderApprove/index' })
+          uni.reLaunch({ url: '/subPackages/customerList/index' })
         }, 800);
       }
     },

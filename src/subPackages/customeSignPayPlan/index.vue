@@ -413,16 +413,16 @@ export default {
       let projectOption = arr.map(item => {
         return { 
           value: item.id, 
-          name: item.project_name || item.major_name || '', 
+          name: item.major_name || item.project_name || '', 
         }
       })
       
       projectOption = projectOption.map(item => {
-        currentProjectIds = currentProjectIds ? `${currentProjectIds}, ${item.id}` : item.id 
+        currentProjectIds = currentProjectIds ? `${currentProjectIds}, ${item.id || item.value}` : item.id || item.value
         currentProjectName = currentProjectName ? `${currentProjectName}, ${item.name}` : item.name 
         return item
       })
-
+      
       this.currentProjectIds = currentProjectIds
       this.currentProjectName = currentProjectName
       this.projectOption = projectOption

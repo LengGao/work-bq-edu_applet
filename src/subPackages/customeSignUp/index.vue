@@ -16,7 +16,6 @@
         :value="formData.mobile"
         required
         type="number"
-        :border="false"
         label="手机号码"
         label-class="label"
         input-align="right"
@@ -39,6 +38,7 @@
       />
       <van-cell
         is-link
+        required
         title="订单来源"
         title-width="200rpx"
         :value="formData.source || '请选择'"
@@ -116,9 +116,9 @@
             label-class="label"
             placeholder="请输入实收金额"
             title-width="400rpx"
-            :value="formData.projectData[index].pay_money"
+            :value="item.pay_money"
             :label="`${item.project_name}-实收学费金额`"
-            @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
+            @change="({ detail }) => handleInput(detail, index, item)"
           />
         </view>
       </template>
@@ -160,10 +160,11 @@
             input-align="right"
             title-width="400rpx"
             placeholder="请输入实收金额"
-            :value="formData.projectData[index].pay_money"
+            :value="item.pay_money"
             :label="`${item.major_name}-实收学费金额`"
-            @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
+            @change="({ detail }) => handleInput(detail, index, item)"
           />
+          <!-- @input="({ detail }) => (formData.projectData[index].pay_money = detail)" -->
         </view>
       </template>
 
@@ -360,6 +361,16 @@ export default {
       this.formData.union_staff_id = checked.map((item) => item.staff_id).join(",");
       this.selectShow = false;
     },
+    // 金额输入控制
+    handleInput(detail, index, item) {
+      let projectData = this.formData.projectData
+      projectData.forEach(p => {
+        if (p.id == item.id) {
+            p.pay_money = detail
+          }
+      })
+      this.formData.projectData = projectData
+    },
     // 取消
     handleCancel() {
       uni.navigateBack()
@@ -372,6 +383,7 @@ export default {
     handleSave() {
       const validator = [
         { key: "surname", errmsg: "客户姓名不能为空" },
+        { key: "source", errmsg: "订单来源不能为空" },
         { key: "id_card_number", errmsg: "请输入正确的身份证号码", minLength: 18 },
         { key: "mobile", errmsg: "请输入正确的手机号", reg: /^1[3-9]\d{9}$/ },
         { key: "projectData", errmsg: "请选择报名项目或专业", minLength: 1, },
@@ -448,7 +460,7 @@ export default {
         return item.id
       })
       data.project = project
-      data.project_pay_money
+      data.project_pay_money = project_pay_money
 
       // 计算报名学费总额，
       let order_money = 0

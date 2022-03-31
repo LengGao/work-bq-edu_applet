@@ -218,7 +218,6 @@
       :show="selectEduProjectShow"
       @close="selectEduProjectShow = false"
       @confirm="handleSelectEduProjectChange"
-      :value="formData.project_projectData"
     />
   </view>
 </template>
@@ -242,7 +241,7 @@ export default {
     Select,
     SelectProject,
     SelectEduProject,
-    DatePicker,
+    DatePicker, 
   },
   props: {
     data: {
@@ -292,10 +291,22 @@ export default {
   },
   mounted() {
     console.log("1", this.data);
-    this.formData = this.data
+    this.formData = Object.assign(this.formData, this.data)
     this.resolveSaffData(this.data)
+    let _projectOptions = this.resolveProjectOptions(this.data.projectData)
+    this.handleSelectProjectChange(_projectOptions)
   },
   methods: {
+    resolveProjectOptions(projectData) {
+      
+      let _projectOptions = projectData.map(item => {
+        return { 
+          name:  (item.major && item.major.value) || item.project_name || '', 
+          value: item.id
+        }
+      })
+      return _projectOptions || []
+    },
     // 拨号
     onPhoneCall(phoneNumber) {
       uni.makePhoneCall({ phoneNumber})
@@ -344,6 +355,7 @@ export default {
       this.sheetActions = this[key];
     },
     onSheetSelect({ detail }) {
+      // 届别
       if (this.sheetChecked === "payTypeOptions") {
         this.formData.pay_type = detail.name;
         this.$emit('input-blur', { pay_type: detail.name})
@@ -394,6 +406,7 @@ export default {
     },
     // 选择职称项目
     handleSelectProjectChange(project = []) {
+      console.log("handleSelectProjectChange",project);
       let idStr = project.map(item => item.value).join(',')
       this.checkedProjectName = project.map(item => item.name).join(',')
       this.selectProjectShow = false;
