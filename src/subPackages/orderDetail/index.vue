@@ -653,7 +653,7 @@ export default {
         console.log("planCheckedIndex", item.planCheckedIndex);
 
         item.receipt_file = (item.receipt_file || []).map((file, index) => {
-          return { name: "回款凭证" + (index + 1), url: file };
+          return { name: "回款凭证" + (index + 1), url: file , isImage: true};
         })
 
         return item;

@@ -50,13 +50,13 @@
       :key="index"
     >
       <van-cell :title="`${item.pay_date} 回款`" title-class="bold-title" />
-      <van-cell :border="false">
+      <van-cell :border="false" custom-class="cell-item">
         <template #title>
           <text class="title">入账状态</text>
           <text class="value">{{ payStatusMap[item.verify_status] || "--"}}</text>
         </template>
       </van-cell>
-      <van-cell :border="false">
+      <van-cell :border="false" custom-class="cell-item">
         <template #title>
           <text class="title">回款金额</text>
           <text class="value">{{ item.pay_money | moneyFormat }}</text>
@@ -64,13 +64,13 @@
         <text class="title">支付方式</text>
         <text class="value">{{ item.pay_type }}</text>
       </van-cell>
-      <van-cell :border="false" title-width="130rpx">
+      <van-cell :border="false" title-width="130rpx" custom-class="cell-item">
         <template #title>
           <text class="title">回款计划</text>
         </template> 
         <text class="value" decode>{{ item.relation_plan.replaceAll(',', ',  ') || "无" }}</text>
       </van-cell>
-      <van-cell :border="false">
+      <van-cell :border="false" >
         <template #title>
           <text class="title">备注信息</text>
         </template>
@@ -135,21 +135,21 @@
             <text class="title">计划 {{ item.day }} 回款</text>
           </template>
         </van-cell>
-        <van-cell :border="false" title-class="title">
+        <van-cell :border="false" title-class="title" custom-class="cell-item">
           <template #title>
             <text class="title">计划回款金额</text>
             <text class="value">{{ item.money | moneyFormat }}</text>
           </template>
           <text class="title">回款进度</text>
         </van-cell>
-        <van-cell :border="false">
+        <van-cell :border="false" custom-class="cell-item">
           <template #title>
             <text class="title">实际回款金额</text>
             <text class="value">{{ item.pay_money | moneyFormat }}</text>
           </template>
           <text class="progress">{{ item.pay_progress }}</text>
         </van-cell>
-        <van-cell :border="false" title-width="130rpx">
+        <van-cell :border="false" title-width="130rpx" custom-class="cell-item">
           <template #title>
             <text class="title">所属项目</text>
           </template> 
@@ -252,12 +252,14 @@ export default {
     color: #ccc;
   }
   /deep/.bold-title {
-    flex: inherit;
-    flex-shrink: 0;
     font-size: @font-size-sm;
     color: @text-color;
     font-weight: 700;
+    margin-left: -20rpx;
     margin-right: 20rpx;
+  }
+  /deep/.cell-item {
+    padding: 8rpx 16rpx;
   }
 }
 </style>

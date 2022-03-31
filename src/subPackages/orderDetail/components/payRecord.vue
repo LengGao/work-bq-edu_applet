@@ -20,11 +20,6 @@
       <van-cell :title="`${item.pay_date || '--'} 回款`" title-class="bold-title" />
       <van-cell :border="false" custom-class="cell-item">
         <template #title>
-
-        </template>
-      </van-cell>
-      <van-cell :border="false" custom-class="cell-item">
-        <template #title>
           <text class="title">回款金额</text>
           <text class="value">{{ item.pay_money | moneyFormat }}</text>
         </template>
@@ -54,7 +49,7 @@
         </template>
           <text class="value" style="width: 100%;" decode>{{ item.relation_plan.replaceAll(',', ',  ') || "无" }}</text>
       </van-cell>
-      <van-cell :border="false">
+      <van-cell :border="false"  custom-class="cell-item">
         <template #title>
           <text class="title">备注信息</text>
           <text class="value">{{ item.tips || "无" }}</text>
@@ -164,8 +159,8 @@ export default {
   methods: {
     previewImage(urls, index) {
       if (typeof urls[0] === 'object') {
-        let _urls = urls.map(item => { item.url })
-        uni.previewImage({ _urls, current: _urls[index] })
+        let _urls = urls.map(item => item.url)
+        uni.previewImage({ urls: _urls, current: _urls[index] })
       } else {
         uni.previewImage({ urls, current: urls[index] })
       }
@@ -223,11 +218,10 @@ export default {
     color: #cccccc;
   }
   /deep/.bold-title {
-    flex: inherit;
-    flex-shrink: 0;
     font-size: @font-size-sm;
     color: @text-color;
     font-weight: 700;
+    margin-left: -20rpx;
     margin-right: 20rpx;
   }
 }

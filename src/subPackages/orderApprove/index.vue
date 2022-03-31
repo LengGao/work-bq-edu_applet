@@ -33,6 +33,7 @@
             <text>{{ item.submit_name || "--" }}</text>
             提交了{{ verifyTypeMap[item.verify_type] }}审批
           </view>
+          <view class="item-submit-tag">
           <template v-if="[3, 8, 9].includes(item.status)">
             <van-tag type="success" plain v-if="item.status === 3"
               >已通过</van-tag
@@ -49,6 +50,7 @@
           <van-tag :type="verifyTypeMaps[item.verify_type].type" plain>
               {{ verifyTypeMaps[item.verify_type].text }}
           </van-tag>
+          </view>
         </view>
 
         <view class="item-customer">
@@ -204,6 +206,7 @@ export default {
     &-submit {
       .flex-c-b();
       margin-bottom: 10rpx;
+
       &-name {
         color: @text-color-grey;
         text {
@@ -230,6 +233,15 @@ export default {
           }
         }
       }
+
+      &-tag {
+        min-width: 240rpx;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+      }
+
       &-time {
         color: @text-color-grey;
       }

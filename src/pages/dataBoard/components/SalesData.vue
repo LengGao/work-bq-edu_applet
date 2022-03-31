@@ -24,7 +24,7 @@
           {{ priceFormat(data.recruitOtherMoney) }}
           <text class="unit">{{ unitFormat(data.recruitOtherMoney) }}</text>
         </view>
-        <view class="sales-data-item-title">招生其他回款</view>
+        <view class="sales-data-item-title">其他回款</view>
       </view>
       <view class="sales-data-item">
         <view class="sales-data-item-value sales-data-item-value-1">
@@ -45,7 +45,21 @@
           {{ priceFormat(data.recruitRefundMoney) }}
           <text class="unit">{{ unitFormat(data.recruitRefundMoney) }}</text>
         </view>
-        <view class="sales-data-item-title">招生退款作废</view>
+        <view class="sales-data-item-title">退款作废</view>
+      </view>
+      <!-- <view class="sales-data-item">
+        <view class="sales-data-item-value sales-data-item-value-4">
+          {{ priceFormat(data.recruitWebsiteMoney) }}
+          <text class="unit">{{ unitFormat(data.recruitWebsiteMoney) }}</text>
+        </view>
+        <view class="sales-data-item-title">招生官网缴费订单金额</view>
+      </view> -->
+      <view class="sales-data-item">
+        <view class="sales-data-item-value sales-data-item-value-1">
+          {{ priceFormat(data.recruitWebsitePayMoney) }}
+          <text class="unit">{{ unitFormat(data.recruitWebsitePayMoney) }}</text>
+        </view>
+        <view class="sales-data-item-title">官网回款</view>
       </view>
     </view>
 
@@ -91,6 +105,27 @@
         </view>
         <view class="sales-data-item-title">机构入账</view>
       </view>
+      <view class="sales-data-item">
+        <view class="sales-data-item-value sales-data-item-value-3">
+          {{ priceFormat(data.orgRefundMoney) }}
+          <text class="unit">{{ unitFormat(data.orgRefundMoney) }}</text>
+        </view>
+        <view class="sales-data-item-title">退款作废</view>
+      </view>
+      <!-- <view class="sales-data-item">
+        <view class="sales-data-item-value sales-data-item-value-4">
+          {{ priceFormat(data.orgWebsiteMoney) }}
+          <text class="unit">{{ unitFormat(data.orgWebsiteMoney) }}</text>
+        </view>
+        <view class="sales-data-item-title">官网缴费订单</view>
+      </view> -->
+      <view class="sales-data-item">
+        <view class="sales-data-item-value sales-data-item-value-1">
+          {{ priceFormat(data.orgWebsitePayMoney) }}
+          <text class="unit">{{ unitFormat(data.orgWebsitePayMoney) }}</text>
+        </view>
+        <view class="sales-data-item-title">官网回款</view>
+      </view>
     </view>
   </view>
 </template>
@@ -127,11 +162,11 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
   &-item {
     width: 25%;
-    text-align: center;
+    text-align: left;
     &:nth-of-type(-n + 4) {
       margin-bottom: 20rpx;
     }
@@ -141,9 +176,8 @@ export default {
       margin-bottom: 8rpx;
     }
     &-value {
-      text-align: center;
       color: @primary;
-      font-size: @font-size-md;
+      font-size: @font-size-lg;
       .unit {
         font-size: @font-size-xs;
       }
