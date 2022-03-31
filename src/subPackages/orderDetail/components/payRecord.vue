@@ -76,7 +76,7 @@
         >配置回款计划</van-button
       >
     </view>
-    <template v-if="data.pay_plan.length">
+    <template v-if="data.pay_plan && data.pay_plan.length > 0">
       <van-cell-group
         custom-class="cell-group"
         inset
@@ -134,7 +134,7 @@ export default {
   props: {
     data: {
       type: Object,
-      default: () => ({}),
+      default: {},
     },
     isApprove: {
       type: [Boolean, Number],

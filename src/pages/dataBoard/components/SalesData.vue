@@ -24,7 +24,7 @@
           {{ priceFormat(data.recruitOtherMoney) }}
           <text class="unit">{{ unitFormat(data.recruitOtherMoney) }}</text>
         </view>
-        <view class="sales-data-item-title">其他回款</view>
+        <view class="sales-data-item-title">招生其他回款</view>
       </view>
       <view class="sales-data-item">
         <view class="sales-data-item-value sales-data-item-value-1">

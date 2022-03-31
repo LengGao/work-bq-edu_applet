@@ -45,6 +45,7 @@
       </van-tab>
       <van-tab title="回款记录">
         <PayRecord
+          v-if="detailData"
           :isApprove="isApprove"
           :isChannel="isChannel"
           :passParams="passParams"
@@ -94,16 +95,28 @@
     <!-- 订单相关操作 -->
     <template v-else>
       <van-tabbar @change="handleTabbarChange">
-        <van-tabbar-item v-if="detailData.verify_status == 1 && !detailData.reshuffle" name="3" icon="revoke">
+        <van-tabbar-item v-if="detailData.verify_status <= 1 && !detailData.reshuffle" name="3" icon="revoke">
           撤回
         </van-tabbar-item>  
-        <van-tabbar-item v-if="detailData.verify_status == 8 && !detailData.is_deleted" name="4" icon="delete-o">
+        <van-tabbar-item v-if="(
+          detailData.verify_status <=1 ||
+          detailData.verify_status >= 8 ) && 
+          !detailData.is_deleted &&
+          !detailData.reshuffle
+          " 
+          name="4" icon="delete-o">
           删除
         </van-tabbar-item>  
-        <van-tabbar-item v-if="detailData.refund_button" name="5" icon="failure">
+        <van-tabbar-item v-if="detailData.refund_button && !detailData.reshuffle" name="5" icon="failure">
           退款作废
         </van-tabbar-item>
-        <van-tabbar-item v-if="detailData.verify_status < 4 || detailData.verify_status == 9 && !detailData.reshuffle" name="6" icon="orders-o">
+        <van-tabbar-item v-if="(
+          detailData.verify_status < 4 || 
+          detailData.verify_status >= 8 ) && 
+          !detailData.reshuffle
+          " 
+          name="6" icon="orders-o"
+        >
           申请异动
         </van-tabbar-item>
         <van-tabbar-item v-if="detailData.verify_status < 3" name="7" icon="smile-o">
@@ -116,6 +129,10 @@
     <template v-if="isChange && detailData.reshuffle_list && detailData.reshuffle_list.length">
       <Seal type="warning" v-if="detailData.reshuffle_list[0].status === 3">已驳回</Seal>
       <Seal type="success" v-if="detailData.reshuffle_list[0].status === 2">已通过</Seal>
+      <Seal type="warning" v-if="detailData.reshuffle_list[0].status === 8">已撤回</Seal>
+    </template>
+    <template v-else>
+      <Seal type="warning" v-if="detailData.is_deleted == 1">已删除</Seal>
     </template>
   
     <van-popup custom-class="pay-drawer" position="bottom" :show="settingPayPlanShow">
@@ -347,7 +364,7 @@ export default {
   computed: {
     ...mapGetters(["payTypeOptions", 'expenseType']),
     periodOptions() {
-      return this.detailData.pay_plan.map((item, index) => {
+      return (this.detailData.pay_plan || []).map((item, index) => {
         return ({
           name: `第${index + 1}期 ${item.day} ￥${item.money}`,
           value: item.id

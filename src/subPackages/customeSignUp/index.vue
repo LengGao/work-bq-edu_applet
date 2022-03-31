@@ -116,7 +116,7 @@
             label-class="label"
             placeholder="请输入实收金额"
             title-width="400rpx"
-            :model:value="item.pay_money"
+            :value="formData.projectData[index].pay_money"
             :label="`${item.project_name}-实收学费金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
           />
@@ -160,7 +160,7 @@
             input-align="right"
             title-width="400rpx"
             placeholder="请输入实收金额"
-            :model:value="item.pay_money"
+            :value="formData.projectData[index].pay_money"
             :label="`${item.major_name}-实收学费金额`"
             @input="({ detail }) => (formData.projectData[index].pay_money = detail)"
           />
@@ -280,7 +280,13 @@ export default {
     this.formData.mobile = query.userMobile;
     this.formData.id_card_number = query.userIdCard;
     this.formData.source = query.source
-    this.formData.is_new = query.is_new || '0'
+    this.formData.is_new = query.is_new || '0'  
+  },
+  onUnload() {
+    console.log('卸载');
+    if (uni.getStorageSync('plan')) [
+      uni.removeStorageSync("plan")
+    ]
   },
   methods: {
     // 打开选择客户回款日期、支付方式
@@ -357,6 +363,10 @@ export default {
     // 取消
     handleCancel() {
       uni.navigateBack()
+      console.log('卸载');
+      if (uni.getStorageSync('plan')) [
+        uni.removeStorageSync("plan")
+      ]
     },
     // 保存
     handleSave() {

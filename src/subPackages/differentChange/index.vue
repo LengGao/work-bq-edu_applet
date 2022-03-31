@@ -164,12 +164,12 @@ export default {
       let formData = this.formData;
       formData.order_money = this.formData.totalMoney
       let param = this.resolveSubmitData(formData);
-      console.log("formDta", param);
+      
       if (this.validator(param)) {
-        let res = await orderReshuffle(param);
+        let res = await orderReshuffle(param).catch(() => {});
         if (res.code === 0) {
-          uni.showToast({ icon: "none", title: "申请成功" });
           uni.navigateBack().then(() => {
+            uni.showToast({ icon: "none", title: `${res.message}`});
             this.eventChannel.emit("updateData", {});
           });
         }

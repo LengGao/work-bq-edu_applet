@@ -115,7 +115,7 @@ import DatePicker from "@/components/datePicker/index.vue";
 import Select from "@/components/select/index.vue";
 import { getPlanYearOptions, currentYear } from "@/utils/date"
 import { mapGetters } from 'vuex'
-import { accAdd } from "@/utils/index";
+import { accAdd, getNowFormatDate } from "@/utils/index";
 
 export default {
   components: {
@@ -132,6 +132,8 @@ export default {
       currentCheckeds: [], // 学杂费选中列表
       planYearOptions: [],  // 年份
       projectOption: [], // 所属项目
+      currentProjectIds: '', // 第一步项目选择是已选报名项目id
+      currentProjectName: '', // 第一步项目选择时已选项目名称
       payList: [], // 回款计划
       currentItem: {
         year: '',
@@ -153,6 +155,12 @@ export default {
     console.log("customeSignPayPlan", q);
     this.formData = Object.assign({}, q)
     this.getPlanYearOptions()
+    let cache = uni.getStorageSync('plan')
+    if (cache) {
+      console.log("cache", cache);
+      this.payList = cache.payList
+      this.currentCheckeds = cache.currentCheckeds
+    }
     this.getProjectOptions(q.projectData)
   },
   methods: {
@@ -248,7 +256,6 @@ export default {
     },
     // 删除
     handleDelete(item, index) {
-      console.log("handleDelete", item, index, this.payList);
       let modalOption = { title: "", content: "确定要删除此计划吗?", showCancel: true, cancelColor: "#199fff", confirmColor: "#199fff" };
       let payList = this.payList
       let _index = payList.findIndex(i => i.id == item.id)
@@ -280,7 +287,7 @@ export default {
     },
     // 构造插入对象
     creataItem(type, index) {
-      let typs = this.expenseType, 
+      let types = this.expenseType, 
           _currentYear = currentYear,
           payList = this.payList, 
           len = payList.length, 
@@ -289,16 +296,30 @@ export default {
 
       if (index == -1) {
         startId = lastItem ? ((lastItem.id / 100) + 1) * 100 : 100
-        console.log('creataItem', lastItem, startId);
       } else {
         let lastindex = this.handleFindLast(payList, (item) => item.type = type)
         startId = (+payList[lastindex].id) + 1
-        console.log('creataItem', lastindex, type, payList, startId);
       }
       if (type == 1 || type == '1') {
-        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
+        return  { 
+          type, 
+          id: startId, 
+          name: types[type], 
+          year: _currentYear, 
+          day: getNowFormatDate(), 
+          money: ''
+        }
       } else {
-        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '' } 
+        return  { 
+          type, 
+          id: startId, 
+          name: types[type], 
+          year: _currentYear, 
+          day: getNowFormatDate(),
+          money: '', 
+          project_name: this.currentProjectName, 
+          project_ids: this.currentProjectIds 
+        } 
       }
     },
     // 检查选中状态
@@ -319,7 +340,9 @@ export default {
     },
     // 上一步 下一步
     toPrev() {
-        uni.navigateBack()
+      uni.navigateBack()
+      let cache = { payList: this.payList, currentCheckeds: this.currentCheckeds }
+      uni.setStorageSync('plan', cache)
     },
     toNext() {
       let query = this.formData
@@ -386,12 +409,30 @@ export default {
     // 获取所属项目选项
     getProjectOptions(arr) {
       if (!arr) return [];
-      let projectOption = arr.map(item => ({ 
-        value: item.id, 
-        name: item.project_name || item.major_name || '', 
-      }))
-      console.log("projectOption", projectOption, arr);
+      let currentProjectIds = '', currentProjectName = '';
+      let projectOption = arr.map(item => {
+        return { 
+          value: item.id, 
+          name: item.project_name || item.major_name || '', 
+        }
+      })
+      
+      projectOption = projectOption.map(item => {
+        currentProjectIds = currentProjectIds ? `${currentProjectIds}, ${item.id}` : item.id 
+        currentProjectName = currentProjectName ? `${currentProjectName}, ${item.name}` : item.name 
+        return item
+      })
+
+      this.currentProjectIds = currentProjectIds
+      this.currentProjectName = currentProjectName
       this.projectOption = projectOption
+      if (this.payList.length) {
+        this.payList = this.payList.map(item => {
+          item.project_ids = currentProjectIds
+          item.project_name = currentProjectName
+          return item
+        })
+      }
     },
   }
 };

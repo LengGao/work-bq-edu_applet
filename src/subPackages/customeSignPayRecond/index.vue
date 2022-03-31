@@ -177,6 +177,11 @@ export default {
 
     this.getPlanData(payList)
   },
+  onUnload() {
+    if (uni.getStorageSync('plan')) [
+      uni.removeStorageSync("plan")
+    ]
+  },
   methods: {
     // 订单小姐金额计算
     computeMoney(arr) {
@@ -227,6 +232,9 @@ export default {
     },
     handleCancel() {
       uni.navigateBack()
+      if (uni.getStorageSync('plan')) [
+        uni.removeStorageSync("plan")
+      ]
     },
     // 保存
     handleSave() {
