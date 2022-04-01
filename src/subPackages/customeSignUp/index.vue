@@ -284,7 +284,6 @@ export default {
     this.formData.is_new = query.is_new || '0'  
   },
   onUnload() {
-    console.log('卸载');
     if (uni.getStorageSync('plan')) [
       uni.removeStorageSync("plan")
     ]
@@ -374,7 +373,6 @@ export default {
     // 取消
     handleCancel() {
       uni.navigateBack()
-      console.log('卸载');
       if (uni.getStorageSync('plan')) [
         uni.removeStorageSync("plan")
       ]

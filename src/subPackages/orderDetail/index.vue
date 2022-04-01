@@ -7,10 +7,7 @@
         left-icon="volume-o"
         :text="`驳回原因：${detailData.reshuffle_list[unusualIndex].tips || '无'}`"
       />
-      <van-notice-bar
-        v-else
-        wrapable
-        left-icon="volume-o"
+      <van-notice-bar v-else wrapable left-icon="volume-o"
         :text="`异动原因：${detailData.reshuffle_list[unusualIndex].reason};${detailData.reshuffle_list[unusualIndex].desc}`"
       />
     </template>

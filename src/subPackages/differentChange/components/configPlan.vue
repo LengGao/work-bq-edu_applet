@@ -7,12 +7,8 @@
       </view>
       <van-checkbox-group :value="currentCheckeds" @change="handleChecked">
         <view class="check-group">
-          <van-checkbox 
-            v-for="(item, index) in expenseType" 
-            :key="index" 
-            shape="square" 
-            :name="index" 
-            class="van-checkbox"
+          <van-checkbox  v-for="(item, index) in expenseType"  :key="index" 
+            class="van-checkbox" shape="square" :name="index"
           >
             {{ item }}
           </van-checkbox>
@@ -74,7 +70,7 @@
             input-class="input-class"
             :value="Number(item.money)"
             @blur="({ detail }) => 
-              detail.value !== item.money && 
+              detail.value != item.money && 
               handleInputMoney(detail, item, index)
             "
           />
@@ -110,10 +106,10 @@
 
 <script>
 import Title from "@/components/title/index2";
-import DatePicker from "@/components/datePicker/index.vue";
 import Select from "@/components/select/index.vue";
-import { mapGetters } from 'vuex'
+import DatePicker from "@/components/datePicker/index.vue";
 import { getPlanYearOptions, currentYear } from "@/utils/date"
+import { mapGetters } from 'vuex'
 import { accAdd } from "@/utils/index";
 
 export default {
@@ -136,6 +132,9 @@ export default {
       default: '0.00'
     },
   },
+  computed: {
+    ...mapGetters([ 'expenseType']),
+  },
   data() {
     return {
       projectShow: false,
@@ -152,15 +151,10 @@ export default {
         money: '',
       }, // 正在输入的回款计划
       currentIndex: 0, // 正在输入的回款计划索引
-      // 提交表单
-      formData: {},
     };
   },
-  computed: {
-    ...mapGetters(['expenseType'])    // 学杂费
-  },
   mounted() {
-    console.log("2", this.list);
+    console.log("2", this.list, this.projectOption);
     this.payList = this.list
     let cacheType = []
      this.list.filter(item => {
@@ -170,9 +164,26 @@ export default {
     })
 
     this.currentCheckeds = cacheType.map(item => `${item}`)
-    
-    console.log("currentCheckeds", this.currentCheckeds);
     this.getPlanYearOptions()
+  },
+  watch: {
+    "projectOption": function (newVal) {
+      console.log("projectOption", newVal);
+      this.projectOption = newVal
+    },
+    'list': function (newVal) {
+      console.log("list", newVal);
+      this.payList = newVal
+      let cacheType = []
+      newVal.filter(item => {
+        if (cacheType.indexOf(item.type) == -1) {
+          cacheType.push(item.type)
+        }
+      })
+
+      this.currentCheckeds = cacheType.map(item => `${item}`)
+      this.getPlanYearOptions()
+    }
   },
   methods: {
     openPicker(key, index, item) {
@@ -224,10 +235,11 @@ export default {
     // 实收金额输入
     handleInputMoney(detail, item, index) {      
       let val = detail.value
+      console.log(val);
       item.money = val
       this.currentItem = item
       this.payList[index] = item
-      this.$emit('dynamic-input', 'configPlan', {money: val}, index)
+      this.$emit('dynamic-input', 'configPlan',  { money: val }, index)
     },
     // 多选 新增 删除 更新 diff
     handleChecked({ detail }) {

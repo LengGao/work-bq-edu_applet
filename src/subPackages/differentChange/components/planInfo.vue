@@ -175,6 +175,14 @@ export default {
   watch: {
     'paylist': function(newVal) {
       this.getPlanData(newVal)
+    },
+    'otherMoney': function(newVal) {
+      console.log('otherMoney',newVal);
+      this.otherMoney = newVal
+    },
+    'totalMoney': function(newVal) {
+      console.log('totalMoney', newVal);
+      this.totalMoney = newVal
     }
   },
   mounted() {
@@ -299,7 +307,7 @@ export default {
     getPlanData(data) {
       console.log("getPlanData", data );
       this.planOptions = data.map((item, index) => ({
-        name: `${item.year} ${item.name} ￥${item.money}`,
+        name: `${item.year} ${item.name} ￥${item.money || 0}`,
         value: index,
         id: item.id
       }))

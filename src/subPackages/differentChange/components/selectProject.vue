@@ -60,11 +60,7 @@ export default {
       type: [String, Number],
       default: 1,
     },
-    auto: {
-      type: Boolean,
-      default: false
-    },
-    autoData: {
+    value: {
       type: Array,
       default: []
     }
@@ -82,11 +78,11 @@ export default {
     this.getCateProjectOption();
   },
   mounted() {
-    console.log("prject mounted", this.auto, this.autoData);
+    // console.log("prject mounted", this.auto, this.autoData);
   },
   watch: {
-    'autoData': function (newVal) {
-      console.log("prject autoData", newVal, this.checkedValue, this.projectOptions);
+    'value': function (newVal) {
+      console.log("selectProject value", newVal, this.checkedValue, this.projectOptions);
       if (newVal && newVal.length > 0) {
         this.checkedValue = newVal.map(item => {
           return `${item.project_name},${item.id}`
