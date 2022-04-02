@@ -314,13 +314,14 @@ export default {
     // 报名缴费
     async createCrmOrder() {
       let formData = this.formData,
-          receipt_file = formData.receipt_file.map(item => item.url)
-      
+          receipt_file = formData.receipt_file.map(item => item.url),
+          source = formData.source.trim()
+
       let data = {
         order_token: Date.now(),
         id: formData.id,
         order_money: formData.order_money,
-        surname: formData.surname,
+        surname: source,
         mobile: formData.mobile,
         id_card_number: formData.id_card_number,
         tips: formData.tips,
