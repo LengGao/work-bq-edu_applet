@@ -527,7 +527,7 @@ export default {
     }
 
     /deep/.van-button {
-      width: 40%;
+     width: 300rpx;
     }
   }
 }
