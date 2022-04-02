@@ -48,3 +48,12 @@ export function staffFollow(data) {
         data
     })
 }
+// 通知
+export function getNoticeData(params) {
+    return http.request({
+        url: '/StaffNotice/notice',
+        method: 'get',
+        params,
+        loading: false
+    })
+}

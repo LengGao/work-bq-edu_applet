@@ -7,7 +7,7 @@
       color="#199fff"
       title-active-color="#199fff"
       :active="active"
-      :z-index="100"
+      :z-index="1"
       @change="handlerTabChange"
     >
       <van-tab title="基本信息" title-style="z-index: 100">
@@ -24,6 +24,7 @@
       <van-tab title="回款计划" title-style="z-index: 100">
         <ConfigPlan
           v-if="payPlan.length > 0"
+          style="z-index: 999;"
           :list="payPlan"
           :projectOption="projectOption"
           :project-type="formData.type"

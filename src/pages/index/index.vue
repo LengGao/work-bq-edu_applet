@@ -8,6 +8,7 @@
           :text="item.title"
           v-for="(item, index) in items"
           :key="index"
+          :dot="item.dot"
           link-type="navigateTo"
           :url="item.path"
         />
@@ -100,6 +101,7 @@ import {
   getSystemMsgList,
   staffFollow,
   readStaffNotice,
+  getNoticeData,
 } from "@/api/index";
 import NoticeList from "./components/NoticeList.vue";
 import SystemNoticeList from "./components/SystemNoticeList.vue";
@@ -121,48 +123,66 @@ export default {
     return {
       items: [
         {
+          id: 0,
           title: "客户管理",
           path: "/subPackages/customerList/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/9.png",
+          dot: false
         },
         {
+          id: 1,
           title: "公海客户",
           path: "/subPackages/highSeasCustomers/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/10.png",
+          dot: false
         },
         {
+          id: 2,
           title: "订单管理",
           path: "/subPackages/orderList/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/13.png",
+          dot: false
         },
         {
+          id: 3,
           title: "教务开课",
           path: "/subPackages/eduOpenClass/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/11.png",
+          dot: false
         },
         {
+          id: 4,
           title: "订单审批",
           path: "/subPackages/orderApprove/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/2.png",
+          dot: false
         },
         {
+          id: 5,
           title: "异动审批",
           path: "/subPackages/changeOrderApprove/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/3.png",
+          dot: false
         },
         {
+          id: 6,
           title: "回款审批",
           path: "/subPackages/collectionApproval/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/7.png",
+          dot: false
         },
         {
+          id: 7,
           title: "班级管理",
           path: "/subPackages/classManagement/index",
           icon: "https://oss-file.beiqujy.com/default/crm_applet/8.png",
+          dot: false
         }
       ],
       tabIndex: 0,
       // 工作通知
+      timerId: '',
+      
       workNoticeData: [],
       workNoticePage: 1,
       workNoticeTotal: 0,
@@ -248,8 +268,19 @@ export default {
       }
     },
   },
+  onLoad() {
+    this.timerId = setInterval(() => {
+      this.getNoticeData();
+    }, 1000 * 30);
+  },
   onShow() {
     this.getStaffNotice();
+  },
+  onUnload() {
+    if (this.timerId) {
+      clearInterval(this.timerId);
+      this.timerId = null;
+    }
   },
   methods: {
     onSheetSelect({ detail }) {
@@ -429,6 +460,17 @@ export default {
         this.workNoticeData.push(...res.data.data);
       }
       this.workNoticeTotal = res.data.total;
+    },
+    async getNoticeData() {
+      const items = this.items
+      const res = await getNoticeData().catch(() => {})
+      if (res.code == 0) {
+        items[3].dot = res.data.openCourse
+        items[4].dot = res.data.orderAuth
+        items[5].dot = res.data.orderAuth
+        items[6].dot = res.data.orderPayAuth
+        this.items = items
+      }
     },
     // tabs 切换
     handleTabsChange({ detail }) {
