@@ -87,9 +87,12 @@ class Http {
                 title: "加载中",
             });
             // console.log(`${url} >>参数：`, data)
+            let baseUir = process.env.VUE_APP_BASE_API 
+            let _url = (baseUir + url).replace('\'', '')
+            console.log("_url", _url);
             uni.request({
                 ...options,
-                url: process.env.VUE_APP_BASE_API + url,
+                url: _url,
                 data,
                 header,
                 success: (response) => {

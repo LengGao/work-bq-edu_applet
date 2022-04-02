@@ -152,8 +152,8 @@
         <van-cell :border="false" title-width="130rpx" custom-class="cell-item">
           <template #title>
             <text class="title">所属项目</text>
-            <text class="value" decode>{{ (item.project_name || '').replaceAll(',', ',  ') || "无" }}</text>
           </template> 
+            <text class="value" decode>{{ (item.project_name || '').replaceAll(',', ',  ') || "无" }}</text>
         </van-cell>
       </van-cell-group>
     </template>

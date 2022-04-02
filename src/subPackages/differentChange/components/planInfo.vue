@@ -378,7 +378,6 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
-
 .sign-submit {
   width: 100%;
   overflow: hidden;

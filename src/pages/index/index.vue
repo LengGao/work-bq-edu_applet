@@ -269,12 +269,19 @@ export default {
     },
   },
   onLoad() {
+  },
+  onShow() {
+    this.getStaffNotice();
+    this.getNoticeData();
     this.timerId = setInterval(() => {
       this.getNoticeData();
     }, 1000 * 30);
   },
-  onShow() {
-    this.getStaffNotice();
+  onHide() {
+    if (this.timerId) {
+      clearInterval(this.timerId);
+      this.timerId = null;
+    }
   },
   onUnload() {
     if (this.timerId) {

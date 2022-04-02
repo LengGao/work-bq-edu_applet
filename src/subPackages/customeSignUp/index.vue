@@ -441,7 +441,7 @@ export default {
         surname: formData.surname,
         mobile: formData.mobile,
         id_card_number: formData.id_card_number,
-        source: formData.source,
+        source: formData.source.replace('-', '0'), // 不允许传'-'
         union_staff_id: formData.union_staff_id,
         online_course: formData.online_course,
         type: formData.type,

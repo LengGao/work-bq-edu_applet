@@ -492,27 +492,6 @@ export default {
       border: none;
     }
   }
-  
-  .footer {
-    position: absolute;
-    bottom: 40rpx;
-    left: 0;
-    z-index: 99;
-
-    &-submit {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      padding: 0 60rpx;
-      background-color: #fff;
-    }
-
-    /deep/.van-button {
-      width: 300rpx;
-    }
-  }
 }
 
 /deep/.label-class {
