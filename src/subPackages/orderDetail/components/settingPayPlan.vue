@@ -510,7 +510,7 @@ export default {
   }
   
   .footer {
-    position: relative;
+    position: fixed;
     bottom: 0;
     left: 0;
     z-index: 99;

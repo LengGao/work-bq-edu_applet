@@ -15,17 +15,11 @@
       @refresh="handleRefresh"
       class="load-more"
     >
-      <view
-        class="item"
-        v-for="(item, index) in listData"
-        :key="item.id"
-        @click="toDetail(item.order_id, item.id, index)"
+      <view v-for="(item, index) in listData" :key="item.id"
+        class="item" @click="toDetail(item.order_id, item.id, index)"
       >
         <view class="item-submit">
-          <view
-            class="item-submit-name finish"
-            v-if="item.finish_staff_id || item.status === 8"
-          >
+          <view class="item-submit-name finish" v-if="item.finish_staff_id || item.status === 8">
             <text>{{ item.submit_name || "--" }}</text>
             提交了{{ verifyTypeMap[item.verify_type] }}审批
           </view>
@@ -33,39 +27,41 @@
             <text>{{ item.submit_name || "--" }}</text>
             提交了{{ verifyTypeMap[item.verify_type] }}审批
           </view>
-          <view class="item-submit-tag">
-          <template v-if="[3, 8, 9].includes(item.status)">
-            <van-tag type="success" plain v-if="item.status === 3"
-              >已通过</van-tag
-            >
-            <van-tag color="#999" plain v-if="item.status === 8"
-              >已撤销</van-tag
-            >
-            <van-tag type="warning" plain v-if="item.status === 9"
-              >已驳回</van-tag
-            >
-          </template>
-          <view class="item-submit-time" v-else>{{ item.create_time }} </view>
-          
-          <van-tag :type="verifyTypeMaps[item.verify_type].type" plain>
-              {{ verifyTypeMaps[item.verify_type].text }}
-          </van-tag>
-          </view>
+
+          <view class="item-submit-time">{{ item.create_time }} </view>
         </view>
 
         <view class="item-customer">
-          {{ item.surname || ""
-          }}<span v-if="item.jiebie_name">-{{ item.jiebie_name }}</span
-          >-{{ item.project_name }}
+          <view class="">
+            {{ item.surname || "" }}
+            <span v-if="item.jiebie_name">-{{ item.jiebie_name }}-</span>
+            {{ item.project_name }}
+          </view>
+
+          <view class="item-tag" style="margin-top: 4rpx;">
+            <template v-if="[3, 8, 9].includes(item.status)">
+              <van-tag type="success" plain v-if="item.status === 3">已通过</van-tag>
+              <van-tag color="#999" plain v-if="item.status === 8">已撤销</van-tag>
+              <van-tag type="warning" plain v-if="item.status === 9">已驳回</van-tag>
+            </template>
+          </view>
         </view>
         <view class="item-desc">
-          <text>订单总金额{{ item.order_money | moneyFormat }}</text>
-          <text style="margin-left: 20rpx">
-            实收金额{{ accAdd(item.pay_money, item.other_money) | moneyFormat }}
-          </text>
+          <view class="">
+            <text>订单总金额{{ item.order_money | moneyFormat }}</text>
+            <text style="margin-left: 20rpx">
+              实收金额{{ accAdd(item.pay_money, item.other_money) | moneyFormat }}
+            </text>
+          </view>
+          <view class="item-tag">
+            <van-tag :type="verifyTypeMaps[item.verify_type].type" plain>
+              {{ verifyTypeMaps[item.verify_type].text }}
+            </van-tag>
+          </view>
         </view>
       </view>
     </LoadMore>
+
     <SearchDrawer
       :show="drawerShow"
       @close="drawerShow = false"
@@ -194,17 +190,24 @@ export default {
 @import "@/styles/var";
 .order-approve-list {
   height: 100%;
+  width: 100%;
+  overflow: hidden;
+
   /deep/.load-more {
     height: calc(100% - 50px);
   }
+
   .item {
+    width: 100%;
     padding: 20rpx;
     border-bottom: 2rpx solid #efefef;
     &:active {
       background-color: #f2f6fc;
     }
     &-submit {
-      .flex-c-b();
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 10rpx;
 
       &-name {
@@ -233,25 +236,32 @@ export default {
           }
         }
       }
-
-      &-tag {
-        min-width: 240rpx;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-      }
-
       &-time {
+        margin-right: 5rpx;
         color: @text-color-grey;
       }
     }
+
     &-customer {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-start;
       font-size: @font-size-md;
       margin-bottom: 8rpx;
     }
     &-desc {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
       color: @text-color-grey;
+    }
+
+    &-tag {
+      margin-left: 10rpx;
+      min-width: 160rpx;
+      text-align: right;
     }
   }
 }

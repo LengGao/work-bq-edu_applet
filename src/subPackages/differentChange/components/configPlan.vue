@@ -115,7 +115,6 @@ import Select from "@/components/select/index.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { getPlanYearOptions, currentYear } from "@/utils/date"
 import { mapGetters } from 'vuex'
-import { accAdd } from "@/utils/index";
 
 export default {
   components: {

@@ -107,6 +107,7 @@
       @close="projectShow = false"
       @confirm="handleSelectChange"
       :options="projectOption"
+      :value="projectOption"
       multiple
     />
 
@@ -191,6 +192,8 @@ export default {
       currentItem.project_ids = detail.map(item => item.value).join(',')
       currentItem.project_name = detail.map(item => item.name).join(',')
       this.currentItem = currentItem
+      this.currentProjectIds = currentItem.project_ids
+      this.currentProjectName = currentItem.project_name
       this.payList[index] = currentItem
       this.projectShow = false
     },

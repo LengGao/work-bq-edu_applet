@@ -7,9 +7,10 @@
       color="#199fff"
       title-active-color="#199fff"
       :active="active"
+      :z-index="100"
       @change="handlerTabChange"
     >
-      <van-tab title="基本信息">
+      <van-tab title="基本信息" title-style="z-index: 100">
         <CustomInfo
           v-if="formData.order_id && projectData.length"
           :data="formData"
@@ -20,7 +21,7 @@
           @open-sheet="onOpenSheet"
         />
       </van-tab>
-      <van-tab title="回款计划">
+      <van-tab title="回款计划" title-style="z-index: 100">
         <ConfigPlan
           v-if="payPlan.length > 0"
           :list="payPlan"
@@ -30,7 +31,7 @@
           @dynamic-input="dynamicInput"
         />
       </van-tab>
-      <van-tab title="回款记录">
+      <van-tab title="回款记录" title-style="z-index: 100">
         <PlanInfo
           v-if="payLog.length > 0"
           :info="payLog"
@@ -263,15 +264,16 @@ export default {
     },
     // 选择学历项目
     handleSelectEduProjectChange(project = []) {
+      console.log("beichufa");
       this.projectData = project.map(item => { item.must_money = ''; return item; })
       this.projectOption = this.generatorrojectOption(this.projectData)
       this.selectEduProjectShow = false;
     },
     // 选择职称项目
-    handleSelectProjectChange(project = []) {
+    handleSelectProjectChange(project = [], init = false) {
       let idStr = project.map(item => item.value).join(',')
       this.selectProjectShow = false;
-      this.getCateProjectDetail(idStr);
+      this.getCateProjectDetail(idStr, init);
     },
     // 选择业绩共享人
     handleSelectChange(checked) {
@@ -372,8 +374,8 @@ export default {
             uni.showToast({ icon: "none", messages: "请选择回款记录回款日期" });
           } else if (v.pay_plan_id <= 0) {
             uni.showToast({ icon: "none", messages: "请选择回款记录回款计划" });
-          } else if (`${v.pay_money}`.length <= 0) {
-            uni.showToast({ icon: "none", messages: "请选择回款记录回款金额" });
+          } else if (`${v.pay_money}`.length <= 0 || parseFloat(v.pay_money) <= 0) {
+            uni.showToast({ icon: "none", messages: "请选择回款记录回款金额, 却回款金额不能小于等于0元" });
           } else if (!v.pay_type) {
             uni.showToast({ icon: "none", messages: "请选择回款记录支付方式" });
           }
@@ -412,14 +414,14 @@ export default {
       }
     },
     // 已选职称项目详情
-    async getCateProjectDetail(idStr) {
+    async getCateProjectDetail(idStr, init) {
       if (!idStr) { return projectData = []; }
       const data = { id: idStr }
       let res = await getCateProjectDetail(data);
       if (res.code === 0) {
         let projectData = res.data.map(item => { item.must_money = ''; return item; })
         this.projectOption = this.generatorrojectOption(projectData)
-        this.projectData = projectData
+        if (!init) { this.projectData = projectData }
         this.getGradeOptions(res.data[0].category_id)
       }
     },
@@ -462,7 +464,7 @@ export default {
       // 生成项目配置数据
       let projectOption = this.generatorrojectOption(projectData)
       // 职称项目需要动态生成届别
-      if (data.type == 0) this.handleSelectProjectChange(projectOption);
+      if (data.type == 0) this.handleSelectProjectChange(projectOption, true);
       
       console.log('staff', staff);
       this.payLog = plan.payLog
@@ -600,7 +602,7 @@ export default {
     }
 
     /deep/.van-button {
-      width: 40%;
+      width: 300rpx;
     }
   }
 }

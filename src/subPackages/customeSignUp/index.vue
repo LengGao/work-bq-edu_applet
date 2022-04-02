@@ -417,7 +417,8 @@ export default {
         }
         if (item.key === 'projectData') {
           this.formData['projectData'].forEach(ele => {
-            if (!ele.pay_money) {
+            let money = parseFloat(ele.pay_money)
+            if ( money < 0 ) {
               if (this.formData.type == 0) {
                 uni.showToast({ icon: 'none', title: `请输入 ${ele.project_name} 的实收金额` })
               } else {

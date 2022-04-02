@@ -257,13 +257,23 @@ export default {
     },
     validate(arr, cb) {
       for (const item of arr) {
-        if (!this.formData[item.key]) {
+        if (!this.formData[item.key] && item.key !== 'pay_money') {
           uni.showToast({
             icon: "none",
             title: item.errmsg,
           });
           return;
         }
+        // if (item.key === 'pay_money') {
+        //   let pay_money = this.formData[item.key]
+        //   if (parseFloat(pay_money) <= 0) {
+        //     uni.showToast({
+        //       icon: 'none',
+        //       title: '回款金额不能小于等于0'
+        //     })
+        //     return;
+        //   }
+        // }
         if (item.reg) {
           if (!item.reg.test(this.formData[item.key])) {
             uni.showToast({

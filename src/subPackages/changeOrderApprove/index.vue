@@ -35,19 +35,19 @@
             >{{ item.create_time }}
           </view>
           <template v-else>
-            <van-tag type="success" plain v-if="item.status === 2"
-              >已通过</van-tag
-            >
-            <van-tag type="warning" plain v-if="item.status === 3"
-              >已驳回</van-tag
-            >
+            <van-tag type="success" plain v-if="item.status === 2">
+              已通过
+            </van-tag>
+            <van-tag type="warning" plain v-if="item.status === 3">
+              已驳回
+            </van-tag>
           </template>
         </view>
         <view class="item-customer">
           {{ item.surname || "" }}-{{ item.project_name }}
         </view>
         <view class="van-multi-ellipsis--l2 item-desc">
-          {{ item.reason }}
+          备注： {{ item.reason }}
         </view>
       </view>
     </LoadMore>

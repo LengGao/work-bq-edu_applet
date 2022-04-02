@@ -102,7 +102,7 @@
           title-class="title"
           value-class="value"
           title="项目价格"
-          :value="item.total_money | moneyFormat"
+          :value="(item.project_price || item.price) | moneyFormat"
         >
         </van-cell>
       </van-cell-group>
