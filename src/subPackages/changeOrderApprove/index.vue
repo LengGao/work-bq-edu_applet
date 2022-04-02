@@ -46,7 +46,7 @@
         <view class="item-customer">
           {{ item.surname || "" }}-{{ item.project_name }}
         </view>
-        <view class="van-multi-ellipsis--l2 item-desc">
+        <view class="van-multi-ellipsis--l2 item-desc" v-if="item.reason">
           备注： {{ item.reason }}
         </view>
       </view>

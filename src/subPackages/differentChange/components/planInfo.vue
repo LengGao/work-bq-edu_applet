@@ -1,5 +1,5 @@
 <template>
-  <view class="sign-submit">
+  <view class="sign-submit" style="z-index: 999;">
     <view class="hr"></view>
     <Title customStyle="padding: 20rpx;" title="订单小结"></Title>
     <van-cell-group custom-class="group-cell">
@@ -23,7 +23,7 @@
       />
     </van-cell-group>
 
-    <view class="hr"></view>
+    <view class="hr" style="height: 40rpx;"></view>
     <Title customStyle="padding: 20rpx;" title="回款记录"></Title>
     <van-cell-group custom-class="group-cell" v-for="(item, index) in data" :key="item.id">
       <van-cell
@@ -79,7 +79,7 @@
           @delete="({ detail }) => handleDeleteFile(detail, index)"
         />
       </van-cell>
-      <view class="hr"></view>
+      <view class="hr" style="height: 4rpx;"></view>
     </van-cell-group>
 
     <van-action-sheet

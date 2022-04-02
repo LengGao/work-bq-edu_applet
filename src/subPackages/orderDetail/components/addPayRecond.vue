@@ -257,7 +257,7 @@ export default {
     },
     validate(arr, cb) {
       for (const item of arr) {
-        if (!this.formData[item.key]) {
+        if (!this.formData[item.key] && item.key !== 'pay_money') {
           uni.showToast({
             icon: "none",
             title: item.errmsg,

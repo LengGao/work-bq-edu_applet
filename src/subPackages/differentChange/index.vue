@@ -342,6 +342,10 @@ export default {
     },
     // 校验
     validator(param) {
+      let orderMoneyVali = (val, key) => {
+        return parseFloat(val) >= 0
+      }
+
       let projectVali = (val, key) => {
         let _val = JSON.parse(val);
         let must_money = _val.every((v) => `${v.must_money}`.length > 0);
@@ -386,7 +390,7 @@ export default {
 
       let rules = [
         { key: "order_id", type: "required" },
-        { key: "order_money", type: "required" },
+        { key: "order_money", validator: orderMoneyVali },
         { key: "source", type: "required" },
         { key: "online_course", type: "required" },
         { key: "project", validator: projectVali },
@@ -396,7 +400,7 @@ export default {
 
       let messages = [
         { key: "order_id", message: "请填写订单号" },
-        { key: "order_money", message: "请输入学费金额" },
+        { key: "order_money", message: "请输入正确订单金额" },
         { key: "source", message: "请选择订单来源" },
         { key: "online_course", message: "请选择是否开通网课" },
         { key: "project", message: "请配置项目信息" },

@@ -529,7 +529,10 @@ export default {
       const { order_no, create_time, surname, order_money, pay_money, overdue_money, order_id } = this.detailData;
       switch (detail) {
         case "1":
-          this.detailData.reshuffle ? this.orderUnusualApprove(detail) : this.crmOrderApprove(detail) 
+          Dialog.confirm({ title: "提醒", message: "确定要通过审批吗？" })
+          .then(() => { 
+            this.detailData.reshuffle ? this.orderUnusualApprove(detail) : this.crmOrderApprove(detail)   
+          }).catch(() => { });
         break;
         case "2":
           this.rejectDialog = true;
@@ -577,6 +580,7 @@ export default {
       const data = { order_id: this.orderId, action, tips };
       const res = await crmOrderApprove(data);
       if (res.code === 0) {
+        uni.showToast({ icon: 'none', title: '操作成功' })
         this.getCrmOrderDetail();
       }
     },
@@ -585,6 +589,7 @@ export default {
       const data = { id: this.detailData.reshuffle, verify: action, tips };
       const res = await orderUnusualApprove(data);
       if (res.code === 0) {
+        uni.showToast({ icon: 'none', title: '操作成功' })
         this.getCrmOrderDetail();
       }
     },

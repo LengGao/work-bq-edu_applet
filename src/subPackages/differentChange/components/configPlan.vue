@@ -1,5 +1,5 @@
 <template>
-  <view class="payment-plan">
+  <view class="payment-plan" style="z-index: 999;">
     <view class="hr"></view>
     <view class="payment-check"> 
       <view class="header">
@@ -159,7 +159,9 @@ export default {
         money: '',
       }, // 正在输入的回款计划
       currentIndex: 0, // 正在输入的回款计划索引
-      currProject: []  // 当亲计划选中俩表划选中列表
+      currProject: [],  // 当亲计划选中俩表划选中列表
+      currentProjectIds: '', // 第一步项目选择是已选报名项目id
+      currentProjectName: '', // 第一步项目选择时已选项目名称
     };
   },
   mounted() {
@@ -178,6 +180,22 @@ export default {
   watch: {
     "projectOption": function (newVal) {
       console.log("projectOption", newVal);
+      let currentProjectIds = '', currentProjectName = '';
+      let projectOption = newVal.map(item => {
+        return { 
+          value: item.id, 
+          name: (item.major && item.major.value) || item.major_name || item.project_name || '', 
+        }
+      })
+      
+      projectOption = projectOption.map(item => {
+        currentProjectIds = currentProjectIds ? `${currentProjectIds}, ${item.id || item.value}` : item.id || item.value
+        currentProjectName = currentProjectName ? `${currentProjectName}, ${item.name}` : item.name 
+        return item
+      })
+      
+      this.currentProjectIds = currentProjectIds
+      this.currentProjectName = currentProjectName
       this.projectOption = newVal
     },
     'list': function (newVal) {
@@ -191,7 +209,6 @@ export default {
       })
 
       this.currentCheckeds = cacheType.map(item => `${item}`)
-      this.getPlanYearOptions()
     }
   },
   methods: {
@@ -221,6 +238,8 @@ export default {
       currentItem.project_ids = ids
       currentItem.project_name = names
       this.currentItem = currentItem
+      this.currentProjectIds = currentItem.project_ids
+      this.currentProjectName = currentItem.project_name
       this.payList[index] = currentItem
       this.projectShow = false
       this.$emit("dynamic-input", 'configPlan', { project_ids: ids, project_name: names }, index)
@@ -347,9 +366,25 @@ export default {
       }
 
       if (type == 1 || type == '1') {
-        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '' }
+        return  { 
+          type, 
+          id: startId, 
+          name: typs[type], 
+          year: _currentYear, 
+          day: '',  
+          money: '' 
+        }
       } else {
-        return  { id: startId, type, name: typs[type], year: _currentYear, day: '',  money: '', project_name: '', project_ids: '', } 
+        return  { 
+          type, 
+          id: startId, 
+          name: typs[type], 
+          year: _currentYear, 
+          day: '',  
+          money: '', 
+          project_name: this.currentProjectName,
+          project_ids: this.currentProjectIds
+        } 
       }
     },
     // 检查选中状态
