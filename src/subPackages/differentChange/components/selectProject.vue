@@ -6,7 +6,7 @@
       custom-style="width: 80%;height:100%;overflow: hidden;display: flex;flex-direction: column;"
       @close="onCancel"
       safe-area-inset-bottom
-      z-index="1000"
+      :z-index="1000"
     >
       <view class="select-project-header">
         <view>已选项目数：{{ checkedValue.length }}</view>

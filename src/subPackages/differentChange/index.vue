@@ -7,10 +7,10 @@
       color="#199fff"
       title-active-color="#199fff"
       :active="active"
-      :z-index="1"
+      :z-index="100"
       @change="handlerTabChange"
     >
-      <van-tab title="基本信息" title-style="z-index: 100">
+      <van-tab title="基本信息">
         <CustomInfo
           v-if="formData.order_id && projectData.length"
           :data="formData"
@@ -21,10 +21,9 @@
           @open-sheet="onOpenSheet"
         />
       </van-tab>
-      <van-tab title="回款计划" title-style="z-index: 100">
+      <van-tab title="回款计划">
         <ConfigPlan
           v-if="payPlan.length > 0"
-          style="z-index: 999;"
           :list="payPlan"
           :projectOption="projectOption"
           :project-type="formData.type"
@@ -32,7 +31,7 @@
           @dynamic-input="dynamicInput"
         />
       </van-tab>
-      <van-tab title="回款记录" title-style="z-index: 100">
+      <van-tab title="回款记录">
         <PlanInfo
           v-if="payLog.length > 0"
           :info="payLog"

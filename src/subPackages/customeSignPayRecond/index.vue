@@ -314,8 +314,11 @@ export default {
     // 报名缴费
     async createCrmOrder() {
       let formData = this.formData,
-          receipt_file = formData.receipt_file.map(item => item.url),
-          source = formData.source.trim()
+          receipt_file = formData.receipt_file.map(item => item.url)
+          
+      // 来源数据的'-'需要特殊处理
+      let source = formData.source.trim()
+      if (source === '') { source = '-' }
 
       let data = {
         order_token: Date.now(),
