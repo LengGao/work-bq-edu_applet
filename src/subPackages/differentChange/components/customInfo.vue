@@ -213,7 +213,7 @@ export default {
       return this.staffData.map(staff => staff.staff_name).join(',')
     },
     'checkedProjectName': function() {
-      return this.projectData.map(pro => ((pro.major && pro.marjor.value) || pro.major_name || pro.project_name || '' )).join(',')
+      return this.projectData.map(pro => ((pro.major && pro.major.value) || pro.major_name || pro.project_name || '' )).join(',')
     }
   },
   watch: {

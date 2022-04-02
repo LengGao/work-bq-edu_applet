@@ -41,8 +41,9 @@
             required
             title="所属项目"
             title-class="label-class"
+            title-width="140rpx"
             value-class="input-class"
-            :value="item.project_name || '请选择所属项目'"
+            :value="item.major_name || item.project_name || '请选择所属项目'"
             @click="() => openPicker('project', index, item)"
           />
           <van-cell
@@ -102,6 +103,7 @@
       @close="projectShow = false"
       @confirm="handleSelectChange"
       :options="projectOption"
+      :value="currProject"
       multiple
     />
   </view>
@@ -132,8 +134,12 @@ export default {
     },
     totalMoney: {
       type: [String, Number],
-      default: '0.00'
+      default: '0'
     },
+    projectType: {
+      type: [String, Number],
+      default: '0'
+    }
   },
   computed: {
     ...mapGetters([ 'expenseType']),
@@ -154,6 +160,7 @@ export default {
         money: '',
       }, // 正在输入的回款计划
       currentIndex: 0, // 正在输入的回款计划索引
+      currProject: []  // 当亲计划选中俩表划选中列表
     };
   },
   mounted() {
@@ -199,9 +206,11 @@ export default {
         this.currentItem = item
         this.currentIndex = index
       } else if (key == 'project') {
+        console.log("item,", item);
         this.projectShow = true
         this.currentItem = item
         this.currentIndex = index
+        this.getSelectProject(item)
       }
     },
     // 项目选择
@@ -364,6 +373,18 @@ export default {
       let planYearOptions = getPlanYearOptions().map(item => ({ name: item }))
       this.planYearOptions = planYearOptions
     },
+    // 获取当亲打开项目已选中项目
+    getSelectProject(plan) {
+      console.log("plan", plan);  
+      let projectOption = this.projectOption, ids = '', curr = undefined
+      if (this.projectType == 0) {
+        ids = plan.project_ids
+      } else {
+        ids = plan.major_detail_ids || plan.project_ids
+      }
+      curr = projectOption.filter(pro => ids.indexOf(`${pro.value}`) !== -1)
+      this.currProject = curr
+    }
   }
 };
 </script>

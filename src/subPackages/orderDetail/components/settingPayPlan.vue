@@ -45,7 +45,8 @@
             required
             title="所属项目"
             title-class="label-class"
-            value-class="input-class"
+            title-width="140rpx"
+            value-class="input-class-project"
             :value="item.project_name || '请选择所属项目'"
             @click="() => openPicker('project', index, item)"
           />
@@ -526,7 +527,7 @@ export default {
     }
 
     /deep/.van-button {
-      width: 300rpx;
+      width: 40%;
     }
   }
 }
@@ -536,6 +537,11 @@ export default {
 }
 
 /deep/.input-class {
+  font-size: @font-size-md;
+}
+
+/deep/.input-class-project {
+  width: 70;
   font-size: @font-size-md;
 }
 

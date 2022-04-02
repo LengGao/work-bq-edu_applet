@@ -25,6 +25,7 @@
           v-if="payPlan.length > 0"
           :list="payPlan"
           :projectOption="projectOption"
+          :project-type="formData.type"
           :totalMoney="formData.total_money"
           @dynamic-input="dynamicInput"
         />
@@ -263,6 +264,7 @@ export default {
     // 选择学历项目
     handleSelectEduProjectChange(project = []) {
       this.projectData = project.map(item => { item.must_money = ''; return item; })
+      this.projectOption = this.generatorrojectOption(this.projectData)
       this.selectEduProjectShow = false;
     },
     // 选择职称项目
@@ -327,9 +329,7 @@ export default {
       let param = this.resolveSubmitData(formData);
       
       if (this.validator(param)) {
-        let res = await orderReshuffle(param).catch((err) => {
-          uni.showToast({ icon: 'none', title: `${err.message}` })
-        });
+        let res = await orderReshuffle(param).catch((err) => {})
         if (res.code === 0) {
           uni.navigateBack().then(() => {
             uni.showToast({ icon: "none", title: `申请异动成功`});
@@ -415,10 +415,11 @@ export default {
     async getCateProjectDetail(idStr) {
       if (!idStr) { return projectData = []; }
       const data = { id: idStr }
-      const res = await getCateProjectDetail(data);
+      let res = await getCateProjectDetail(data);
       if (res.code === 0) {
         let projectData = res.data.map(item => { item.must_money = ''; return item; })
         this.projectOption = this.generatorrojectOption(projectData)
+        this.projectData = projectData
         this.getGradeOptions(res.data[0].category_id)
       }
     },
@@ -549,7 +550,7 @@ export default {
       console.log("generatorrojectOption start", arr);
       return (arr || []).map(item => ({ 
         value: item.id, 
-        name:  (item.major && item.major.value) || item.project_name || ''
+        name:  (item.major && item.major.value) || item.major_name || item.project_name || ''
       }))
     },
     // 生成当前业绩共享人
@@ -599,7 +600,7 @@ export default {
     }
 
     /deep/.van-button {
-      width: 300rpx;
+      width: 40%;
     }
   }
 }

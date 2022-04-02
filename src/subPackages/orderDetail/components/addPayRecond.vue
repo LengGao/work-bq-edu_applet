@@ -40,6 +40,7 @@
         title="回款计划"
         is-link
         required
+        title-width="140rpx"
         title-class="label"
         value-class="input"
         :value="planCheckedName || '请选择'"
@@ -78,7 +79,7 @@
       </van-cell>
     </van-cell-group>
 
-    <view style="display: block; height: 240rpx;"></view>
+    <view style="display: block; height: 180rpx;"></view>
     <view class="footer">
       <view class="tags"> 
           * 回款时必须保证回款金额等于所选回款计划的总金额，如不相等请先修改回款计划 
@@ -359,7 +360,7 @@ export default {
     }
 
     /deep/.van-button {
-      width: 300rpx;
+      width: 40%;
     }
   }
 

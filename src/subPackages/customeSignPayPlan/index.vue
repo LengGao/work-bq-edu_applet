@@ -38,6 +38,7 @@
             is-link
             required
             title="所属项目"
+            title-width="140rpx"
             title-class="label-class"
             value-class="input-class"
             :value="item.project_name || '请选择所属项目'"
@@ -416,7 +417,7 @@ export default {
       let projectOption = arr.map(item => {
         return { 
           value: item.id, 
-          name: item.major_name || item.project_name || '', 
+          name: (item.major && item.major.value) || item.major_name || item.project_name || '', 
         }
       })
       

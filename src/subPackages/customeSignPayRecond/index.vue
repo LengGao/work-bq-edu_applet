@@ -40,6 +40,7 @@
         is-link
         required
         title-class="label"
+        title-width="140rpx"
         value-class="input"
         :value="planCheckedName || '请选择'"
         @click="selectShow = true"
