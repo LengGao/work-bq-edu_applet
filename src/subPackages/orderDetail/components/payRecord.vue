@@ -43,7 +43,7 @@
           <text class="title">入账状态</text>
           <text class="value">{{ payStatusMap[item.verify_status] || "--"}}</text>
       </van-cell>
-      <van-cell :border="false" title-width="130rpx" custom-class="cell-item">
+      <van-cell :border="false" title-width="140rpx" custom-class="cell-item">
         <template #title>
           <text class="title">回款计划</text>
         </template>
@@ -94,7 +94,7 @@
             <text class="progress">{{ item.pay_progress }}</text>
           </template>
         </van-cell>
-        <van-cell :border="false" title-width="130rpx" custom-class="cell-item">
+        <van-cell :border="false" title-width="140rpx" custom-class="cell-item">
           <template #title>
             <text class="title">所属项目</text>
           </template>
@@ -117,7 +117,7 @@
 </template>
 
 <script>
-import Title from "@/components/title/index.vue";
+import Title from "@/components/title/index";
 import { mapGetters } from 'vuex'
 
 export default {

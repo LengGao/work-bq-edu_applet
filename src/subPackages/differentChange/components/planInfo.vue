@@ -112,9 +112,9 @@
 </template>
 
 <script>
-import Title from "@/components/title/index.vue";
-import Select from "@/components/select/index3.vue";
-import DatePicker from "@/components/datePicker/index.vue";
+import Title from "@/components/title/index";
+import Select from "@/components/select/index3";
+import DatePicker from "@/components/datePicker/index";
 import { mapGetters } from "vuex";
 import { accAdd } from "@/utils/index"
 import { createCrmOrder, uploadImage } from "@/api/customer";

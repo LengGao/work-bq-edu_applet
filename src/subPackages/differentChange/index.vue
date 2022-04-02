@@ -94,13 +94,13 @@
 </template>
 
 <script>
-import CustomInfo from "./components/customInfo.vue";
-import ConfigPlan from "./components/configPlan.vue";
-import PlanInfo from "./components/planInfo.vue";
-import Select from "@/components/select/index.vue";
-import DatePicker from "@/components/datePicker/index.vue";
-import SelectProject from "./components/selectProject.vue";
-import SelectEduProject from "./components/selectEduProject.vue";
+import CustomInfo from "./components/customInfo";
+import ConfigPlan from "./components/configPlan";
+import PlanInfo from "./components/planInfo";
+import Select from "@/components/select/index";
+import DatePicker from "@/components/datePicker/index";
+import SelectProject from "./components/selectProject";
+import SelectEduProject from "./components/selectEduProject";
 import { getCrmOrderDetail, orderReshuffle } from "@/api/order";
 import { categoryGetSessionList, getCateProjectDetail } from "@/api/customer";
 import { mapGetters } from "vuex";
@@ -578,7 +578,7 @@ export default {
     position: fixed;
     bottom: 0;
     left: 0;
-    z-index: 99;
+    z-index: 66;
     width: 100%;
     background-color: #fff;
 

@@ -184,7 +184,7 @@
 </template>
 
 <script>
-import Title from "@/components/title/index.vue";
+import Title from "@/components/title/index";
 
 export default {
   components: {

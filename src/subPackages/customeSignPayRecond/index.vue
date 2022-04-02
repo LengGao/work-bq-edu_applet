@@ -10,7 +10,7 @@
         :value="totalMoney"
       />
       <van-cell 
-        title="其他金额 "
+        title="其他金额"
         title-class=“label“
         value-class="input"
         :value="otherMoney"
@@ -46,7 +46,6 @@
       />
       <van-field
         required
-        
         type="number"
         label="回款金额"
         label-class="label"
@@ -382,7 +381,6 @@ export default {
     margin: 20rpx 20rpx 40rpx;
     font-size: 24rpx;
     color: #ff4b4b;
-    // border: @border;
   }
 
   &-submit {
@@ -395,7 +393,7 @@ export default {
   }
 
   /deep/.van-button {
-    width: 300rpx;
+    width: 40%;
   }
 }
 .hr {

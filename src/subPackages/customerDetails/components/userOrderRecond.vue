@@ -37,7 +37,7 @@
           >
             <template #title>
               <text class="title">业绩归属</text>
-              <text class="value">{{ data.jiebie_name || '--' }}</text>
+              <text class="value">{{ staff || '--' }}</text>
             </template>
             <view class="cell-item-value" style="overflow: hidden">
               <text class="title">订单时间</text>
@@ -107,6 +107,7 @@ export default {
   },
   props: {
     uid: { type: Number },
+    staff: { type: String, default: ''}
   },
   data() {
     return {

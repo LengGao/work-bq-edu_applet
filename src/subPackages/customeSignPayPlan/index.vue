@@ -35,6 +35,7 @@
         <view class="list-item-slot">
           <van-cell
             v-if="item.type != 1"
+            is-link
             required
             title="所属项目"
             title-class="label-class"
@@ -44,6 +45,7 @@
           />
 
           <van-cell
+            is-link
             required
             title="所属年份"
             title-class="label-class"
@@ -52,6 +54,7 @@
             @click="() => openPicker('year', index, item)"
           />
           <van-cell
+            is-link
             required
             title="计划回款日期"
             title-class="label-class"
@@ -525,7 +528,7 @@ export default {
     }
 
     /deep/.van-button {
-      width: 300rpx;
+      width: 40%;
     }
   }
 

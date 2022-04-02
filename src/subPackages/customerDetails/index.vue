@@ -48,7 +48,7 @@
           </CertificateInformation>
         </van-tab>
         <van-tab title="订单记录">
-          <UserOrderRecond :uid="uid"></UserOrderRecond>
+          <UserOrderRecond :uid="uid" :staff="staff"></UserOrderRecond>
         </van-tab>
         <van-tab title="项目班级">
           <StudentClass :uid="uid"></StudentClass>
@@ -125,6 +125,7 @@ export default {
       defaultAvator: "../../static/avator.png",
       uid: "",
       cid: "",
+      staff: "",
       // 选择客户来源、学历
       sheetShow: false,
       sheetActions: [],
@@ -270,12 +271,11 @@ export default {
       uni.navigateTo({ url });
     },
     async getUserInfo() {
-      const data = {
-        uid: this.uid,
-        cid: this.cid,
-      };
-      const res = await getUserInfo(data);
-      this.userInfo = res.data;
+      const param = { uid: this.uid, cid: this.cid };
+      const res = await getUserInfo(param);
+      const data = res.data
+      this.userInfo = data  
+      this.staff = data.admin_name ? data.admin_name + ',' + data.union_staff_name : data.union_staff_name
       this.initFormData();
     },
   },

@@ -66,12 +66,12 @@
       <van-cell title="客户标签" use-label-slot>
         <template #label>
           <view class="tags-container">
-            <view class="tag" v-for="(item, index) in tags" :key="index">{{
-              item
-            }}</view>
-            <view class="tag tag-add" @click="tagDialogShow = true"
-              >+新建标签</view
-            >
+            <view class="tag" v-for="(item, index) in tags" :key="index" @click="handlerClickTag(index)">
+              <text :style="item.checked ? 'color: #199fff;' : ''"> {{ item.text }} </text>
+            </view>
+            <view class="tag tag-add" @click="tagDialogShow = true">
+              +新建标签
+            </view>
           </view>
         </template>
       </van-cell>
@@ -229,10 +229,23 @@ export default {
 
       this.createCrmCustomer(type);
     },
+    // 选中标签
+    handlerClickTag(index) {
+      let tags = this.tags
+      tags[index].checked = !tags[index].checked
+      this.tags = tags
+    },
+    // 删除标签
+    handleDelTag(index) {
+      let tags = this.tags
+      tags.splice(index, 1)
+      this.tags = tags
+    },
     // 添加标签
     handleAddTag() {
       if (this.tagName) {
-        this.tags.push(this.tagName);
+        // this.tags.push(this.tagName);
+        this.tags.push({ text: this.tagName, checked: false });
         this.tagName = "";
       } else {
         uni.showToast({
@@ -268,9 +281,18 @@ export default {
     },
     // 添加客户
     async createCrmCustomer(type) {
+      let _tags = this.tags || []
+      _tags = _tags.map(item => {
+        if (item.checked) {
+          return item.text
+        } else {
+          return ""
+        }
+      }).filter(i => i !== '')
+
       const data = {
         ...this.formData,
-        tags: this.tags.length ? this.tags.join(",") : "",
+        tags: _tags.join(',')
       };
       this.addLoading = true;
       const res = await createCrmCustomer(data).catch(() => {
