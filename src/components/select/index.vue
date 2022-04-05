@@ -132,6 +132,7 @@ export default {
   watch: {
     value: {
       handler(val) {
+        console.log("检测", val);
         // 多选回显
         if (Array.isArray(val) && val.length) {
           this.checkedValue = val.map((item) => item[this.optionValue] + "");

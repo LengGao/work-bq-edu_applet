@@ -27,24 +27,24 @@
     <Title customStyle="padding: 20rpx;" title="回款记录"></Title>
     <van-cell-group custom-class="group-cell" v-for="(item, index) in data" :key="item.id">
       <van-cell
-        title="回款日期"
         is-link
         required
+        title="回款日期"
         title-class="label"
         value-class="input"
         :value="item.pay_date || '请选择'"
-        @click="handleDataSelect(item, index)"
+        @click="() => handlerOpenPicker('date', index, item)"
       />
 
       <van-cell
-        title="回款计划"
         is-link
         required
+        title="回款计划"
         title-class="label"
         title-width="140rpx"
         value-class="input"
-        :value="item.planCheckedName || '请选择'"
-        @click="handlePlanSelect(item, index)"
+        :value="item.pay_plan_name || '请选择'"
+        @click="handlerOpenSelect('plan', index, item)"
       />
 
       <van-field
@@ -58,79 +58,44 @@
         input-align="right"
         @blur="({ detail }) => 
           detail.value !== item.pay_money && 
-          $emit('dynamic-input', 'planRecond', {pay_money: detail.value}, index)
+          handlerFormInput('planRecond', detail.value, index, item)
         "
       />
+
       <van-cell
-        title="支付方式"
-        required
         is-link
+        required
+        title="支付方式"
         title-class="label"
         value-class="input"
         title-width="200rpx"
         :value="item.pay_type || '请选择'"
-        @click="handlePayTypeSelect(item, index)"
+        @click="handlerOpenSheet('payTypeOptions', index, item)"
       />
+
       <van-cell title="回款凭证" title-width="160rpx" :border="false">
         <van-uploader
-          :file-list="item.receipt_file"
           deletable
+          :file-list="item.receipt_file"
           @after-read="({ detail }) => handleAfterRead(detail, index)"
           @delete="({ detail }) => handleDeleteFile(detail, index)"
         />
       </van-cell>
       <view class="hr" style="height: 4rpx;"></view>
     </van-cell-group>
-
-    <van-action-sheet
-      :show="sheetShow"
-      :actions="sheetActions"
-      @close="sheetShow = false"
-      @select="onSheetSelect"
-    />
-
-    <Select
-      :show="selectShow"
-      @close="selectShow = false"
-      @confirm="handleSelectChange"
-      :options="planOptions"
-      :value="currentItem.planCheckedIndex"
-      other="plan"
-      option-name="name"
-      option-value="value"
-      multiple
-    />
-
-    <DatePicker
-      :show="datePickerShow"
-      @close="datePickerShow = false"
-      @cancel="datePickerShow = false"
-      @confirm="handleDateChange"
-      :value="currentDate"
-      :max-date="currentDate"
-    />
   </view>
 </template>
 
 <script>
 import Title from "@/components/title/index";
-import Select from "@/components/select/index3";
-import DatePicker from "@/components/datePicker/index";
-import { mapGetters } from "vuex";
-import { accAdd } from "@/utils/index"
-import { createCrmOrder, uploadImage } from "@/api/customer";
+import { uploadImage } from "@/api/customer";
 
 export default {
   components: {
     Title,
-    Select,
-    DatePicker
-  },
-  computed: {
-    ...mapGetters(["payTypeOptions"]),
   },
   props: {
-    info: {
+    logs: {
       type: Array,
       default: []
     },
@@ -153,165 +118,33 @@ export default {
   },
   data() {
     return {
-      saveLoading: false, // 板寸按钮加载状态
-      // 日期选择
-      datePickerShow: false, // 回款日期
-      currentDate: new Date().getTime(),
-      // 回款计划
-      selectShow: false, // 选择回款计划
-      planOptions: [], // 回款计划选项
-      planCheckedName: "", // 当前选择的会跨计划
-      planCheckedIndex: [], // 当前选择的会跨计划索引
-      // 选择支付方式
-      sheetShow: false, 
-      sheetActions: [],
-      sheetChecked: "",
-      // 提交表单
       data: [],
-      planLog: [],
-      currentItem: {name: '', value: ''},
-      currentIndex: 0,
     };
   },
   watch: {
-    'paylist': function(newVal) {
-      this.getPlanData(newVal)
-    },
-    'otherMoney': function(newVal) {
-      console.log('otherMoney',newVal);
-      this.otherMoney = newVal
-    },
-    'totalMoney': function(newVal) {
-      console.log('totalMoney', newVal);
-      this.totalMoney = newVal
+    'logs': function (newVal) {
+      this.data = newVal
     }
   },
   mounted() {
-    this.data = this.info
-    this.getPlanData(this.paylist)
+    this.data = this.logs
   },
   methods: {
-    // 日期玄额
-    handleDataSelect(item, index) {
-      this.datePickerShow = true
-      this.currentItem = item
-      this.currentIndex = index
+    // 实收金额输入
+    handlerFormInput(detail, key, index, item) {
+      this.$emit('dynamic-input', key, { pay_money: detail }, index, item)
     },
-    // 回款计划选择
-    handlePlanSelect(item, index) {
-      this.currentItem = item
-      this.currentIndex = index
-      this.selectShow = true
+    // 打开选择器
+    handlerOpenSelect(key, index, item) {
+      this.$emit('open-select', key, index, item)
     },
-    handlePayTypeSelect(item, index) {
-      this.openSheet('payTypeOptions')
-      this.currentItem = item
-      this.currentIndex = index
+    // 活动面板
+    handlerOpenSheet(key, index, item) {
+      this.$emit('open-sheet', key, index, item )
     },
-    // 支付方式
-    onSheetSelect({ detail }) {
-      let item = this.currentItem, index = this.currentIndex
-      item.pay_type = detail.name
-      this.data[index] = item
-      this.$emit('dynamic-input', 'planRecond', { pay_type: detail.name }, index)
-    },
-    // 打开选择客户回款日期、支付方式
-    openSheet(key) {
-      this.sheetChecked = key;
-      this.sheetActions = this[key];
-      this.sheetShow = true;
-    },
-    // 胡款计划
-    handleSelectChange(detail) {
-      this.selectShow = false
-      let names = detail.map(item => item.name)
-      let indexs = detail.map(item => item.value)
-      let ids = detail.map(item => item.id).join(',')
-      let item = this.currentItem, index = this.currentIndex
-      item.planCheckedName = names[0] ? `${names[0]} (${names.length})` : '请选择'       
-      item.planCheckedIndex = indexs
-      item.pay_plan_id = ids
-
-      let money = names.map(name => name.split(' ')[2].replace('￥', ''))
-      let val = 0;
-      for(let i = money.length - 1; i >=0; i--) {
-        let _val = money[i] 
-        val = accAdd(val, _val)
-      }
-      item.pay_money = val 
-
-      this.data[index] = item
-      this.$emit('dynamic-input', 'planRecond', { pay_money: val, pay_plan_id: ids }, index)
-    },
-    // 回款日期
-    handleDateChange(day) {
-      this.datePickerShow = false;
-      let item = this.currentItem, index = this.currentIndex
-      item.pay_date = day
-      this.data[index] = item
-      this.$emit('dynamic-input', 'planRecond', { pay_date: day }, index)
-    },
-    handleCancel() {
-      uni.navigateBack()
-    },
-    // 保存
-    handleSave() {
-      let validator = [
-          { key: "surname",errmsg: "客户姓名不能为空" },
-          { key: "id_card_number", errmsg: "请输入正确的身份证号码", minLength: 18 },
-          { key: "mobile", errmsg: "请输入正确的手机号", reg: /^1[3-9]\d{9}$/ },
-          { key: "pay_plan_ids", errmsg: "请配置回款计划" },
-          { key: "order_money", errmsg: "请输入学费金额" },
-          { key: "pay_money", errmsg: "请输入回款金额" },
-          { key: "pay_type", errmsg: "请选择支付方式" },
-          { key: "pay_day", errmsg: "请选择回款日期" },
-      ]
-
-      const callback = () => {
-        this.createCrmOrder()
-      }
-
-      this.validate(validator, callback)
-    },
-    validate(arr, cb) {
-      for (const item of arr) {
-        if (!this.formData[item.key]) {
-          uni.showToast({
-            icon: "none",
-            title: item.errmsg,
-          });
-          return;
-        }
-        if (item.reg) {
-          if (!item.reg.test(this.formData[item.key])) {
-            uni.showToast({
-              icon: "none",
-              title: item.errmsg,
-            });
-            return;
-          }
-        }
-        if (item.minLength) {
-          if (this.formData[item.key].length < item.minLength) {
-            uni.showToast({
-              icon: "none",
-              title: item.errmsg,
-            });
-            return;
-          }
-        }
-      }
-      
-      if (cb) cb();
-    },
-    // 获取配置好的计划
-    getPlanData(data) {
-      console.log("getPlanData", data );
-      this.planOptions = data.map((item, index) => ({
-        name: `${item.year} ${item.name} ￥${item.money || 0}`,
-        value: index,
-        id: item.id
-      }))
+    // 回款日期选择
+    handlerOpenPicker(detail, index, item) {
+      this.$emit('open-picker', detail, 'log', index, item)
     },
     // 删除上传
     handleDeleteFile(detail, index) {
@@ -327,50 +160,7 @@ export default {
       let _data = this.data[index].receipt_file
       _data.push({ url, isImage: true });
       this.data[index].receipt_file = _data
-      this.$emit('dynamic-input', 'planRecond', {receipt_file: _data}, index)
-    },
-    // 报名缴费
-    async createCrmOrder() {
-      let formData = this.formData,
-          receipt_file = formData.receipt_file.map((item) => item.url)
-      
-      let data = {
-        order_token: Date.now(),
-        id: formData.id,
-        order_money: formData.order_money,
-        surname: formData.surname,
-        mobile: formData.mobile,
-        id_card_number: formData.id_card_number,
-        tips: formData.tips,
-        union_staff_id: formData.union_staff_id,
-        type: formData.type,
-        project: formData.project,
-        project_pay_money: formData.project_pay_money,
-        jiebie_id: formData.jiebie_id,
-        source: formData.source,
-        receipt_file: receipt_file,
-        pay_day: formData.pay_day,
-        pay_money: formData.pay_money,
-        pay_type: formData.pay_type,
-        pay_plan_ids: formData.pay_plan_ids,
-        pay_plan: []
-      };
-
-      data.pay_plan = formData.payList.map((item, index) => {
-        if (this.planCheckedIndex.indexOf(index) !== -1) {
-          return { temp_id: item.id, year: item.year, type: item.type, day: item.day,money: item.money }
-        }
-      })
-      
-      this.saveLoading = true;
-      const res = await createCrmOrder(data).catch(() => { this.saveLoading = false; })
-      
-      if (res.code === 0) {
-        setTimeout(() => {
-          this.saveLoading = false;          
-          uni.reLaunch({ url: '/subPackages/orderApprove/index' })
-        }, 800);
-      }
+      this.$emit('dynamic-input', 'planRecond', { receipt_file: _data }, index)
     },
   }
 }

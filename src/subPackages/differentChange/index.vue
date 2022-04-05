@@ -36,12 +36,14 @@
       <van-tab title="回款记录">
         <PlanInfo
           v-if="payLog.length > 0"
-          :info="payLog"
-          :paylist="payPlan"
+          :logs="payLog"
           :orderMoney="formData.order_money"
           :totalMoney="formData.total_money"
           :otherMoney="formData.other_money"
           @dynamic-input="dynamicInput"
+          @open-select="onOpenSelect"
+          @open-sheet="onOpenSheet"
+          @open-picker="openPicker"
         />
       </van-tab>
     </van-tabs>
@@ -75,23 +77,32 @@
     />
 
     <Select
+      multiple
       :show="selectStaffShow"
-      @close="selectStaffShow = false"
-      @confirm="handleSelectChange"
       :options="staffOptions"
       option-name="staff_name"
       option-value="staff_id"
       :value="currentStaffs"
-      multiple
+      @confirm="handleSelectChange"
+      @close="selectStaffShow = false"
     />
 
-    <Select
+    <SelectOfPlan
+      multiple
       :show="projectShow"
-      @close="projectShow = false"
-      @confirm="handlerSelectOfProject"
       :options="projectOption"
       :value="currentProjectData"
+      @confirm="handleSelectOfProject"
+      @close="projectShow = false"
+    />
+
+    <SelectOfLog
       multiple
+      :show="planShow"
+      :options="planOptions"
+      :value="currentPlanData"
+      @confirm="handleSelectLog"
+      @close="planShow = false"
     />
 
     <SelectProject
@@ -119,9 +130,11 @@ import CustomInfo from "./components/customInfo";
 import ConfigPlan from "./components/configPlan";
 import PlanInfo from "./components/planInfo";
 import Select from "@/components/select/index";
-import DatePicker from "@/components/datePicker/index";
+import SelectOfPlan from "@/components/select/index";
+import SelectOfLog from "@/components/select/index";
 import SelectProject from "./components/selectProject";
 import SelectEduProject from "./components/selectEduProject";
+import DatePicker from "@/components/datePicker/index";
 import { getCrmOrderDetail, orderReshuffle } from "@/api/order";
 import { categoryGetSessionList, getCateProjectDetail } from "@/api/customer";
 import { mapGetters } from "vuex";
@@ -138,9 +151,11 @@ export default {
     ConfigPlan,
     PlanInfo,
     Select,
-    DatePicker,
+    SelectOfPlan,
+    SelectOfLog,
     SelectProject,
     SelectEduProject,
+    DatePicker,
   },
   computed: {
     ...mapGetters(["staffOptions", "payTypeOptions", 'gradeOptions', 'fromOptions', 'expenseType']),
@@ -157,14 +172,16 @@ export default {
       selectStaffShow: false,       // 客户共享
       selectOccProjectShow: false,  // 选择职称项      
       selectEduProjectShow: false,  // 选择学历项目
-
-      dateShow: false,
-      yearShow: false,
-      projectShow: false,
-      years: [],
-      currentDate: new Date().getTime(),
-      dateFrom: '',
       
+      planShow: false,              // 回款计划选择器
+      projectShow: false,           // 计划所属项目选择器
+      dateShow: false,              // 日期选择器
+      yearShow: false,              // 年份选择器
+      
+      dateFrom: '',                 // 日期选择器来历
+      years: [],                    // 年份选择数据
+      currentDate: new Date().getTime(), // 当前时间
+
       currentStaffs: [{             // 当前业绩共享人
         staff_id: '', 
         staff_name: ''             
@@ -177,17 +194,22 @@ export default {
         name: '',
         value: ''                   // 计算索引
       }],
+
       currentProjectIds: '',        // 复制新创建需要使用当前选中内容
       currentProjectName: '',       // 复制新创建需要使用当前选中内容
-      currentPlan: {},
-      currentPlanIndex: 0,
-      currentLog: {},
-      currentLogIndex: 0,
+      currentPlan: {},              // 当前则在操作的计划项
+      currentPlanIndex: 0,          // 当前正在操作的计划索引
+      
+      currentLog: {},               // 当前正在操作的记录项
+      currentLogIndex: 0,           // 当前正在操作的记录项索引
 
-      projectOption: [],            // 项目选择器选项  
+      projectOption: [],            // 项目选择器选项
+      planOptions: [],              // 计划选择选项
+      
       projectData: [],              // 项目数据   
       payLog:  [],                  // 回款记录数据
       payPlan: [],                  // 回款计划数据
+
       formData: {
         uid: '',                    // 用户 id
         surname: "",                // 用户名
@@ -258,6 +280,8 @@ export default {
         case 'fromOptions':  // 来源
         break;
         case 'payTypeOptions': // 支付方式
+          this.currentPlanIndex = index
+          this.currentLog = item
         break;
         case 'years':
           this.currentPlanIndex = index
@@ -291,6 +315,13 @@ export default {
           this.projectShow = true;
           this.currentPlanIndex = index
           this.currentPlan = item
+          this.currentProjectData = this.generatorProjectData(item, this.projectOption)
+        break;
+        case 'plan':
+          this.planShow = true
+          this.currentPlanIndex = index
+          this.currentLog = item
+          this.currentPlanData = this.generatorPlanData(item, this.planOptions)
         break;
         default:
           console.log('openSelceProject error', selectKey);
@@ -304,7 +335,7 @@ export default {
         case 'date':
           if (from === 'plan') {
             this.currentPlanIndex = index
-            this.currentPlan = item
+            this.currentPlan = item            
           } else {
             this.currentLogIndex = index
             this.currentLog = item
@@ -315,12 +346,13 @@ export default {
           console.log("onPicker error", key, from);
         break;
       }
+      this.dateShow = true
     },
     // 活动面板选择事件，动态更新
     handlerSheetSelect({ detail }) {
       switch (this.sheetChecked) {
         case 'payTypeOptions':
-          this.dynamicInput('formData', { pay_type: detail.name })
+          this.dynamicInput('planRecond', { pay_type: detail.name }, this.currentPlanIndex)
         break;
         case 'gradeOptions':
           this.dynamicInput('formData', { jiebie_name: detail.name, jiebie_id: detail.value })
@@ -367,11 +399,8 @@ export default {
       this.selectStaffShow = false;
     },
     // 选择回款计划所属项目
-    handlerSelectOfProject(detail) {
+    handleSelectOfProject(detail) {
       console.log("currentProjectData", detail, this.currentProjectData);
-      // 修改当前选中项目
-      // 保存当前修改项目
-      // 修改关联内容
       let index = this.currentPlanIndex,
           currentItem = this.currentPlan,
           ids = detail.map(item => item.value).join(','), 
@@ -386,11 +415,27 @@ export default {
     },
     // 日期选择
     handleDateChange(detail) {
-      if (this.from === 'plan') {
+      if (this.dateFrom === 'plan') {
         this.dynamicInput('configPlan', { day: detail }, this.currentPlanIndex)
       } else {
-        this.dynamicInput('planRecond', { pay_day: detail }, this.currentLogIndex)
+        this.dynamicInput('planRecond', { pay_date: detail }, this.currentLogIndex)
       }
+      this.dateShow = false
+    },
+    // 计划选择
+    handleSelectLog(detail = []) {
+      console.log("handleSelectLog", detail, this.currentPlanData);
+      this.planShow = false 
+      let ids = [], moneyAll = 0
+      detail.forEach(item => {
+        if (item.major_detail_ids) {
+          ids.push(item.major_detail_ids)
+        } else {
+          ids.push(item.project_ids)
+        }
+        moneyAll = accAdd(moneyAll, item.money)
+      })
+      this.$emit('dynamic-input', 'planRecond', { pay_money: moneyAll, pay_plan_id: ids }, this.currentLogIndex)
     },
     // 根据子组件转发事件类型动态更新props, data
     dynamicInput(key, val, index) {
@@ -417,6 +462,7 @@ export default {
           payPlan = val
         }
         this.payPlan = payPlan
+        this.planOptions = this.generatorPlanOptions(payPlan)
         let { otherMoney } = this.computeMoney(payPlan), orderMoney = accAdd(otherMoney, formData.total_money)
         this.dynamicInput('formData', { order_money: orderMoney, other_money: otherMoney })
       }
@@ -571,44 +617,44 @@ export default {
       // 处理已选项目数据
       let projectData = this.resolveProjectData(data.project);
       // 生成当前业绩共享人选项
-      let staff = this.generatorSaffData(data.union_staff_id, this.staffOptions)
+      let curr_staff = this.generatorSaffData(data.union_staff_id, this.staffOptions)
       // 生成项目配置数据
       let projectOption = this.generatorProjectOption(projectData)
       // 职称项目需要动态生成届别
       if (data.type == 0) this.handleSelectProjectChange(projectOption, true);
+      // 生成计划配置数据
+      let planOptions = this.generatorPlanOptions(plan.payPlan)
       
-      console.log('staff', staff);
+      console.log('staff', curr_staff);
       this.payLog = plan.payLog
       this.payPlan = plan.payPlan
       this.projectData = projectData
       this.projectOption = projectOption
-      this.currentStaffs = staff
+      this.planOptions = planOptions
+      this.currentStaffs = curr_staff
       this.formData = data
     },
     // 处理计划数据
     resolvePlanlog(payLog = [], payPlan = []) {
       console.log("resolvePlanlog start", payLog, payPlan);
-      let types = this.expenseType,
-          cacheName = "",
-          cacheIndex = [];
+      let types = this.expenseType
+
       // 计划数据处理
       payPlan = payPlan.map((item) => {
         item.name = types[item.type];
         item.project_ids = item.major_detail_ids || item.project_ids || ''
         return item;
-      });
+      })
 
+      // 记录数据处理
       payLog = payLog.map((item) => {
-        let pay_plan_ids = item.pay_plan_id.split(",") || [];
-        payPlan.map((plan, i) => {
-          if (pay_plan_ids.indexOf(`${plan.id}`) !== -1) {
-            cacheName += cacheName ? `,${plan.name}` : plan.name;
-            cacheIndex.push(i);
+        let pay_plan_id = item.pay_plan_id
+
+        payPlan.forEach(plan => {
+          if (pay_plan_id.indexOf(`${plan.id}`) !== -1) {
+            item.pay_plan_name = `${plan.year} ${plan.name} ￥${plan.money}`
           }
         })
-
-        item.planCheckedName = cacheName;
-        item.planCheckedIndex = cacheIndex;
 
         item.receipt_file = (item.receipt_file || []).map((file, index) => {
           return { name: "回款凭证" + (index + 1), url: file };
@@ -659,9 +705,9 @@ export default {
       return data;
     },
     // 生成项目配置数据
-    generatorProjectOption(arr) {
+    generatorProjectOption(arr = []) {
       console.log("generatorProjectOption start", arr);
-      return (arr || []).map(item => ({ 
+      return arr.map(item => ({ 
         value: item.id, 
         name:  (item.major && item.major.value) || item.major_name || item.project_name || ''
       }))
@@ -675,20 +721,24 @@ export default {
       return staffOptions.filter(staff => { staffIds.indexOf(`${staff.staff_id}`) !== -1 })
     },
     // 生成当前选额项目
-    generatorProjectData(plan, projectOption, type) {
-      console.log('generatorProjectData');
-      let ids = curr = undefined
-      if (type == 0) {
-        ids = plan.project_ids
-      } else {
-        ids = plan.major_detail_ids || plan.project_ids
-      }
-      curr = projectOption.filter(pro => ids.indexOf(`${pro.value}`) !== -1)
-      this.currentProjectData = curr
+    generatorProjectData(plan, projectOption = []) {
+      console.log('generatorProjectData', plan, projectOption);
+      let ids = plan.major_detail_ids || plan.project_ids || ''
+      return projectOption.filter(pro => ids.indexOf(`${pro.value}`) !== -1)
     },
     // 生成当前回款计划
-    generatorPlanData() {
-
+    generatorPlanOptions(plans = []) {
+      console.log('generatorPlanData start', plans);
+      return plans.map(item => ({
+        name:  `${item.year} ${item.name} ￥${item.money || 0}`,
+        value: item.id
+      }))
+    },
+    // 生成当前所选计划
+    generatorPlanData(log = {}, plans = []) {
+      console.log("generatorPlanData start", log, plans);
+      let ids = log.pay_plan_id || ''
+      return plans.filter(plan => ids.indexOf(`${plan.value}`) !== -1)
     },
   },
 };

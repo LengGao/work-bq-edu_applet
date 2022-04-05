@@ -78,7 +78,6 @@
             "
           />
         </view>
-
       </view>
     </view>
 
@@ -116,12 +115,6 @@ export default {
     return {
       currentCheckeds: [], // 学杂费选中列表
       payList: [], // 回款计划
-      currentItem: {
-        year: '',
-        day: '',
-        type: '',
-        money: '',
-      }, // 正在输入的回款计划
     };
   },
   mounted() {
@@ -134,6 +127,12 @@ export default {
       console.log("list", newVal);
       this.payList = newVal
       this.generatorCurrentChecked(newVal)
+    },
+    'currentProjectIds': function (newVal) {
+      this.currentProjectIds = newVal
+    },
+    'currentProjectName': function (newVal) {
+      this.currentProjectName = newVal
     }
   },
   methods: {
