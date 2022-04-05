@@ -14,7 +14,7 @@
         <CustomInfo
           v-if="formData.order_id && projectData.length"
           :data="formData"
-          :project-data="projectData"          
+          :project-data="projectData"
           :staff-data="currentStaffs"
           @dynamic-input="dynamicInput"
           @open-select="onOpenSelect"
@@ -25,10 +25,12 @@
         <ConfigPlan
           v-if="payPlan.length > 0"
           :list="payPlan"
-          :projectOption="projectOption"
-          :project-type="formData.type"
-          :totalMoney="formData.total_money"
+          :currentProjectIds="currentProjectIds"
+          :currentProjectName="currentProjectName"
           @dynamic-input="dynamicInput"
+          @open-select="onOpenSelect"
+          @open-sheet="onOpenSheet"
+          @open-picker="openPicker"
         />
       </van-tab>
       <van-tab title="回款记录">
@@ -64,6 +66,14 @@
       @select="handlerSheetSelect"
     />
 
+    <DatePicker
+      :show="dateShow"
+      @close="dateShow = false"
+      @cancel="dateShow = false"
+      @confirm="handleDateChange"
+      :value="currentDate"
+    />
+
     <Select
       :show="selectStaffShow"
       @close="selectStaffShow = false"
@@ -75,10 +85,19 @@
       multiple
     />
 
+    <Select
+      :show="projectShow"
+      @close="projectShow = false"
+      @confirm="handlerSelectOfProject"
+      :options="projectOption"
+      :value="currentProjectData"
+      multiple
+    />
+
     <SelectProject
       v-if="formData.type == 0"
-      :show="selectProjectShow"
-      @close="selectProjectShow = false"
+      :show="selectOccProjectShow"
+      @close="selectOccProjectShow = false"
       @confirm="handleSelectProjectChange"
       ref="selectProject"
       :value="projectData"
@@ -91,7 +110,7 @@
       @close="selectEduProjectShow = false"
       @confirm="handleSelectEduProjectChange"
     />
-
+    
   </view>
 </template>
 
@@ -108,6 +127,10 @@ import { categoryGetSessionList, getCateProjectDetail } from "@/api/customer";
 import { mapGetters } from "vuex";
 import { accAdd } from "@/utils/index";
 import Validator from "@/utils/validator";
+import { getPlanYearOptions, currentYear } from "@/utils/date";
+
+// 迁移基本功能， 项目训责， 日期选择， 年费选择，金额输入
+// 更新本身以及相关联内容
 
 export default {
   components: {
@@ -132,8 +155,15 @@ export default {
       sheetChecked: "",             // 当前面板数据key
       
       selectStaffShow: false,       // 客户共享
-      selectProjectShow: false,     // 选择职称项      
+      selectOccProjectShow: false,  // 选择职称项      
       selectEduProjectShow: false,  // 选择学历项目
+
+      dateShow: false,
+      yearShow: false,
+      projectShow: false,
+      years: [],
+      currentDate: new Date().getTime(),
+      dateFrom: '',
       
       currentStaffs: [{             // 当前业绩共享人
         staff_id: '', 
@@ -147,6 +177,12 @@ export default {
         name: '',
         value: ''                   // 计算索引
       }],
+      currentProjectIds: '',        // 复制新创建需要使用当前选中内容
+      currentProjectName: '',       // 复制新创建需要使用当前选中内容
+      currentPlan: {},
+      currentPlanIndex: 0,
+      currentLog: {},
+      currentLogIndex: 0,
 
       projectOption: [],            // 项目选择器选项  
       projectData: [],              // 项目数据   
@@ -178,6 +214,7 @@ export default {
     const eventChannel = this.getOpenerEventChannel();
     this.eventChannel = eventChannel;
     this.getCrmOrderDetail(order_id);
+    this.generatorYearOptions();
   },
   methods: {
     // tabe切换
@@ -206,19 +243,78 @@ export default {
       return cache
     },
     // 活动面板事件
-    onOpenSheet(key) {
-      this.sheetChecked = key;
-      if (key === 'gradeOptions') {
-        if (this.formData.projectData && !this.formData.projectData.length) {
-          uni.showToast({ icon: "none", title: "请先选择项目" });
-          return undefined;
-        } else if (this.formData.type == 0) {
-          this.sheetShow = true; 
-          return undefined;
-        }
+    onOpenSheet(key, index, item) {
+      let flag = true
+      switch (key) {
+        case 'gradeOptions': // 届别
+          if (!this.projectShow.length) {
+             uni.showToast({ icon: "none", title: "请先选择项目" });
+             flag = false
+          } else if (this.formData.type == 0) {
+            this.sheetShow = true
+            flag = false
+          }
+        break;
+        case 'fromOptions':  // 来源
+        break;
+        case 'payTypeOptions': // 支付方式
+        break;
+        case 'years':
+          this.currentPlanIndex = index
+          this.currentPlan = item
+        break;
+        default: 
+          console.log('onOpenSheet err', key);
+        break;
       }
-      this.sheetShow = true;
-      this.sheetActions = this[key];
+
+      if (flag) {
+        this.sheetChecked = key;
+        this.sheetShow = true;
+        this.sheetActions = this[key];
+      }
+    },
+    // 打开选择器
+    onOpenSelect(selectKey, index, item) {
+      console.log('onOpenSelect', selectKey, index, item);
+      switch (selectKey) {
+        case 'staff': 
+          this.selectStaffShow = true;
+        break;
+        case 'occProject':
+          this.selectOccProjectShow = true;
+        break;
+        case 'eduProject': 
+          this.selectEduProjectShow = true;
+        break;
+        case 'project':
+          this.projectShow = true;
+          this.currentPlanIndex = index
+          this.currentPlan = item
+        break;
+        default:
+          console.log('openSelceProject error', selectKey);
+        break;
+      }
+    },
+    // 打开选择器
+    openPicker(key, from, index, item) {
+      console.log("openPicker", key, from, index, item);
+      switch(key) {
+        case 'date':
+          if (from === 'plan') {
+            this.currentPlanIndex = index
+            this.currentPlan = item
+          } else {
+            this.currentLogIndex = index
+            this.currentLog = item
+          }
+          this.dateFrom = from
+        break;
+        default: 
+          console.log("onPicker error", key, from);
+        break;
+      }
     },
     // 活动面板选择事件，动态更新
     handlerSheetSelect({ detail }) {
@@ -232,25 +328,11 @@ export default {
         case 'fromOptions':
           this.dynamicInput('formData', { source: detail.name })
         break;
+        case 'years':
+          this.dynamicInput('configPlan', { year: detail.name }, this.currentPlanIndex)
+        break;
         default:
           console.log("handlerSheetSelect error", this.sheetChecked, detail);
-        break;
-      }
-    },
-    // 打开选择器
-    onOpenSelect(selectKey) {
-      switch (selectKey) {
-        case 'staff': 
-          this.selectStaffShow = true;
-        break;
-        case 'project':
-          this.selectProjectShow = true;
-        break;
-        case 'eduProject': 
-          this.selectEduProjectShow = true;
-        break;
-        default:
-          console.log('openSelceProject error', selectKey);
         break;
       }
     },
@@ -266,13 +348,13 @@ export default {
     handleSelectEduProjectChange(project = []) {
       console.log("beichufa");
       this.projectData = project.map(item => { item.must_money = ''; return item; })
-      this.projectOption = this.generatorrojectOption(this.projectData)
+      this.projectOption = this.generatorProjectOption(this.projectData)
       this.selectEduProjectShow = false;
     },
     // 选择职称项目
     handleSelectProjectChange(project = [], init = false) {
       let idStr = project.map(item => item.value).join(',')
-      this.selectProjectShow = false;
+      this.selectOccProjectShow = false;
       this.getCateProjectDetail(idStr, init);
     },
     // 选择业绩共享人
@@ -283,6 +365,32 @@ export default {
       this.formData.staff_name = staff_name
       this.formData.union_staff_id = union_staff_id
       this.selectStaffShow = false;
+    },
+    // 选择回款计划所属项目
+    handlerSelectOfProject(detail) {
+      console.log("currentProjectData", detail, this.currentProjectData);
+      // 修改当前选中项目
+      // 保存当前修改项目
+      // 修改关联内容
+      let index = this.currentPlanIndex,
+          currentItem = this.currentPlan,
+          ids = detail.map(item => item.value).join(','), 
+          names = detail.map(item => item.name).join(',')
+
+      currentItem.project_ids = ids
+      currentItem.project_name = names
+      this.currentProjectIds = currentItem.project_ids
+      this.currentProjectName = currentItem.project_name
+      this.dynamicInput('configPlan', { project_ids: ids, project_name: names }, index)
+      this.projectShow = false
+    },
+    // 日期选择
+    handleDateChange(detail) {
+      if (this.from === 'plan') {
+        this.dynamicInput('configPlan', { day: detail }, this.currentPlanIndex)
+      } else {
+        this.dynamicInput('planRecond', { pay_day: detail }, this.currentLogIndex)
+      }
     },
     // 根据子组件转发事件类型动态更新props, data
     dynamicInput(key, val, index) {
@@ -300,7 +408,7 @@ export default {
         projectData[index] = { ...projectData[index], ...val }
         let totalMoney = this.computeTuitionMoney(projectData), orderMoney = accAdd(totalMoney, formData.other_money)
         this.dynamicInput('formData', { total_money: totalMoney, order_money: orderMoney })
-        this.projectOption = this.generatorrojectOption(projectData)
+        this.projectOption = this.generatorProjectOption(projectData)
       
       } else if (key === "configPlan") {
         if (index !== undefined) {
@@ -311,7 +419,6 @@ export default {
         this.payPlan = payPlan
         let { otherMoney } = this.computeMoney(payPlan), orderMoney = accAdd(otherMoney, formData.total_money)
         this.dynamicInput('formData', { order_money: orderMoney, other_money: otherMoney })
-
       }
       
       console.log(
@@ -424,7 +531,7 @@ export default {
       let res = await getCateProjectDetail(data);
       if (res.code === 0) {
         let projectData = res.data.map(item => { item.must_money = ''; return item; })
-        this.projectOption = this.generatorrojectOption(projectData)
+        this.projectOption = this.generatorProjectOption(projectData)
         if (!init) { this.projectData = projectData }
         this.getGradeOptions(res.data[0].category_id)
       }
@@ -466,7 +573,7 @@ export default {
       // 生成当前业绩共享人选项
       let staff = this.generatorSaffData(data.union_staff_id, this.staffOptions)
       // 生成项目配置数据
-      let projectOption = this.generatorrojectOption(projectData)
+      let projectOption = this.generatorProjectOption(projectData)
       // 职称项目需要动态生成届别
       if (data.type == 0) this.handleSelectProjectChange(projectOption, true);
       
@@ -552,20 +659,32 @@ export default {
       return data;
     },
     // 生成项目配置数据
-    generatorrojectOption(arr) {
-      console.log("generatorrojectOption start", arr);
+    generatorProjectOption(arr) {
+      console.log("generatorProjectOption start", arr);
       return (arr || []).map(item => ({ 
         value: item.id, 
         name:  (item.major && item.major.value) || item.major_name || item.project_name || ''
       }))
+    },
+    // 生成年份配置
+    generatorYearOptions() {
+      this.years = getPlanYearOptions().map(item => ({ name: item }))
     },
     // 生成当前业绩共享人
     generatorSaffData(staffIds, staffOptions) {
       return staffOptions.filter(staff => { staffIds.indexOf(`${staff.staff_id}`) !== -1 })
     },
     // 生成当前选额项目
-    generatorProjectData() {
-
+    generatorProjectData(plan, projectOption, type) {
+      console.log('generatorProjectData');
+      let ids = curr = undefined
+      if (type == 0) {
+        ids = plan.project_ids
+      } else {
+        ids = plan.major_detail_ids || plan.project_ids
+      }
+      curr = projectOption.filter(pro => ids.indexOf(`${pro.value}`) !== -1)
+      this.currentProjectData = curr
     },
     // 生成当前回款计划
     generatorPlanData() {

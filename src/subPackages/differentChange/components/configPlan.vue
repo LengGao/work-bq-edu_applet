@@ -8,8 +8,7 @@
       <van-checkbox-group :value="currentCheckeds" @change="handleChecked">
         <view class="check-group">
           <van-checkbox  v-for="(item, index) in expenseType"  :key="index" 
-            class="van-checkbox" shape="square" :name="index"
-          >
+            class="van-checkbox" shape="square" :name="index">
             {{ item }}
           </van-checkbox>
         </view>
@@ -44,7 +43,7 @@
             title-width="140rpx"
             value-class="input-class"
             :value="item.major_name || item.project_name || '请选择所属项目'"
-            @click="() => openPicker('project', index, item)"
+            @click="() => handlerOpenSelect('project', index, item)"
           />
           <van-cell
             is-link
@@ -53,7 +52,7 @@
             title-class="label-class"
             value-class="input-class"
             :value="item.year || '请选择年份'"
-            @click="() => openPicker('year', index, item)"
+            @click="() => handlerOpenSheet('years', index, item)"
           />
           <van-cell
             is-link
@@ -62,7 +61,7 @@
             title-class="label-class"
             value-class="input-class"
             :value="item.day || '请选择回款日期'"
-            @click="() => openPicker('date', index, item)"
+            @click="() => handlerOpenPicker('date', index, item)"
           />
           <van-field
             required
@@ -75,82 +74,47 @@
             :value="Number(item.money)"
             @blur="({ detail }) => 
               detail.value != item.money && 
-              handleInputMoney(detail, item, index)
+              handlerFormInput(detail.value, 'configPlan', index, item)
             "
           />
-        </view>  
+        </view>
 
       </view>
     </view>
 
-    <van-action-sheet
-      :show="yearPickerShow"
-      :actions="planYearOptions"
-      @close="yearPickerShow = false"
-      @select="handleYearChange"
-    />
-
-    <DatePicker
-      :show="datePickerShow"
-      @close="datePickerShow = false"
-      @cancel="datePickerShow = false"
-      @confirm="handleDateChange"
-      :value="currentDate"
-    />
-
-    <Select
-      :show="projectShow"
-      @close="projectShow = false"
-      @confirm="handleSelectChange"
-      :options="projectOption"
-      :value="currProject"
-      multiple
-    />
   </view>
 </template>
 
 <script>
 import Title from "@/components/title/index2";
-import Select from "@/components/select/index.vue";
-import DatePicker from "@/components/datePicker/index.vue";
-import { getPlanYearOptions, currentYear } from "@/utils/date"
-import { mapGetters } from 'vuex'
+import { currentYear } from "@/utils/date";
+import { mapGetters } from 'vuex';
 
 export default {
   components: {
-    Title,
-    Select,
-    DatePicker,
+    Title
   },
   props: {
     list: {
       type: Array,
       default: []
     },
-    projectOption: {
-      type: Array,
-      default: []
-    },
-    totalMoney: {
-      type: [String, Number],
-      default: '0'
-    },
-    projectType: {
-      type: [String, Number],
-      default: '0'
-    }
+    currentProjectIds: {
+      type: String,
+      default: ''
+    }, // 第一步项目选择是已选报名项目id
+    currentProjectName: {
+      type: String,
+      default: ''
+    }, // 第一步项目选择时已选项目名称
+    
   },
   computed: {
-    ...mapGetters([ 'expenseType']),
+    ...mapGetters([ 'expenseType'])
   },
   data() {
     return {
-      projectShow: false,
-      datePickerShow: false, 
-      yearPickerShow: false,
-      currentDate: new Date().getTime(),
       currentCheckeds: [], // 学杂费选中列表
-      planYearOptions: [],  // 年份
       payList: [], // 回款计划
       currentItem: {
         year: '',
@@ -158,118 +122,36 @@ export default {
         type: '',
         money: '',
       }, // 正在输入的回款计划
-      currentIndex: 0, // 正在输入的回款计划索引
-      currProject: [],  // 当亲计划选中俩表划选中列表
-      currentProjectIds: '', // 第一步项目选择是已选报名项目id
-      currentProjectName: '', // 第一步项目选择时已选项目名称
     };
   },
   mounted() {
-    console.log("2", this.list, this.projectOption);
+    console.log("2", this.list);
     this.payList = this.list
-    let cacheType = []
-     this.list.filter(item => {
-      if (cacheType.indexOf(item.type) == -1) {
-        cacheType.push(item.type)
-      }
-    })
-
-    this.currentCheckeds = cacheType.map(item => `${item}`)
-    this.getPlanYearOptions()
+    this.generatorCurrentChecked(this.list)
   },
   watch: {
-    "projectOption": function (newVal) {
-      console.log("projectOption", newVal);
-      let currentProjectIds = '', currentProjectName = '';
-      let projectOption = newVal.map(item => {
-        return { 
-          value: item.id, 
-          name: (item.major && item.major.value) || item.major_name || item.project_name || '', 
-        }
-      })
-      
-      projectOption = projectOption.map(item => {
-        currentProjectIds = currentProjectIds ? `${currentProjectIds}, ${item.id || item.value}` : item.id || item.value
-        currentProjectName = currentProjectName ? `${currentProjectName}, ${item.name}` : item.name 
-        return item
-      })
-      
-      this.currentProjectIds = currentProjectIds
-      this.currentProjectName = currentProjectName
-      this.projectOption = newVal
-    },
     'list': function (newVal) {
       console.log("list", newVal);
       this.payList = newVal
-      let cacheType = []
-      newVal.filter(item => {
-        if (cacheType.indexOf(item.type) == -1) {
-          cacheType.push(item.type)
-        }
-      })
-
-      this.currentCheckeds = cacheType.map(item => `${item}`)
+      this.generatorCurrentChecked(newVal)
     }
   },
   methods: {
-    openPicker(key, index, item) {
-      if (key == 'date') {
-        this.datePickerShow = true
-        this.currentItem = item
-        this.currentIndex = index
-      } else if (key == 'year') {
-        this.yearPickerShow = true
-        this.currentItem = item
-        this.currentIndex = index
-      } else if (key == 'project') {
-        console.log("item,", item);
-        this.projectShow = true
-        this.currentItem = item
-        this.currentIndex = index
-        this.getSelectProject(item)
-      }
+    // 实收金额输入
+    handlerFormInput(detail, key, index, item) {
+      this.$emit('dynamic-input', key, { money: detail }, index, item)
     },
-    // 项目选择
-    handleSelectChange(detail) {
-      console.log('detail', detail);
-      let index = this.currentIndex, currentItem = this.currentItem
-      let ids = detail.map(item => item.value).join(',')
-      let names = detail.map(item => item.name).join(',')
-      currentItem.project_ids = ids
-      currentItem.project_name = names
-      this.currentItem = currentItem
-      this.currentProjectIds = currentItem.project_ids
-      this.currentProjectName = currentItem.project_name
-      this.payList[index] = currentItem
-      this.projectShow = false
-      this.$emit("dynamic-input", 'configPlan', { project_ids: ids, project_name: names }, index)
+    // 打开选择器
+    handlerOpenSelect(key, index, item) {
+      this.$emit('open-select', key, index, item)
     },
-    // 年份选择
-    handleYearChange({ detail }) {
-      let index = this.currentIndex, currentItem = this.currentItem
-      currentItem.year = detail.name
-      this.currentItem = currentItem
-      this.payList[index] = currentItem
-      this.yearPickerShow = false
-      this.$emit("dynamic-input", 'configPlan', { year: detail.name }, index)
+    // 活动面板
+    handlerOpenSheet(key, index, item) {
+      this.$emit('open-sheet', key, index, item )
     },
     // 回款日期选择
-    handleDateChange(val) {
-      let index = this.currentIndex, currentItem = this.currentItem
-      currentItem.day = val
-      this.currentItem = currentItem
-      this.payList[index] = currentItem
-      this.datePickerShow = false
-      this.$emit("dynamic-input", 'configPlan', { day: val }, index)
-    },
-    // 实收金额输入
-    handleInputMoney(detail, item, index) {      
-      let val = detail.value
-      console.log(val);
-      item.money = val
-      this.currentItem = item
-      this.payList[index] = item
-      this.$emit('dynamic-input', 'configPlan',  { money: val }, index)
+    handlerOpenPicker(detail, index, item) {
+      this.$emit('open-picker', detail, 'plan', index, item)
     },
     // 多选 新增 删除 更新 diff
     handleChecked({ detail }) {
@@ -365,7 +247,7 @@ export default {
         startId = (+payList[lastindex].id) + 1
       }
 
-      if (type == 1 || type == '1') {
+      if (type == 1) {
         return  { 
           type, 
           id: startId, 
@@ -402,22 +284,13 @@ export default {
       }
       return -1
     },
-    // 获取年份
-    getPlanYearOptions() {
-      let planYearOptions = getPlanYearOptions().map(item => ({ name: item }))
-      this.planYearOptions = planYearOptions
-    },
-    // 获取当亲打开项目已选中项目
-    getSelectProject(plan) {
-      console.log("plan", plan);  
-      let projectOption = this.projectOption, ids = '', curr = undefined
-      if (this.projectType == 0) {
-        ids = plan.project_ids
-      } else {
-        ids = plan.major_detail_ids || plan.project_ids
-      }
-      curr = projectOption.filter(pro => ids.indexOf(`${pro.value}`) !== -1)
-      this.currProject = curr
+    // 生成当前选项
+    generatorCurrentChecked(list) {
+      let cacheType = []    
+      list.filter(item => {
+        if (cacheType.indexOf(item.type) == -1) { cacheType.push(item.type) }
+      })
+      this.currentCheckeds = cacheType.map(item => `${item}`)
     }
   }
 };

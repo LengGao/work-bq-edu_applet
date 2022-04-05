@@ -75,7 +75,7 @@
           value-class="input"
           title-width="200rpx"
           :value="checkedProjectName || '请选择'"
-          @click="handlerOpenSelect('project')"
+          @click="handlerOpenSelect('occProject')"
         />
         <van-cell
           is-link

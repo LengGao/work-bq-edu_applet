@@ -89,7 +89,7 @@ class Http {
             // console.log(`${url} >>参数：`, data)
             let baseUir = process.env.VUE_APP_BASE_API 
             let _url = (baseUir + url).replace('\'', '')
-            console.log("_url", _url);
+            // console.log("_url", _url);
             uni.request({
                 ...options,
                 url: _url,
