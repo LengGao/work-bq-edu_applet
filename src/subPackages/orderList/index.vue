@@ -175,6 +175,7 @@ export default {
 
 <style lang="less" scoped>
 @import "@/styles/var";
+
 .order-list {
   height: 100%;
   /deep/.load-more {

@@ -56,7 +56,7 @@
                 </view>
               </view>
               <view class="item-info-time flex-row">
-                <van-icon name="manager-o" size="16rpx" color="#ddd" />
+                <van-icon name="manager-o" size="32rpx" color="#ddd" />
                 <text>
                   任课老师：{{ item.teacher_name || "--" }}
                 </text>

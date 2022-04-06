@@ -1,4 +1,4 @@
-<template >
+<template>
   <view class="order-recond">
     <template v-if="orderList.length">
       <view
@@ -123,7 +123,7 @@ export default {
       return str.split(",");
     },
     async getOrderRecond() {
-      const data = { uid: this.uid, person: 1 };
+      const data = { uid: this.uid, person: 1, page: 1 , limit: 99};
       const res = await getOrderRecond(data);
       this.orderList = res.data.list;
     },

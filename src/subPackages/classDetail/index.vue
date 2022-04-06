@@ -79,7 +79,7 @@
           </view>
           <view class="item-card-item">
             <view class="card-item-row">
-              <view class="row-left">
+              <view class="row-left" style="width: 100%;">
                 <text class="col-title">手机号码</text>
                 <text class="col-value ellipsis">{{ item.telphone | phoneFormat }}</text>
                 <van-icon 
@@ -89,12 +89,12 @@
                   custom-style="margin-left: 20rpx;" 
                   @click="onCopy(item.telphone)"
                 />
-              </view>
-              <view class="row-right phone-icons">
+
                 <van-icon 
                   name="phone-o" 
                   size="32rpx"
                   color="#199fff" 
+                  custom-style="margin-left: 20rpx"
                   @click="onPhoneCall(item.telphone)"
                 />
               </view>
