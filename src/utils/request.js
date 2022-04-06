@@ -1,5 +1,6 @@
 import store from '@/store'
 import { appletLogin } from '@/api/user'
+const baseUrl = process.env.VUE_APP_BASE_API
 const debounce = (fn, delay = 300) => {
     let timer = null
     return function (...args) {
@@ -87,8 +88,7 @@ class Http {
                 title: "加载中",
             });
             // console.log(`${url} >>参数：`, data)
-            let baseUir = process.env.VUE_APP_BASE_API
-            let _url = (baseUir + url).replace('\'', '')
+            const _url = (baseUrl + url).replace('\'', '')
             // console.log("_url", _url);
             uni.request({
                 ...options,
