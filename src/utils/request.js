@@ -87,7 +87,7 @@ class Http {
                 title: "加载中",
             });
             // console.log(`${url} >>参数：`, data)
-            let baseUir = process.env.VUE_APP_BASE_API 
+            let baseUir = process.env.VUE_APP_BASE_API
             let _url = (baseUir + url).replace('\'', '')
             // console.log("_url", _url);
             uni.request({
@@ -114,11 +114,6 @@ class Http {
                             icon: 'none',
                             title: data.message
                         })
-                    }
-                    // 绑定教务账号后
-                    if (url === '/passport/appletBindPhone') {
-                        // 执行队列里的请求
-                        this._onAccessTokenFetched()
                     }
                     resolve(data)
                 },
