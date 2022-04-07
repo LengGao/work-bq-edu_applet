@@ -275,7 +275,7 @@ export default {
     ...mapGetters(["staffOptions", 'gradeOptions', 'fromOptions']),
   },
   onLoad(query) {
-    console.log("customeSignUp:", query);
+    // console.log("customeSignUp:", query);
     this.formData.id = query.userId;
     this.formData.surname = query.userName;
     this.formData.mobile = query.userMobile;

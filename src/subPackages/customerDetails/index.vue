@@ -272,7 +272,7 @@ export default {
       }
     },
     handleTabClick(event) {
-      console.log("event", event);
+      // console.log("event", event);
     },
     handleSignUp() {
       const { uid, surname, mobile, id_card_number } = this.userInfo;

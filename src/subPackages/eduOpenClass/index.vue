@@ -22,14 +22,21 @@
     >
     <template v-if="listType === 1">
       <view class="item" v-for="(item, index) in listData" :key="item.id">
-        <view class="item-info">
-          <view class="item-info-status">
-            <view class="user-name">{{ item.surname }}-{{ item.project_name }}</view>
+        <view class="item-info">  
+          <view class="item-info-status" style="display: flex; flex-direction: row; align-items: baseline;">
+            <view class="user-name" style="max-width: 500rpx; margin-right: 20rpx;">
+              {{ item.surname }}-{{ item.project_name }}
+            </view>
             <van-tag plain type="success" v-if="item.open_course">已开课</van-tag>
             <van-tag plain type="warning" v-else>未开课</van-tag>
           </view>
-          <view class="item-info-time"
-            >{{ item.create_time }} | {{ item.customer_type || "--" }}
+          
+          <view class="item-info-time" style="margin: 20rpx 0 0;">
+            所属部门：{{ item.group_name || "--" }}
+          </view>
+
+          <view class="item-info-time" style="margin: 20rpx 0 0;">
+            {{ item.create_time }} | {{ item.customer_type || "--" }}
           </view>
         </view>
         <view

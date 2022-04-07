@@ -234,7 +234,7 @@ export default {
       return this.detailData.verify_status
     },
   },
-  onLoad({ orderId, approve, change, verifyId }) {
+  onLoad({ orderId, approve, change, verifyId = '' }) {
     this.isApprove = approve == 1; // 是否审批 1 审批, 2 招生订单，3渠道订单
     this.isChange = change == 1; // 是否异动 1 异动
     this.isRecruit = approve == 2 
@@ -271,7 +271,7 @@ export default {
     updateListItem(data) {
       const pages = getCurrentPages();
       const prevPage = pages[pages.length - 2];
-      console.log("updateListItem", prevPage);
+      // console.log("updateListItem", prevPage);
       prevPage.$vm && prevPage.$vm.updateItem && prevPage.$vm.updateItem(data);
     },
     handleTabsChange({ detail }) {
@@ -283,7 +283,7 @@ export default {
     },
     // tabbar 点击事件处理器
     handleTabbarChange({ detail }) {
-      console.log('handleTabbarChange', detail);
+      // console.log('handleTabbarChange', detail);
       let { order_id, order_no, order_money, surname, pay_money, overdue_money, create_time } = this.detailData,
           modal = { title: "提醒", content: "", showCancel: true, cancelColor: "#199fff", confirmColor: "#199fff" }
 
@@ -327,7 +327,7 @@ export default {
           this.hurryUp()
         break;
         default: 
-          console.log('handleTabbarChange', detail);
+          // console.log('handleTabbarChange', detail);
         break;
       }
 
@@ -398,7 +398,6 @@ export default {
       let buttons = this.generatorArticleButton(data)
       // 生成印章
       let seals = this.generatorVerifySeal(data.reshuffle, data.reshuffle_list, data.is_deleted)
-
       // 统计数据处理
       this.totalMoney = data.total_money
       this.otherMoney = data.other_money
@@ -461,11 +460,12 @@ export default {
       return { payLog, payPlan };
     },
     // 处理不进度数据
-    resolveStepData(stepData = [], submitter, reviewer, verifyStatus) {
+    resolveStepData(stepData = [], submitter = '', reviewer = '', verifyStatus) {
+      // console.log('resolveStepData', stepData, submitter, reviewer, verifyStatus);
       const approvStepOptions = [
-        { state_id: 0, test: '', desc: '待审核', activeIcon: '', activeColor: '#199fff' },
-        { state_id: 1, test: '', desc: '待审核', activeIcon: '', activeColor: '#199fff' },
-        { state_id: 2, test: '', desc: '（多人）审核中', activeIcon: '', activeColor: '#199fff' },
+        { state_id: 0, test: '', desc: '待审核', activeIcon: 'checked', activeColor: '#199fff' },
+        { state_id: 1, test: '', desc: '待审核', activeIcon: 'checked', activeColor: '#199fff' },
+        { state_id: 2, test: '', desc: '（多人）审核中', activeIcon: 'checked', activeColor: '#199fff' },
         { state_id: 3, test: '', desc: '审核通过', activeIcon: 'checked', activeColor: '#59D234' },
         { state_id: 8, test: '', desc: '已撤销审核', activeIcon: 'clear', activeColor: '#c0c4cc' },
         { state_id: 9, test: '', desc: '驳回不通过', activeIcon: 'clear', activeColor: '#f56c6c' },
@@ -480,20 +480,22 @@ export default {
         }
       })
       
-      steps.unshift({ text: submitter, desc: '提交了审批' })
-      let len = steps.length
-      this.stepActiveColor = steps[len - 1].activeColor
+      steps.unshift({ text: submitter, desc: '提交了审批', activeIcon: 'checked' })
+      const step = steps.length  // 1 2
 
-      if (len.length < 1) {
-        steps.push({ text: reviewer, desc: '待审核' })
-      }
-
-      if(verifyStatus < 8) {
-        steps.push({ text: "审批", desc: "完成" })
-        this.stepActive = len + 1
+      // 撤回 驳回 steps长度固定为0 通过 待审核
+      if (verifyStatus <= 3 ) {
+        if (step < 2) { steps.push({ text: reviewer, desc: '待审核', activeIcon: 'checked' }) }
+        steps.push({ text: "审批", desc: "完成", activeIcon: 'checked' })
+        if (verifyStatus == 3) {
+          this.stepActive = steps.length - 1
+        } else {
+          this.stepActive = steps.length - 2
+        }
       } else {
-        this.stepActive = len
+        this.stepActive = step - 1
       }
+      this.stepActiveColor = approvStepOptions.find(option => option.state_id == verifyStatus).activeColor
 
       return steps
     },
@@ -598,11 +600,17 @@ export default {
     &-other {
       color: @text-color-grey;
       font-size: @font-size-md;
-    }
+    }    
   }
 
   &-steps {
     padding: 0 20rpx;
+  }
+
+  /deep/.van-step__wrapper {
+    align-items: flex-end;
+    -webkit-box-align: flex-end;
+    -webkit-align-items: flex-end;
   }
 
   /deep/.reject-reason {

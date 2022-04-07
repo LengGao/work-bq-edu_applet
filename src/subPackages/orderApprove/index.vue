@@ -46,12 +46,13 @@
             </template>
           </view>
         </view>
+
         <view class="item-desc">
-          <view class="">
+          <view class="" style="display: flex; align-items: center;">
+            <!-- <van-icon name="cash-o" size="32rpx" color="#999" /> -->
             <text>订单总金额{{ item.order_money | moneyFormat }}</text>
-            <text style="margin-left: 20rpx">
-              实收金额{{ accAdd(item.pay_money, item.other_money) | moneyFormat }}
-            </text>
+            <!-- <van-icon name="cash-o" size="32rpx" color="#999" /> -->
+            <text style="margin-left: 20rpx">实收金额{{ accAdd(item.pay_money, item.other_money) | moneyFormat }}</text>
           </view>
           <view class="item-tag">
             <van-tag :type="verifyTypeMaps[item.verify_type].type" plain>
@@ -247,14 +248,16 @@ export default {
       flex-direction: row;
       justify-content: space-between;
       align-items: flex-start;
+      margin: 20rpx 0;
       font-size: @font-size-md;
-      margin-bottom: 8rpx;
     }
+
     &-desc {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
+      margin: 20rpx 0 0;
       color: @text-color-grey;
     }
 

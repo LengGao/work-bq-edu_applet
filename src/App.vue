@@ -1,13 +1,13 @@
 <script>
 export default {
   onLaunch: function (options) {
-    console.log(options);
+    // console.log(options);
   },
   onShow: function () {
-    console.log("App Show");
+    // console.log("App Show");
   },
   onHide: function () {
-    console.log("App Hide");
+    // console.log("App Hide");
   },
 };
 </script>

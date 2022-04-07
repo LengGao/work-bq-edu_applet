@@ -111,7 +111,7 @@ export default {
   },
   watch: {
     "value": function (newVal) {
-      console.log("selectEduProject value", newVal);
+      // console.log("selectEduProject value", newVal);
     }
   },
   methods: {

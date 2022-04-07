@@ -41,7 +41,7 @@ class Validator {
                 }
             } else if (!!type) {
                 if(!defaultRules[type](val, key)) {
-                    console.log("type", type, val ,key);
+                    // console.log("type", type, val ,key);
                     errorList.push({ key: key, msg: message })
                 }
             }
@@ -56,7 +56,7 @@ class Validator {
         if (errorList.length > 0) {
             let err = errorList[0]
             uni.showToast({ icon: 'none', title: `${err.msg}` })
-            console.log("%c from validator:", err.key, err.msg, "color: orange;");
+            // console.log("%c from validator:", err.key, err.msg, "color: orange;");
         }
             
     }

@@ -82,7 +82,7 @@ export default {
     };
   },
   onLoad(query) {    
-    console.log(query);
+    // console.log(query);
     let info = JSON.parse(decodeURIComponent(query.info)),
         _liveInfo = this.liveInfo,
         channelId = info.channel_id
@@ -93,7 +93,7 @@ export default {
     _liveInfo.teatcher = _liveInfo.teacher + channelId
     
     this.liveInfo = Object.assign(info, this.liveInfo)
-    console.log("query", query, this.liveInfo);
+    ("query", query, this.liveInfo);
   },
   methods: {
     // 复制

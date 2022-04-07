@@ -82,7 +82,7 @@ export default {
   },
   watch: {
     'value': function (newVal) {
-      console.log("selectProject value", newVal, this.checkedValue, this.projectOptions);
+      // console.log("selectProject value", newVal, this.checkedValue, this.projectOptions);
       if (newVal && newVal.length > 0) {
         this.checkedValue = newVal.map(item => {
           return `${item.project_name},${item.id}`
@@ -107,7 +107,7 @@ export default {
       this.checkedValue.splice(index, 1);
     },
     onChange({ detail }) {
-      console.log("project checked ", this.checkedValue);
+      // console.log("project checked ", this.checkedValue);
       this.checkedValue = detail;
     },
     handleConfirm() {

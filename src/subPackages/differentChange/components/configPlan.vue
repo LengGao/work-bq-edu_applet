@@ -118,13 +118,13 @@ export default {
     };
   },
   mounted() {
-    console.log("2", this.list);
+    // console.log("2", this.list);
     this.payList = this.list
     this.generatorCurrentChecked(this.list)
   },
   watch: {
     'list': function (newVal) {
-      console.log("list", newVal);
+      // console.log("list", newVal);
       this.payList = newVal
       this.generatorCurrentChecked(newVal)
     },
@@ -198,12 +198,12 @@ export default {
     },
     // 删除
     handleDelete(item, index) {
-      console.log("handleDelete",item, index, this.payList);
+      // console.log("handleDelete",item, index, this.payList);
       let modalOption = { title: "", content: "确定要删除此计划吗?", showCancel: true, cancelColor: "#199fff", confirmColor: "#199fff" };
       let payList = JSON.parse(JSON.stringify(this.payList))
       let _index = payList.findIndex(i => i.id == item.id)
       payList.splice(_index, 1)
-      console.log("find indew", _index, payList);
+      // console.log("find indew", _index, payList);
       uni.showModal(modalOption).then(modal => {
         if (modal[1].confirm) {
           this.payList = payList

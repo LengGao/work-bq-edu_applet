@@ -196,7 +196,7 @@ export default {
       }
     },
     handleSelectChange(detail) {
-      console.log('detail', detail);
+      // console.log('detail', detail);
       let index = this.currentIndex, 
           currentItem = this.currentItem,
           projectId = '',
@@ -214,7 +214,6 @@ export default {
 
       currentItem.project_ids = projectId
       currentItem.project_name = projectName
-      console.log(projectId, projectName);
 
       this.projectId = projectId 
       this.projectName = projectName
@@ -240,7 +239,7 @@ export default {
     },
     // 实收金额输入
     handleInputMoney(detail, item, index) {      
-      console.log("val", detail);
+      // console.log("val", detail);
       item.money = +detail.value
       this.currentItem = item
       this.payList[index] = item
@@ -289,12 +288,11 @@ export default {
     },
     // 删除
     handleDelete(item, index) {
-      console.log("handleDelete",item, index, this.payList);
+      // console.log("handleDelete",item, index, this.payList);
       let modalOption = { title: "", content: "确定要删除此计划吗?", showCancel: true, cancelColor: "#199fff", confirmColor: "#199fff" };
       let payList = JSON.parse(JSON.stringify(this.payList))
       let _index = payList.findIndex(i => i.id == item.id)
       payList.splice(_index, 1)
-      console.log("find indew", _index, payList);
       uni.showModal(modalOption).then(modal => {
         if (modal[1].confirm) {
           this.payList = payList

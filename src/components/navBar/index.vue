@@ -76,7 +76,7 @@ export default {
   methods: {
     // 选择数据权限范围
     handleSelectTagChange(checkedData) {
-      console.log(checkedData);
+      // console.log(checkedData);
       const arr_group = [];
       const arr_uid = [];
       checkedData.forEach((item) => {

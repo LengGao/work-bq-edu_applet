@@ -196,6 +196,7 @@ export default {
         font-size: @font-size-md;
       }
       &-money {
+        margin: 20rpx 0 0;
         color: @text-color-grey;
       }
     }

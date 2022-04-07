@@ -157,12 +157,12 @@ export default {
   },
   onLoad(query) {
     let q = JSON.parse(decodeURIComponent(query.params))
-    console.log("customeSignPayPlan", q);
+    // console.log("customeSignPayPlan", q);
     this.formData = Object.assign({}, q)
     this.getPlanYearOptions()
     let cache = uni.getStorageSync('plan')
     if (cache) {
-      console.log("cache", cache);
+      // console.log("cache", cache);
       this.payList = cache.payList
       this.currentCheckeds = cache.currentCheckeds
     }
@@ -187,7 +187,7 @@ export default {
     },
     // 项目选择
     handleSelectChange(detail) {
-      console.log('detail', detail);
+      // console.log('detail', detail);
       let index = this.currentIndex, currentItem = this.currentItem
       currentItem.project_ids = detail.map(item => item.value).join(',')
       currentItem.project_name = detail.map(item => item.name).join(',')

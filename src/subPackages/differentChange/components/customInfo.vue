@@ -218,11 +218,11 @@ export default {
   },
   watch: {
     'projectData': function (newVal) {
-        console.log('projectData', newVal);
+        // console.log('projectData', newVal);
     }
   },
   mounted() {
-    console.log("1", this.data, this.projectData);
+    // console.log("1", this.data, this.projectData);
   },
   methods: {
     // 动态输入

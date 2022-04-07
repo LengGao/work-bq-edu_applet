@@ -188,7 +188,7 @@ export default {
     }
   },
   mounted() {
-    console.log("3", this.payPlans);
+    // console.log("3", this.payPlans);
     let addRecondPlan = this.resolveRecondPlan(this.payPlans)
     this.planOptions = this.getPlanData(addRecondPlan)
   },
@@ -205,7 +205,7 @@ export default {
     },
     // 胡款计划
     handleSelectChange(detail) {
-      console.log("handleSelectChange", detail);
+      // console.log("handleSelectChange", detail);
       let ids = [], names = [], moneyAll = 0, money = 0
 
       detail.forEach(item => {
@@ -323,7 +323,7 @@ export default {
     },
     // 获取当前可选择的计划数据
     resolveRecondPlan(plan = []) {
-      console.log('resolveRecondPlan', plan);
+      // console.log('resolveRecondPlan', plan);
       return plan.filter(item => parseFloat(item.pay_money) == 0)      
     },
   }

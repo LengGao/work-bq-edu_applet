@@ -137,7 +137,7 @@ export default {
     value: {
       handler(val) {
         // 多选回显
-        console.log('检测', val);
+        // console.log('检测', val);
         if (Array.isArray(val) && val.length) {
             if (this.other === 'plan') {
                 this.checkedValue = val.map(item => item + '')

@@ -288,7 +288,7 @@ export default {
           this.currentPlan = item
         break;
         default: 
-          console.log('onOpenSheet err', key);
+          // console.log('onOpenSheet err', key);
         break;
       }
 
@@ -300,7 +300,7 @@ export default {
     },
     // 打开选择器
     onOpenSelect(selectKey, index, item) {
-      console.log('onOpenSelect', selectKey, index, item);
+      // console.log('onOpenSelect', selectKey, index, item);
       switch (selectKey) {
         case 'staff': 
           this.selectStaffShow = true;
@@ -324,13 +324,13 @@ export default {
           this.currentPlanData = this.generatorPlanData(item, this.planOptions)
         break;
         default:
-          console.log('openSelceProject error', selectKey);
+          // console.log('openSelceProject error', selectKey);
         break;
       }
     },
     // 打开选择器
     openPicker(key, from, index, item) {
-      console.log("openPicker", key, from, index, item);
+      // console.log("openPicker", key, from, index, item);
       switch(key) {
         case 'date':
           if (from === 'plan') {
@@ -343,7 +343,7 @@ export default {
           this.dateFrom = from
         break;
         default: 
-          console.log("onPicker error", key, from);
+          // console.log("onPicker error", key, from);
         break;
       }
       this.dateShow = true
@@ -364,7 +364,7 @@ export default {
           this.dynamicInput('configPlan', { year: detail.name }, this.currentPlanIndex)
         break;
         default:
-          console.log("handlerSheetSelect error", this.sheetChecked, detail);
+          // console.log("handlerSheetSelect error", this.sheetChecked, detail);
         break;
       }
     },
@@ -378,7 +378,7 @@ export default {
     },
     // 选择学历项目
     handleSelectEduProjectChange(project = []) {
-      console.log("beichufa");
+      // console.log("beichufa");
       this.projectData = project.map(item => { item.must_money = ''; return item; })
       this.projectOption = this.generatorProjectOption(this.projectData)
       this.selectEduProjectShow = false;
@@ -400,7 +400,7 @@ export default {
     },
     // 选择回款计划所属项目
     handleSelectOfProject(detail) {
-      console.log("currentProjectData", detail, this.currentProjectData);
+      // console.log("currentProjectData", detail, this.currentProjectData);
       let index = this.currentPlanIndex,
           currentItem = this.currentPlan,
           ids = detail.map(item => item.value).join(','), 
@@ -424,7 +424,7 @@ export default {
     },
     // 计划选择
     handleSelectLog(detail = []) {
-      console.log("handleSelectLog", detail, this.currentPlanData);
+      // console.log("handleSelectLog", detail, this.currentPlanData);
       this.planShow = false 
       let ids = [], moneyAll = 0
       detail.forEach(item => {
@@ -439,7 +439,7 @@ export default {
     },
     // 根据子组件转发事件类型动态更新props, data
     dynamicInput(key, val, index) {
-      console.log("dynamicInput", key, val, index);
+      // console.log("dynamicInput", key, val, index);
       let formData = this.formData, payPlan = this.payPlan, payLog = this.payLog, projectData = this.projectData
       
       if (key === 'formData') {
@@ -467,12 +467,12 @@ export default {
         this.dynamicInput('formData', { order_money: orderMoney, other_money: otherMoney })
       }
       
-      console.log(
-        "dynamicInput：", formData,
-        "\n projectData:", projectData,
-        "\n pay_plan:", payPlan,
-        "\n pay_log:", payLog
-      )
+      // console.log(
+      //   "dynamicInput：", formData,
+      //   "\n projectData:", projectData,
+      //   "\n pay_plan:", payPlan,
+      //   "\n pay_log:", payLog
+      // )
     },
     // 取消
     handleCancel() {
@@ -503,7 +503,7 @@ export default {
         let _val = JSON.parse(val);
         let must_money = _val.every((v) => `${v.must_money}`.length > 0);
         if (!must_money) {
-          console.log('vali' ,val, key, must_money, param);
+          // console.log('vali' ,val, key, must_money, param);
           uni.showToast({ icon: "none", title: "请填写项目价格或总学费" });
         }
         return must_money;
@@ -607,7 +607,7 @@ export default {
     },
     // 规范化详情数据
     normalizeDetailData(data) {
-      console.log('normalizeDetailData start', data);
+      // console.log('normalizeDetailData start', data);
       data.union_staff_id = data.union_staff_id || ''
       data.source = data.source || ''
       data.type = data.type || 0
@@ -625,7 +625,7 @@ export default {
       // 生成计划配置数据
       let planOptions = this.generatorPlanOptions(plan.payPlan)
       
-      console.log('staff', curr_staff);
+      // console.log('staff', curr_staff);
       this.payLog = plan.payLog
       this.payPlan = plan.payPlan
       this.projectData = projectData
@@ -636,7 +636,7 @@ export default {
     },
     // 处理计划数据
     resolvePlanlog(payLog = [], payPlan = []) {
-      console.log("resolvePlanlog start", payLog, payPlan);
+      // console.log("resolvePlanlog start", payLog, payPlan);
       let types = this.expenseType
 
       // 计划数据处理
@@ -663,13 +663,13 @@ export default {
         return item;
       });
 
-      console.log('resolvePlanlog end', payLog , payPlan);
+      // console.log('resolvePlanlog end', payLog , payPlan);
       return { payLog, payPlan };
     },
     // 处理详情接口返回的项目数据
     resolveProjectData(projectData) {
       let list = JSON.parse(projectData) || [];
-      console.log("resolveProjectData:", list);
+      // console.log("resolveProjectData:", list);
       return list.map(item => {
         item.price = item.project_price || item.total_money
         return item
@@ -682,12 +682,12 @@ export default {
           payPlan = this.payPlan,
           projectData = this.projectData
 
-      console.log(
-        "resolveSubmitData start", data,
-        "\n projectData:", projectData,
-        "\n pay_plan:", payPlan,
-        "\n pay_log:", payLog
-      );
+      // console.log(
+      //   "resolveSubmitData start", data,
+      //   "\n projectData:", projectData,
+      //   "\n pay_plan:", payPlan,
+      //   "\n pay_log:", payLog
+      // );
       // 项目信息
       data.project = JSON.stringify(projectData);
       // 回款计划
@@ -701,12 +701,12 @@ export default {
         return item;
       });
 
-      console.log("resolveSubmitData end", data);
+      // console.log("resolveSubmitData end", data);
       return data;
     },
     // 生成项目配置数据
     generatorProjectOption(projectData = []) {
-      console.log("generatorProjectOption start", projectData);
+      // console.log("generatorProjectOption start", projectData);
       return projectData.map(item => ({ 
         value: item.id, 
         name:  (item.major && item.major.value) || item.major_name || item.project_name || ''
@@ -722,13 +722,13 @@ export default {
     },
     // 生成当前选额项目
     generatorProjectData(plan, projectOption = []) {
-      console.log('generatorProjectData', plan, projectOption);
+      // console.log('generatorProjectData', plan, projectOption);
       let ids = plan.major_detail_ids || plan.project_ids || ''
       return projectOption.filter(pro => ids.indexOf(`${pro.value}`) !== -1)
     },
     // 生成当前回款计划
     generatorPlanOptions(plans = []) {
-      console.log('generatorPlanData start', plans);
+      // console.log('generatorPlanData start', plans);
       return plans.map(item => ({
         name:  `${item.year} ${item.name} ￥${item.money || 0}`,
         value: item.id
@@ -736,7 +736,7 @@ export default {
     },
     // 生成当前所选计划
     generatorPlanData(log = {}, plans = []) {
-      console.log("generatorPlanData start", log, plans);
+      // console.log("generatorPlanData start", log, plans);
       let ids = log.pay_plan_id || ''
       return plans.filter(plan => ids.indexOf(`${plan.value}`) !== -1)
     },

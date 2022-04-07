@@ -209,7 +209,7 @@ export function getUserFileList(data) {
  * @returns 
  */
  export function createFile(file) {
-    console.log("formData", file);
+    // console.log("formData", file);
     return new Promise((resolve, reject) => {
         wx.uploadFile({
             url: `${process.env.VUE_APP_BASE_API}/User/createFile`,

@@ -169,7 +169,7 @@ export default {
   onLoad(query) {
     let q = JSON.parse(decodeURIComponent(query.params))    
     this.formData = Object.assign(this.formData, q)
-    console.log("customeSignPayRecond:", q);
+    // console.log("customeSignPayRecond:", q);
     let payList = q.payList, money = this.computeMoney(payList)
     this.totalMoney = q.order_money                                 // 总学费
     this.otherMoney = money.otherMoney                              // 防护学
@@ -188,7 +188,7 @@ export default {
       let totalMoney = 0, otherMoney = 0, orderMoney = 0
       for(let i = arr.length - 1; i >= 0; i--) {
         let item = arr[i]
-        console.log(item, item.type == 1);
+        // console.log(item, item.type == 1);
         if (item.type == 1) {
           totalMoney = accAdd(totalMoney, item.money)
         } else {

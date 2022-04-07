@@ -158,7 +158,7 @@ export default {
       uni.makePhoneCall({
         phoneNumber,
         fail(err) {
-          console.log(err);
+          // console.log(err);
         },
       });
     },

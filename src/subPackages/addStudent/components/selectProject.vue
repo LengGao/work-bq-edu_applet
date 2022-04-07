@@ -117,7 +117,7 @@ export default {
       } else {
         this.$set(this.checkedValue, id, detail);
       }
-      console.log(this.checkedValue);
+      // console.log(this.checkedValue);s
     },
     handleConfirm() {
       if (!this.checkedCount) {

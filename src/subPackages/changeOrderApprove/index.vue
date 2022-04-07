@@ -35,12 +35,8 @@
             >{{ item.create_time }}
           </view>
           <template v-else>
-            <van-tag type="success" plain v-if="item.status === 2">
-              已通过
-            </van-tag>
-            <van-tag type="warning" plain v-if="item.status === 3">
-              已驳回
-            </van-tag>
+            <van-tag type="success" plain v-if="item.status === 2">已通过</van-tag>
+            <van-tag type="warning" plain v-if="item.status === 3">已驳回</van-tag>
           </template>
         </view>
         <view class="item-customer">
@@ -201,9 +197,10 @@ export default {
     }
     &-customer {
       font-size: @font-size-md;
-      margin-bottom: 8rpx;
+      margin: 20rpx 0 0;
     }
     &-desc {
+      margin: 20rpx 0 0;
       color: @text-color-grey;
     }
   }

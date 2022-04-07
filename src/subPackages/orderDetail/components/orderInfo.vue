@@ -250,7 +250,7 @@ export default {
   },
   methods: {
     previewImage(urls, index) {
-      console.log(...arguments);
+      // console.log(...arguments);
       uni.previewImage({
         urls,
         current: urls[index],

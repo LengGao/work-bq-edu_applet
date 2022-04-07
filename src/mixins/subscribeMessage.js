@@ -16,7 +16,7 @@ export default {
     },
     methods: {
         getSubscribeStatus(itemSettings) {
-            console.log('itemSettings', itemSettings)
+            // ss('itemSettings', itemSettings)
             if (!itemSettings) {
                 return
             }
@@ -42,7 +42,7 @@ export default {
                     this.getSubscribeStatus(rest)
                 },
                 fail(err) {
-                    console.log(err);
+                    // console.log(err);
                 },
             });
         }
