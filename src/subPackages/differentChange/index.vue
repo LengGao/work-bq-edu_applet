@@ -582,7 +582,7 @@ export default {
         this.getGradeOptions(res.data[0].category_id)
       }
     },
-    // 动态获取界别
+    // 动态获取界别缺少
     async getGradeOptions(data) {
       let param = { category_id: data }
       const res = await categoryGetSessionList(param).catch(() => {})
@@ -705,9 +705,9 @@ export default {
       return data;
     },
     // 生成项目配置数据
-    generatorProjectOption(arr = []) {
-      console.log("generatorProjectOption start", arr);
-      return arr.map(item => ({ 
+    generatorProjectOption(projectData = []) {
+      console.log("generatorProjectOption start", projectData);
+      return projectData.map(item => ({ 
         value: item.id, 
         name:  (item.major && item.major.value) || item.major_name || item.project_name || ''
       }))

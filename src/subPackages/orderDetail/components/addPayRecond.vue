@@ -103,10 +103,6 @@
       @close="selectShow = false"
       @confirm="handleSelectChange"
       :options="planOptions"
-      :value="currentItem.planCheckedIndex"
-      other="plan"
-      option-name="name"
-      option-value="value"
       multiple
     />
 
@@ -123,7 +119,7 @@
 
 <script>
 import Title from "@/components/title/index.vue";
-import Select from "@/components/select/index3.vue";
+import Select from "@/components/select/index.vue";
 import DatePicker from "@/components/datePicker/index.vue";
 import { mapGetters } from "vuex";
 import { accAdd } from "@/utils/index"
@@ -140,17 +136,13 @@ export default {
     ...mapGetters(["payTypeOptions"]),
   },
   props: {
-    info: {
-      type: Array,
-      default: []
-    },
-    paylist: {
-      type: Array,
-      default: []
-    },
     orderId: {
       type: [String, Number],
       default: ''
+    },
+    payPlans: {
+      type: Array,
+      default: []
     },
     orderMoney: {
       type: [String, Number],
@@ -167,42 +159,38 @@ export default {
   },
   data() {
     return {
-      saveLoading: false, // 板寸按钮加载状态
+      saveLoading: false,                 // 板寸按钮加载状态
       // 日期选择
-      datePickerShow: false, // 回款日期
-      currentDate: new Date().getTime(),
+      datePickerShow: false,              // 回款日期
+      currentDate: new Date().getTime(),  // 默认时间
       // 回款计划
-      selectShow: false, // 选择回款计划
-      planOptions: [], // 回款计划选项
-      planCheckedName: "", // 当前选择的会跨计划
-      planCheckedIndex: [], // 当前选择的会跨计划索引
+      selectShow: false,                  // 选择回款计划
+      planCheckedName: '',                // 当前选择计划
+      planOptions: [],                    // 回款计划选项
       // 选择支付方式
-      sheetShow: false, 
-      sheetActions: [],
-      sheetChecked: "",
-      // 提交表单
-      data: [],
-      planLog: [],
-      currentItem: {name: '', value: ''},
-      currentIndex: 0,
+      sheetShow: false,                   // 显示活动满版
+      sheetActions: [],                   // 活动满版数据
+      sheetChecked: "",                   // 当前选择活动满版
+      // 提交表单 
       formData: {
-        pay_day: '',
-        pay_money: '',
-        pay_type: '',
-        receipt_file: []
+        pay_day: '',                      // 当前回款计划
+        pay_money: '',                    // 回款金额
+        pay_type: '',                     // 支付类型
+        pay_plan_id: '',                  // 回款计划
+        receipt_file: []                  // 回款凭证
       }
     };
   },
   watch: {
-    'paylist': function(newVal) {
-        let addRecondPlan = this.resolveRecondPlan(this.paylist)
-        this.getPlanData(addRecondPlan)
+    'payPlans': function(newVal) {
+        let addRecondPlan = this.resolveRecondPlan(newVal)
+        this.planOptions = this.getPlanData(addRecondPlan)
     }
   },
   mounted() {
-    let addRecondPlan = this.resolveRecondPlan(this.paylist)
-    console.log("3", addRecondPlan);
-    this.getPlanData(addRecondPlan)
+    console.log("3", this.payPlans);
+    let addRecondPlan = this.resolveRecondPlan(this.payPlans)
+    this.planOptions = this.getPlanData(addRecondPlan)
   },
   methods: {
     // 支付方式
@@ -217,26 +205,42 @@ export default {
     },
     // 胡款计划
     handleSelectChange(detail) {
+      console.log("handleSelectChange", detail);
+      let ids = [], names = [], moneyAll = 0, money = 0
+
+      detail.forEach(item => {
+        ids.push(item.value)
+        names.push(item.name)
+        money = parseFloat(item.name.split('￥')[1] || 0)
+        moneyAll = accAdd(moneyAll, money)
+      })
+      this.planCheckedName = names.join(',')
+      this.formData.pay_plan_id = ids.join(',')
+      this.formData.pay_money = moneyAll
       this.selectShow = false
-      let names = detail.map(item => item.name)
-      let indexs = detail.map(item => item.value)
-      let ids = detail.map(item => item.id).join(',')
-      this.planCheckedName = names[0] ? `${names[0]} (${names.length})` : '请选择'
-      this.planCheckedIndex = indexs
-      this.formData.pay_plan_id = ids
-      let money = names.map(name => name.split(' ')[2].replace('￥', ''))
-      let val = 0;
-      for(let i = money.length - 1; i >=0; i--) {
-        let _val = money[i] 
-        val = accAdd(val, _val)
-      }
-      this.formData.pay_money = val 
     },
     // 回款日期
     handleDateChange(day) {
       this.datePickerShow = false;
       this.formData.pay_day = day;
     },
+    // 重置状态
+    reset() {
+      let formData = this.formData
+      
+      for(let k in formData) {
+        let val = formData[k]
+        if (Array.isArray(val)) { 
+          val = [];
+        } else {
+          val = 0
+        }
+      }
+
+      this.formData = formData
+      this.planCheckedName = ''
+    },
+    // 取消
     handleCancel() {
       this.$emit('close')
     },
@@ -286,15 +290,6 @@ export default {
       
       if (cb) cb();
     },
-    // 获取配置好的计划
-    getPlanData(data) {
-      this.planData = data;
-      this.planOptions = data.map((item, index) => ({
-        name: `${item.year} ${item.name} ￥${item.money}`,
-        value: index,
-        id: item.id
-      }))
-    },
     // 上传凭证
     async handleAfterRead({ detail }) {
       const { file } = detail;
@@ -316,11 +311,19 @@ export default {
       if (res.code == 0) {
         uni.showToast({ icon: 'none', title: '创建成功' })
         this.$emit('close')
+        this.reset()
       }
     },
+    // 获取配置好的计划
+    getPlanData(data = []) {
+      return data.map(item => ({
+        name: `${item.year} ${item.name} ￥${item.money || 0}`,
+        value: item.id
+      }))
+    },
     // 获取当前可选择的计划数据
-    resolveRecondPlan(plan) {
-      if (!plan && plan.length < 0) return [];
+    resolveRecondPlan(plan = []) {
+      console.log('resolveRecondPlan', plan);
       return plan.filter(item => parseFloat(item.pay_money) == 0)      
     },
   }
@@ -349,7 +352,7 @@ export default {
     }
 
 
-    &-submit {
+    &-submit {   
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -363,7 +366,6 @@ export default {
       width: 300rpx;
     }
   }
-
 }
 
 /depp/.label {

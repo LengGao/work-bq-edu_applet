@@ -1,6 +1,5 @@
 import { getUserId } from "@/api/dataBoard";
-const userInfo = uni.getStorageSync('userInfo') || { token: 'eyJzdGFmZl9pZCI6MTY1LCJoZWFkX3Bob3RvIjoiIiwic3RhZmZfbmFtZSI6Ilx1NzllNlx1OWU0Zlx1N2EwYiIsImlzX3N1cGVyIjoxLCJkZXBhcnRtZW50X2lkIjoMCwiaXNfZGlyZWN0b3IiOjAsInRpbWVfb3V0IjoxNjQ3MzI4NDA0fQ' }
-// const userInfo = { token: "eyJzdGFmZl9pZCI6MjkxLCJoZWFkX3Bob3RvIjoiIiwic3RhZmZfbmFtZSI6Ilx1Njg4MVx1NTE0OSIsImlzX3N1cGVyIjoxLCJkZXBhcnRtZW50X2lkIjoyMCwiaXNfZGlyZWN0b3IiOjEsInRpbWVfb3V0IjoxNjQ4OTkxMjI4fQ=="}
+const userInfo = uni.getStorageSync('userInfo') || { token: 'eyJzdGFmZl9pZCI6MjkxLCJoZWFkX3Bob3RvIjoiIiwic3RhZmZfbmFtZSI6Ilx1Njg4MVx1NTE0OSIsImlzX3N1cGVyIjoxLCJkZXBhcnRtZW50X2lkIjoyMCwiaXNfZGlyZWN0b3IiOjEsInRpbWVfb3V0IjoxNjQ4OTkxMjI4fQ==' }
 
 const user = {
     state: {

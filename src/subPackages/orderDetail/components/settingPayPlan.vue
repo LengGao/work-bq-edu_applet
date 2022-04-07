@@ -136,10 +136,6 @@ export default {
     DatePicker,
   },
   props: {
-    list: {
-      type: Array,
-      default: []
-    },
     orderId: {
       type: [String, Number],
       default: ''
@@ -165,6 +161,8 @@ export default {
       currentDate: new Date().getTime(),
       currentCheckeds: [], // 学杂费选中列表
       planYearOptions: [],  // 年份
+      projectId: '',                       // 缓存已选所属项目
+      projectName: '',                      // 缓存已选所属项目
       payList: [], // 回款计划
       currentItem: {
         year: '',
@@ -173,25 +171,13 @@ export default {
         money: '',
       }, // 正在输入的回款计划
       currentIndex: 0, // 正在输入的回款计划索引
-      // 提交表单
-      formData: {}      
     };
   },
   computed: {
     ...mapGetters(['expenseType'])    // 学杂费
   },
   mounted() {
-    // this.payList = this.list
-    console.log("seting", this.list);
     this.getPlanYearOptions()
-    // let cacheType = []
-    //  this.list.filter(item => {
-    //    if (cacheType.indexOf(item.type) == -1) {
-    //      cacheType.push(item.type)
-    //   }
-    // })
-    // this.currentCheckeds = cacheType.map(item => `${item}`)
-    console.log("currentCheckeds", this.currentCheckeds);
   },
   methods: {
     openPicker(key, index, item) {
@@ -211,11 +197,27 @@ export default {
     },
     handleSelectChange(detail) {
       console.log('detail', detail);
-      let index = this.currentIndex, currentItem = this.currentItem
-      let ids = detail.map(item => item.value).join(',')
-      let names = detail.map(item => item.name).join(',')
-      currentItem.project_ids = ids
-      currentItem.project_name = names
+      let index = this.currentIndex, 
+          currentItem = this.currentItem,
+          projectId = '',
+          projectName = ''
+
+      detail.map(item => {
+        if (item) {
+          projectId = projectId + item.value + ','
+          projectName = projectName + item.name + ','
+        }
+      })
+
+      projectId = projectId.substring(0, projectId.lastIndexOf(','))
+      projectName = projectName.substring(0, projectName.lastIndexOf(','))
+
+      currentItem.project_ids = projectId
+      currentItem.project_name = projectName
+      console.log(projectId, projectName);
+
+      this.projectId = projectId 
+      this.projectName = projectName
       this.currentItem = currentItem
       this.payList[index] = currentItem
       this.projectShow = false
@@ -355,10 +357,21 @@ export default {
       }
       return -1
     },
-    // 上一步 下一步
+    reset() {
+      this.payList = []
+      this.currentDate = new Date().getTime()
+      this.currentCheckeds = []
+      this.planYearOptions = []
+      this.projectId = ''
+      this.projectName = ''
+      this.currentIndex = 0 
+      this.currentItem = {year: '', day: '', type: '', money: '' }
+      },
+    // 取消
     toPrev() {
         this.$emit("close")
     },
+    //二确定
     toNext() {
       let payList = this.payList
       let planParam = payList.map(item => {
@@ -386,6 +399,7 @@ export default {
         const res = await createOrderPayPlan(data).catch(() => {})
         if (res.code == 0) {
           uni.showToast({ icon: 'none', title: '创建成功' })
+          this.reset()
           this.$emit("close")
         }
       }
@@ -409,11 +423,11 @@ export default {
           options.forEach(err => {
             let key = err.fileld, message = err.message
             if (`${item[key]}`.length <= 0) {
-              if (key == 'project_name' && item.type != 1 || item.type != '1')
+              if (key == 'project_name' && item.type != 1 )
                 errList.push({ icon: "none", title: `${message}` })
               }
           })
-          if (item.type == 1 || item.type == '1') {
+          if (item.type == 1) {
             cache = accAdd(cache, item.money)
           }
         }

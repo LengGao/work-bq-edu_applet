@@ -134,10 +134,6 @@ export default {
       type: [Boolean, Number],
       default: false
     },
-    passParams: {
-      type: Boolean,
-      default: {}
-    }
   },
   components: {
     Title,
