@@ -84,7 +84,7 @@ export default {
 .pie-chart {
   &-canvas {
     width: 100%;
-    height: 600rpx;
+    height: 760rpx;
     display: block;
   }
 }

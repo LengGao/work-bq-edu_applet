@@ -1,6 +1,17 @@
 <template>
   <view class="data-board">
     <NavBar title="数据看板" />
+    <view>
+      <van-cell
+        is-link 
+        :title="userInfo.staff_name || ''"
+        title-class="cell-title"
+        :value="activeSheet[activeSheetIndex - 1].name"
+        value-class="cell-value"
+        custom-class="cell"
+        @click="activeSheetShow = true"
+      />
+    </view>
     <view class="data-board-content">
       <Panel
         title="销售简报"
@@ -70,6 +81,14 @@
         <InputRankBar v-else :data="customerRankData" />
       </Panel>
     </view>
+
+    <van-action-sheet
+      overlay
+      :show="activeSheetShow"
+      :actions="activeSheet"
+      @close="activeSheetShow = false"
+      @select="handlerActiveSheet"
+    />
   </view>
 </template>
 
@@ -172,6 +191,13 @@ export default {
           value: 5,
         },
       ],
+      // 动作面板
+      activeSheetShow: false,
+      activeSheetIndex: 1,
+      activeSheet: [
+        { name: '按回款创建时间', value: 1 },
+        { name: '按申请入账时间', value: 2 },
+      ],
       // 销售趋势
       trendActionSheet: [],
       trendData: [],
@@ -191,7 +217,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["checkedStaffIds"]),
+    ...mapGetters(["checkedStaffIds", 'userInfo']),
   },
   watch: {
     checkedStaffIds() {
@@ -217,13 +243,23 @@ export default {
   },
   onHide() {
     this.pageIsShow = false;
+    this.activeSheetShow = false
   },
   methods: {
+    handlerActiveSheet({ detail }) {
+      this.activeSheetIndex = detail.value
+      this.getBriefing();
+      this.performanceIndicators();
+      this.getTrendData();
+      this.getSalesRankData();
+      this.getCustomerRankData();
+    },
     // 销售简报
     async getBriefing() {
       const data = {
         type: this.briefingType,
         arr_uid: this.checkedStaffIds,
+        returned_type: this.activeSheetIndex,
       };
       const res = await getBriefing(data);
       if (res.code === 0) {
@@ -235,6 +271,7 @@ export default {
       const data = {
         type: this.performanceType,
         arr_uid: this.checkedStaffIds,
+        returned_type: this.activeSheetIndex,
       };
       const res = await performanceIndicators(data);
       if (res.code === 0) {
@@ -259,6 +296,7 @@ export default {
         year: this.trendYear,
         type: this.trendType,
         arr_uid: this.checkedStaffIds,
+        returned_type: this.activeSheetIndex,
       };
       const res = await getTrendData(data).catch(() => {});
       if (res.code === 0) {
@@ -281,6 +319,7 @@ export default {
       const data = {
         month: `${date.getFullYear()}-${date.getMonth() + 1}`,
         arr_uid: this.checkedStaffIds,
+        returned_type: this.activeSheetIndex,
       };
       const res = await getSalesRankData(data).catch(() => {});
       if (res.code === 0) {
@@ -301,6 +340,7 @@ export default {
       const data = {
         month: `${date.getFullYear()}-${date.getMonth() + 1}`,
         arr_uid: this.checkedStaffIds,
+        returned_type: this.activeSheetIndex,
       };
       const res = await getCustomerRankData(data).catch(() => {});
       if (res.code === 0) {
@@ -332,6 +372,10 @@ export default {
   }
   .customer-actions {
     .flex-c-a();
+  }
+  
+  /deep/.cell {
+    background: transparent;
   }
 }
 </style>
