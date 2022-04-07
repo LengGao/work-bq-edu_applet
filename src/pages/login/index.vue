@@ -4,6 +4,7 @@
 
     <van-cell-group title="欢迎登录" custom-class="group-title" :border="false">
       <van-field
+        type="number"
         :value="mobile"
         left-icon="manager-o"
         placeholder="请输入账号"
@@ -11,10 +12,11 @@
       />
       <van-field
         password
-        :value="password"
+        type="password"
         left-icon="question-o"
         placeholder="请输入密码"
         @input="({ detail }) => (password = detail)"
+        @confirm="appletBindPhone"
       />
     </van-cell-group>
     <view class="login-btn">
@@ -31,6 +33,7 @@
 
 <script>
 import { appletBindPhone } from "@/api/user";
+import http from "@/utils/request";
 export default {
   data() {
     return {
@@ -46,6 +49,20 @@ export default {
   methods: {
     // 通过账号登录
     async appletBindPhone() {
+      if (!this.mobile) {
+        uni.showToast({
+          title: "账号不能为空",
+          icon: "error",
+        });
+        return;
+      }
+      if (!this.password) {
+        uni.showToast({
+          title: "密码不能为空",
+          icon: "error",
+        });
+        return;
+      }
       const data = {
         mobile: this.mobile,
         password: this.password,
@@ -60,6 +77,8 @@ export default {
           token: res.data.token,
         });
         uni.navigateBack();
+        // 执行请求队列里的请求
+        http._onAccessTokenFetched();
       }
     },
   },
