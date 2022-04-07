@@ -86,7 +86,8 @@
     <template v-for="(seal, index) in seals">
       <Seal :key="index" :type="seal.type">{{ seal.text }}</Seal>
     </template>
-  
+    
+    <template v-if="!delayLoad">
     <van-popup custom-class="pay-drawer" position="bottom" :show="settingPayPlanShow" lock-scroll>
       <SettingPayPlan
         :orderId="orderId"
@@ -107,6 +108,7 @@
         @close="cancelAdd"
       />
     </van-popup>
+    </template>
 
 
     <van-dialog id="van-dialog" />
@@ -147,11 +149,6 @@ import SettingPayPlan from './components/settingPayPlan.vue'
 import AddPayRecond from './components/addPayRecond.vue'
 import { mapGetters } from "vuex";
 import { getCrmOrderDetail, crmOrderApprove, hurryUp, orderUnusualApprove, getOrderTransactionList } from "@/api/order";
-import { accAdd } from "@/utils/index";
-// 先该原来的代码
-// 在改后来加进去的功能
-// 在修改组件内部代码
-// 最后再看需不需要抽象
 
 export default {
   components: {
@@ -179,8 +176,8 @@ export default {
       rejectDialog: false,    // 驳回对话框
       rejectReason: "",       // 驳回备注
       
-      addPayRecondShow: false,        // 添加回款记录
-      settingPayPlanShow: false,      // 配置回款计划
+      addPayRecondShow: false,      // 添加回款记录
+      settingPayPlanShow: false,    // 配置回款计划
 
       project: [],                  // 项目数据
       payLog: [],                   // 记录数据
@@ -220,6 +217,7 @@ export default {
       otherMoney: "0.00",
       unusualIndex: 0,              // 异动指针
       orderTransactionData: [],     // 学籍异动数据
+      delayLoad: true,              // 延时线管内容加载
     };
   },
   computed: {
@@ -245,6 +243,11 @@ export default {
     this.getCrmOrderDetail(true);
     this.getOrderTransactionList();
     if (this.isChange) { uni.setNavigationBarTitle({ title: "异动详情" }) }
+  },
+  onReady() {
+    setTimeout(() => {
+      this.delayLoad = false
+    }, 300)
   },
   methods: {
     // 添加回款记录
