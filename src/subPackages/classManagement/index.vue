@@ -29,13 +29,13 @@
         >
           <view class="item-info">
             <view class="item-info-status flex-temp">
-              <view class="user-name">{{ item.classroom_name }}</view>
-              <text class="user-name-count">{{ item.student_number }}人</text>
+              <view class="user-name">{{ item.classroom_name || '--'}}</view>
+              <text class="user-name-count">{{ item.student_number || 0}}人</text>
             </view>
             <view class="item-info-time flex-temp">
               <view>
                 <van-icon name="graphic" color="#ddd" size="32rpx" custom-style="margin-right: 10rpx;" />
-                <text class="item-info-project-name"> {{ item.project_name }} </text>
+                <text class="item-info-project-name"> {{ item.project_name || '--'}} </text>
               </view>
               <text class="item-info-staff-name"> 班主任：{{ item.staff_name || "--" }} </text>
             </view>
@@ -52,7 +52,7 @@
             <view class="item-info">
               <view class="item-info-status">
                 <view class="user-name">
-                  <text class="noWrap">{{ item.live_class_name }} </text>
+                  <text class="noWrap">{{ item.live_class_name || '--' }} </text>
                 </view>
               </view>
               <view class="item-info-time flex-row">
@@ -67,7 +67,7 @@
                       custom-style="margin-left: 20rpx; line-height: 16rpx; background-color: #59D234; border-radius: 50%;" 
                     />
                     <text class="item-info-livestate info-livestate-active" >
-                      {{ live_statusText[item.live_status] }}
+                      {{ live_statusText[item.live_status] || '--'}}
                     </text>
                   </template>
                   <template v-else>
@@ -269,16 +269,20 @@ export default {
 @import "@/styles/var";
 .customer-list {
   height: 100%;
+  
   /deep/.load-more {
     height: calc(100% - 50px);
   }
+
   .flex-row {
     display: flex;
     flex-direction: row;
   }
 
   .item {
-    .flex-c-b();
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 20rpx;
     border-bottom: 2rpx solid #efefef;
     &:active {
@@ -325,6 +329,7 @@ export default {
       }
 
       &-time {
+        margin-top: 16rpx;
         color: @text-color-grey;
       }
 
@@ -335,6 +340,7 @@ export default {
         align-items: center;
         width: 710rpx;
       }
+      
       
       .item-info-project-name {
           display: inline-block;

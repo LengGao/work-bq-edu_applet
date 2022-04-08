@@ -98,7 +98,7 @@
           <template #title>
             <text class="title">所属项目</text>
           </template>
-          <text class="value" decode>{{ item.project_name.replaceAll(',', ',  ') || "无" }}</text>
+          <text class="value" style="width: 100%;" decode>{{ item.project_name.replaceAll(',', ',  ') || "无" }}</text>
         </van-cell>
       </van-cell-group>
     </template>
@@ -173,8 +173,11 @@ export default {
   border-top: 20rpx solid #f2f6fc;
   min-height: 65vh;
   &-title {
-    .flex-c-b();
-    padding: 0 20rpx 4rpx;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0 20rpx 8rpx;
   }
   /deep/.cell-group {
     margin-bottom: 20rpx;

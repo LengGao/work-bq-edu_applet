@@ -15,7 +15,6 @@
     </view>
 
     <view class="hr"></view>
-    
     <view class="grid border">
       <view class="grid-row">启动客户端链接</view>
       <view class="grid-row border">
@@ -41,9 +40,7 @@
     <view class="hr"></view>
     
     <view class="grid">
-      <view class="grid-row">
-        教务后台链接
-      </view>
+      <view class="grid-row">教务后台链接</view>
       <view class="grid-row border start" style="margin-bottom: 20rpx;">
         <text class="link">{{ liveInfo.teacher }}</text>
         <van-icon 
@@ -82,18 +79,16 @@ export default {
     };
   },
   onLoad(query) {    
-    // console.log(query);
-    let info = JSON.parse(decodeURIComponent(query.info)),
+    console.log(query);
+    let info = JSON.parse(decodeURIComponent(query.info)) || {},
         _liveInfo = this.liveInfo,
         channelId = info.channel_id
-        
 
-    _liveInfo.web = _liveInfo.web + channelId
-    _liveInfo.client = _liveInfo.client + channelId
-    _liveInfo.teatcher = _liveInfo.teacher + channelId
-    
-    this.liveInfo = Object.assign(info, this.liveInfo)
-    ("query", query, this.liveInfo);
+    _liveInfo.web = _liveInfo.web + channelId;
+    _liveInfo.client = _liveInfo.client + channelId;
+    _liveInfo.teatcher = _liveInfo.teacher + channelId;
+  
+    this.liveInfo = Object.assign(info, _liveInfo)
   },
   methods: {
     // 复制

@@ -281,7 +281,7 @@ export default {
     },
     // 添加客户
     async createCrmCustomer(type) {
-      let _tags = this.tags || []
+      let _tags = this.tags || [], formData = this.formData
       _tags = _tags.map(item => {
         if (item.checked) {
           return item.text
@@ -291,23 +291,18 @@ export default {
       }).filter(i => i !== '')
 
       const data = {
-        ...this.formData,
+        ...formData,
         tags: _tags.join(',')
       };
       this.addLoading = true;
-      const res = await createCrmCustomer(data).catch(() => {
-        this.addLoading = false;
-      });
+      const res = await createCrmCustomer(data).catch(() => { this.addLoading = false; })
       if (res.code === 0) {
         this.reloadList();
         setTimeout(() => {
           if (type === 2) {
-          let data = res.data
-          let options = `&userName=${data.surname}&userMobile=${data.mobile}&source=${this.formData.from}&is_new=${this.formData.is_new}`
-          uni.redirectTo({
-            url: `/subPackages/customeSignUp/index?userId=${data.id}${options}`
-          });
-              
+            let data = res.data
+            let options = `&userName=${data.surname}&userMobile=${data.mobile}&source=${formData.from}&is_new=${data.is_new}`
+            uni.redirectTo({ url: `/subPackages/customeSignUp/index?userId=${data.id}${options}`});
           } else {
             this.addLoading = false;
             uni.navigateBack();

@@ -44,6 +44,8 @@
 @spacing-col-base: 16rpx;
 @spacing-col-lg: 24rpx;
 
+/* 背景 */
+@spacing-color: #f2f6fc;
 
 
 .th-title {
@@ -77,6 +79,21 @@
     margin-left: 10rpx;
     vertical-align: top;
 }
+
+.spacing-line-lg {
+    width: 100%;
+    height: @spacing-col-lg;
+    background-color: @spacing-color;    
+}
+
+.border-sm {
+    border-top: 2rpx solid @border-color;
+}
+
+.spacing-border-lg {
+    border-top: @spacing-col-lg solid @spacing-color;
+}
+
 
 .flex-row {
     display: flex;
@@ -120,3 +137,78 @@
     flex-wrap: wrap;
 }
 
+.list {
+    display: flex;
+    flex-direction: row;
+    padding: 20rpx;
+    width: 100%;
+}
+
+.list-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 84rpx;
+    line-height: 72rpx;
+}
+
+.list-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    min-height: 72rpx;
+    line-height: 72rpx;
+}
+
+.list-item-title {
+    font-size: @font-size-sm;
+    color: @text-color-grey;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.list-item-value {
+    font-size: @font-size-sm;
+    color: @text-color;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.card-header {
+    display: inherit;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-body {
+    display: inherit;
+    flex-direction: row;
+}
+
+.card-body-left {
+    display: inherit;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.card-body-right {
+    display: inherit;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.card-body-footer {
+    display: inherit;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+    flex-wrap: wrap;
+}

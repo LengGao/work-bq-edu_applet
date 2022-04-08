@@ -1,22 +1,10 @@
 <template>
 <page-meta :page-style="addPayRecondShow || settingPayPlanShow ? 'overflow: hidden;' : '' " >
   <view class="order-detail">
-    <template v-if="reshuffleListLength">
-      <van-notice-bar
-        v-if="reshuffle_list[unusualIndex].status === 3"
-        wrapable left-icon="volume-o"
-        :text="`驳回原因：${reshuffle_list[unusualIndex].tips || '无'}`"
-      />
-      <van-notice-bar v-else wrapable left-icon="volume-o"
-        :text="`异动原因：${reshuffle_list[unusualIndex].reason};${reshuffle_list[unusualIndex].desc}`"
-      />
+    <template v-if="reshuffleListLength || steps.length">
+      <van-notice-bar wrapable left-icon="volume-o" :text="text" />
+      <van-notice-bar v-if="tips !== ''" wrapable left-icon="volume-o" :text="tips"/>
     </template>
-
-    <van-notice-bar
-      v-if="detailData.verify_status === 9 && !isChange"
-      wrapable left-icon="volume-o"
-      :text="`驳回原因：${steps[0].tips || '无'}`"
-    />
 
     <view class="order-detail-header">
       <view class="order-detail-header-title"
@@ -33,19 +21,18 @@
     <view class="order-detail-steps" v-if="!isChange">
       <van-steps :steps="steps" :active="stepActive" :active-color="stepActiveColor" />
     </view> 
-
     <van-tabs animated swipeable color="#199fff" :ellipsis="false" @change="handleTabsChange">
       <van-tab title="订单信息">
-        <OrderInfo v-if="detailData.order_id" :data="detailData" />
+        <OrderInfo v-if="orderId" :data="detailData" />
       </van-tab>
 
       <van-tab title="项目信息">
-        <ProjectInfo v-if="detailData.order_id" :data="detailData" />
+        <ProjectInfo v-if="orderId" :data="detailData" />
       </van-tab>
 
       <van-tab title="回款记录">
         <PayRecord
-          v-if="detailData.order_id"
+          v-if="orderId"
           :isApprove="isApprove"
           :isChannel="isChannel"        
           :data="detailData"
@@ -164,60 +151,54 @@ export default {
   },
   data() {
     return {
-      orderId: "",            // 订单 Id
-      verifyId: "",           // 审批 Id
-      isApprove: false,       // 是否是审批
-      isChange: false,        // 是否是异动
-      isChannel: false,       // 是否是渠道订单
-      isRecruit: false,       // 是否是招生订单
-      buttons: [],            // 权限操作按钮
-      seals: [],               // 审批状态印章
+      orderId: "",                        // 订单 Id
+      verifyId: "",                       // 审批 Id
+      isApprove: false,                   // 是否是审批
+      isChange: false,                    // 是否是异动
+      isChannel: false,                   // 是否是渠道订单
+      isRecruit: false,                   // 是否是招生订单
+      buttons: [],                        // 权限操作按钮
+      seals: [],                          // 审批状态印章
 
-      rejectDialog: false,    // 驳回对话框
-      rejectReason: "",       // 驳回备注
+      rejectDialog: false,                // 驳回对话框
+      rejectReason: "",                   // 驳回备注
       
-      addPayRecondShow: false,      // 添加回款记录
-      settingPayPlanShow: false,    // 配置回款计划
+      addPayRecondShow: false,            // 添加回款记录
+      settingPayPlanShow: false,          // 配置回款计划
 
-      project: [],                  // 项目数据
-      payLog: [],                   // 记录数据
-      payPlan: [],                  // 计划数据
-      projectOption: [],            // 项目选项
-      verifyType: {},               // 订单类型
-      steps: [],                    // 审批进度数据
-      reshuffle_list: [],           // 异动记录列表
-      stepActive: 0,                // 进度步骤索引
-      stepActiveColor: "#199fff",   // 进度状态颜色
+      project: [],                        // 项目数据
+      payLog: [],                         // 记录数据
+      payPlan: [],                        // 计划数据
+      projectOption: [],                  // 项目选项
+      verifyType: {},                     // 订单类型
+      steps: [],                          // 审批进度数据
+      reshuffle_list: [],                 // 异动记录列表
+      stepActive: 0,                      // 进度步骤索引
+      stepActiveColor: "#199fff",         // 进度状态颜色
       
       detailData: {
-        order_id: "",       // 订单id
-        surname: "",          // 用户名称
-        project_name: "",     // 项目名称
-        create_time: "",      // 创建时间
-        order_money: "",      // 订单总金额
-        pay_plan: [],         // 回款计划数据
-        pay_log: [],          // 回款记录数据
-        project: "[]",        // 项目数据
-        verify_step: [],      // 审批进度
-        verify_status: 0,     // 审批状态，0：等待审批 ，1：已审批， 2：多人审批进行中 4：审批拒绝/驳回）
-        reshuffle: '',        // 是否异动 有值则为异动
-        is_my_review: '',     // 是否有审批权限 1，是 0，否
-        is_deleted: '',       // 是否已经删除权限 1，是 0，否
-        refund_button: '',    // 是否有退款作废权限 1，是 0，否
+        order_id: "",                     // 订单id
+        surname: "",                      // 用户名称
+        project_name: "",                 // 项目名称
+        create_time: "",                  // 创建时间
+        order_money: "",                  // 订单总金额
+        pay_plan: [],                     // 回款计划数据
+        pay_log: [],                      // 回款记录数据
+        project: "[]",                    // 项目数据
+        verify_step: [],                  // 审批进度
+        verify_status: 0,                 // 审批状态，0：等待审批 ，1：已审批， 2：多人审批进行中 4：审批拒绝/驳回）
+        reshuffle: '',                    // 是否异动 有值则为异动
+        is_my_review: '',                 // 是否有审批权限 1，是 0，否
+        is_deleted: '',                   // 是否已经删除权限 1，是 0，否
+        refund_button: '',                // 是否有退款作废权限 1，是 0，否
       },
 
-      formData: {
-        plan_id: "",
-        pay_date: "",
-        pay_type: "",
-        pay_money: "",
-      },
-      orderMoney: "0.00",
-      totalMoney: "0.00",
-      otherMoney: "0.00",
-      unusualIndex: 0,              // 异动指针
-      orderTransactionData: [],     // 学籍异动数据
-      delayLoad: true,              // 延时线管内容加载
+      orderMoney: "0.00",                 // 订单总额
+      totalMoney: "0.00",                 // 学费金额
+      otherMoney: "0.00",                 // 其他金额
+      unusualIndex: 0,                    // 异动指针
+      orderTransactionData: [],           // 学籍异动数据
+      delayLoad: true,                    // 延时线管内容加载
     };
   },
   computed: {
@@ -231,10 +212,28 @@ export default {
     verifyStatus: function () {
       return this.detailData.verify_status
     },
+    text: function () {
+        let reshuffleItem  = this.reshuffle_list[this.unusualIndex]
+        if (reshuffleItem && reshuffleItem.status == 3) {
+          return `驳回原因：${reshuffleItem.tips || '无'}`;
+        } else if (reshuffleItem) {
+          return `异动原因：${reshuffleItem.reason};${reshuffleItem.desc}`
+        } else {
+          return '无'
+        }
+    },
+    tips: function () {
+      let rejectItem = this.steps[0]
+      if (rejectItem && this.verifyStatus == 8 && this.isChange) {
+        return `驳回原因：${rejectItem.tips || '无'}`
+      } else {
+        return ''
+      }
+    }
   },
   onLoad({ orderId, approve, change, verifyId = '' }) {
-    this.isApprove = approve == 1; // 是否审批 1 审批, 2 招生订单，3渠道订单
-    this.isChange = change == 1; // 是否异动 1 异动
+    this.isApprove = approve == 1;      // 是否审批 1 审批, 2 招生订单，3渠道订单
+    this.isChange = !!change;        // 是否异动 1 异动
     this.isRecruit = approve == 2 
     this.isChannel = approve == 3
     this.orderId = orderId;
@@ -247,7 +246,7 @@ export default {
   onReady() {
     setTimeout(() => {
       this.delayLoad = false
-    }, 300)
+    }, 800)
   },
   methods: {
     // 添加回款记录
@@ -274,9 +273,9 @@ export default {
     updateListItem(data) {
       const pages = getCurrentPages();
       const prevPage = pages[pages.length - 2];
-      // console.log("updateListItem", prevPage);
       prevPage.$vm && prevPage.$vm.updateItem && prevPage.$vm.updateItem(data);
     },
+    // tabs切换时切换异动通知信息
     handleTabsChange({ detail }) {
       this.unusualIndex = detail.index > 2 ? detail.index - 3 : 0;
     },
@@ -392,7 +391,7 @@ export default {
       // 生成项目配置数据
       let projectOption = this.generatorrojectOption(project)
       // ？。。。尚不知
-      if (!isOnload) { this.updateListItem(data) }
+      // if (!isOnload) { this.updateListItem(data) }
       // 生成订单审批状态
       let verifyType = this.generatorVerifyType(data.verify_type)
       // 处理订单审批步骤数据
@@ -571,9 +570,9 @@ export default {
       const first = reshuffle_list[0]
       let seals = []
       if (reshuffle && first) {
-        if (first.status == 2) {
+        if (first.status == 1) {
           seals.push({ type: 'success', text: '已通过' })
-        } else if (first.status == 3) {
+        } else if (first.status == 2) {
           seals.push({ type: 'warning', text: '已驳回' })
         } else if (first.status == 8) {
           seals.push({ type: 'warning', text: '已撤回' })

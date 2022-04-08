@@ -21,16 +21,11 @@
       <view class="item" v-for="item in listData" :key="item.id">
         <view class="item-info">
           <view class="item-info-status">
-            <view class="user-name">{{
-              item.name || item.nickname || "--"
-            }}</view>
+            <view class="user-name">{{ item.name || item.nickname || "--" }}</view>
           </view>
           <view class="item-info-time">加入时间：{{ item.create_time }} </view>
         </view>
-        <view
-          class="item-actions"
-          @click="receiveHighSeas(listType === 2 ? item.intent_id : item.id)"
-        >
+        <view class="item-actions" @click="receiveHighSeas(listType === 2 ? item.intent_id : item.id)">
           <van-icon name="friends" size="50rpx" />
           <view>领取客户</view>
         </view>

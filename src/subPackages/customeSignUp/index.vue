@@ -276,12 +276,14 @@ export default {
   },
   onLoad(query) {
     // console.log("customeSignUp:", query);
-    this.formData.id = query.userId;
-    this.formData.surname = query.userName;
-    this.formData.mobile = query.userMobile;
-    this.formData.id_card_number = query.userIdCard;
-    this.formData.source = query.source
-    this.formData.is_new = query.is_new || '0'  
+    let formData = this.formData
+    formData.id = query.userId || ''
+    formData.surname = query.userName || ''
+    formData.mobile = query.userMobile || ''
+    formData.id_card_number = query.userIdCard || ''
+    formData.source = query.source || ''
+    formData.is_new = query.is_new || '0' 
+    this.formData = formData
   },
   onUnload() {
     if (uni.getStorageSync('plan')) [
