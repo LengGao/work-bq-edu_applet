@@ -233,7 +233,7 @@ export default {
   },
   onLoad({ orderId, approve, change, verifyId = '' }) {
     this.isApprove = approve == 1;      // 是否审批 1 审批, 2 招生订单，3渠道订单
-    this.isChange = !!change;        // 是否异动 1 异动
+    this.isChange = parseInt(change) > 0 ? true : false;        // 是否异动 1 异动
     this.isRecruit = approve == 2 
     this.isChannel = approve == 3
     this.orderId = orderId;

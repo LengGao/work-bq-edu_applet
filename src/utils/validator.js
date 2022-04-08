@@ -1,9 +1,7 @@
 /**
- * rules: [{ key: 'id', type: 'required' [, regexp: RegExp, validator: (val, key) => { true || false } ] }]
+ * rules: [{ key: 'id', type: 'required' [, regexp: RegExp, validator: (val, key) => { true || false }, type: 'required' ] }]
  * message [{ key: 'id', message: '请输入id }]
  */
-
-
 class Validator {
     constructor(rules = [], messages = []) {
         this.rules = rules

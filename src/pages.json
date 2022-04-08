@@ -255,6 +255,13 @@
 						"navigationBarTitleText": "发布成功",
 						"usingComponents": {}
 					}
+				},
+				{
+					"path": "test/index",
+					"style": {
+						"navigationBarTitleText": "测试页面",
+						"usingComponents": {}
+					}
 				}
 			]
 		}
