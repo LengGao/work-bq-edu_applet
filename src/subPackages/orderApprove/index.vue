@@ -48,15 +48,15 @@
         </view>
 
         <view class="item-desc">
-          <view class="" style="display: flex; align-items: center;">
-            <!-- <van-icon name="cash-o" size="32rpx" color="#999" /> -->
-            <text>订单总金额{{ item.order_money | moneyFormat }}</text>
-            <!-- <van-icon name="cash-o" size="32rpx" color="#999" /> -->
-            <text style="margin-left: 20rpx">实收金额{{ accAdd(item.pay_money, item.other_money) | moneyFormat }}</text>
+          <view class="">
+            <!-- <van-icon name="after-sale" size="28rpx" /> -->
+            <text style="margin: 0rpx 10rpx 0rpx 4rpx;">订单总金额{{ item.order_money | moneyFormat }}</text>
+            <!-- <van-icon name="after-sale" size="28rpx" /> -->
+            <text style="margin-left: 4rpx;">实收金额{{ accAdd(item.pay_money, item.other_money) | moneyFormat }}</text>
           </view>
           <view class="item-tag">
             <van-tag :type="verifyTypeMaps[item.verify_type].type" plain>
-              {{ verifyTypeMaps[item.verify_type].text }}
+              {{ verifyTypeMaps[item.verify_type].text }}额额
             </van-tag>
           </view>
         </view>

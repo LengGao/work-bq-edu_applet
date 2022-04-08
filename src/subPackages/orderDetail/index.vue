@@ -2,7 +2,7 @@
 <page-meta :page-style="addPayRecondShow || settingPayPlanShow ? 'overflow: hidden;' : '' " >
   <view class="order-detail">
     <template v-if="reshuffleListLength || steps.length">
-      <van-notice-bar wrapable left-icon="volume-o" :text="text" />
+      <van-notice-bar v-if="text !== ''" wrapable left-icon="volume-o" :text="text" />
       <van-notice-bar v-if="tips !== ''" wrapable left-icon="volume-o" :text="tips"/>
     </template>
 
@@ -214,12 +214,12 @@ export default {
     },
     text: function () {
         let reshuffleItem  = this.reshuffle_list[this.unusualIndex]
-        if (reshuffleItem && reshuffleItem.status == 3) {
+        if (this.isChange && reshuffleItem && reshuffleItem.status == 3) {
           return `驳回原因：${reshuffleItem.tips || '无'}`;
         } else if (reshuffleItem) {
           return `异动原因：${reshuffleItem.reason};${reshuffleItem.desc}`
         } else {
-          return '无'
+          return ''
         }
     },
     tips: function () {
