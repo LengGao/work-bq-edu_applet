@@ -172,6 +172,7 @@ export default {
       projectOption: [],                  // 项目选项
       verifyType: {},                     // 订单类型
       steps: [],                          // 审批进度数据
+      step_list: [],                      // 原审批进度数据
       reshuffle_list: [],                 // 异动记录列表
       stepActive: 0,                      // 进度步骤索引
       stepActiveColor: "#199fff",         // 进度状态颜色
@@ -223,8 +224,8 @@ export default {
         }
     },
     tips: function () {
-      let rejectItem = this.steps[0]
-      if (rejectItem && this.verifyStatus == 8 && this.isChange) {
+      let rejectItem = this.step_list[0]
+      if (rejectItem && this.verifyStatus == 9 && this.isChange) {
         return `驳回原因：${rejectItem.tips || '无'}`
       } else {
         return ''
@@ -285,31 +286,30 @@ export default {
     },
     // tabbar 点击事件处理器
     handleTabbarChange({ detail }) {
-      // console.log('handleTabbarChange', detail);
-      let { order_id, order_no, order_money, surname, pay_money, overdue_money, create_time } = this.detailData,
+      let { reshuffle, order_id, order_no, order_money, surname, pay_money, overdue_money, create_time } = this.detailData,
           modal = { title: "提醒", content: "", showCancel: true, cancelColor: "#199fff", confirmColor: "#199fff" }
 
       let invoke = null, _this = this
 
       switch (detail) {
         case "1":
-          modal.content = '确定要通过审批吗？'
-          if (this.detailData.reshuffle) {
-            invoke = this.orderUnusualApprove 
+          modal.content = '确定要通过审批吗？';
+          if (reshuffle) {
+            invoke = this.orderUnusualApprove;
           } else {
-            invoke = this.crmOrderApprove
+            invoke = this.crmOrderApprove;
           }
         break;
         case "2":
           this.rejectDialog = true;
         break;
         case '3':
-          modal.content = '确定要撤回此订单吗？'
-          invoke = this.crmOrderApprove
+          modal.content = '确定要撤回此订单吗？';
+          invoke = this.crmOrderApprove;
         break;
         case "4":
-          modal.content = '确定要删除此订单吗？'
-          invoke = this.crmOrderApprove
+          modal.content = '确定要删除此订单吗？';
+          invoke = this.crmOrderApprove;
         break;
         case "5":
           let orderData = { order_no, create_time, surname, order_money, pay_money, overdue_money, order_id }
@@ -328,14 +328,11 @@ export default {
         case "7" :
           this.hurryUp()
         break;
-        default: 
-          // console.log('handleTabbarChange', detail);
-        break;
       }
 
       if (invoke) {
         uni.showModal(modal).then(res => {
-          if (res[1].confirm) { invokes(detail) }
+          if (res[1].confirm) { invoke(detail) }
         })
       }
     },
@@ -367,7 +364,9 @@ export default {
       const res = await crmOrderApprove(data);
       if (res.code === 0) {
         uni.showToast({ icon: 'none', title: '操作成功' })
-        this.getCrmOrderDetail();
+        setTimeout(() => {
+          this.getCrmOrderDetail();
+        }, 500)
       }
     },
     // 订单异动审批
@@ -376,7 +375,9 @@ export default {
       const res = await orderUnusualApprove(data);
       if (res.code === 0) {
         uni.showToast({ icon: 'none', title: '操作成功' })
-        this.getCrmOrderDetail();
+        setTimeout(() => {
+          this.getCrmOrderDetail();
+        }, 500)
       }
     },
     // 获取详情
@@ -391,7 +392,7 @@ export default {
       // 生成项目配置数据
       let projectOption = this.generatorrojectOption(project)
       // ？。。。尚不知
-      // if (!isOnload) { this.updateListItem(data) }
+      if (!isOnload) { this.updateListItem(data) }
       // 生成订单审批状态
       let verifyType = this.generatorVerifyType(data.verify_type)
       // 处理订单审批步骤数据
@@ -408,6 +409,7 @@ export default {
       this.payLog = plan.payLog
       this.projectOption = projectOption
       this.steps = steps
+      this.step_list = data.step_list
       this.reshuffle_list = data.reshuffle_list
       this.verifyType = verifyType
       this.buttons = buttons
@@ -539,13 +541,13 @@ export default {
             { name: '1', text: '通过', icon: 'checked', color: '#59D234' }
           ]
         }
-        if (refund_button) {
-          buttons.push({ name: '5', text: '退款作废', icon: 'failure', color: '#333' })
-        }
-        if ((verify_status < 4 || verify_status >= 8 ) && !reshuffle) {
-          buttons.push({ name: '6', text: '申请异动', icon: 'orders-o', color: '#333' })
-        }
-      } else {
+        // if (refund_button) {
+        //   buttons.push({ name: '5', text: '退款作废', icon: 'failure', color: '#333' })
+        // }
+        // if ((verify_status < 4 || verify_status >= 8 ) && !reshuffle) {
+        //   buttons.push({ name: '6', text: '申请异动', icon: 'orders-o', color: '#333' })
+        // }
+      } else if (this.isRecruit) {
         if (verify_status <= 1 && !reshuffle) {
           buttons.push({ name: '3', text: '撤回', icon: 'revoke', color: '#333' })
         }
@@ -555,7 +557,7 @@ export default {
         if (refund_button) {
           buttons.push({ name: '5', text: '退款作废', icon: 'failure', color: '#333' })
         }
-        if ((verify_status < 4 || verify_status >= 8 ) && !reshuffle) {
+        if ((verify_status == 3 || verify_status >= 8 ) && !reshuffle) {
           buttons.push({ name: '6', text: '申请异动', icon: 'orders-o', color: '#333' })
         }
         if (verify_status < 3) {
@@ -570,9 +572,9 @@ export default {
       const first = reshuffle_list[0]
       let seals = []
       if (reshuffle && first) {
-        if (first.status == 1) {
+        if (first.status == 2) {
           seals.push({ type: 'success', text: '已通过' })
-        } else if (first.status == 2) {
+        } else if (first.status == 3) {
           seals.push({ type: 'warning', text: '已驳回' })
         } else if (first.status == 8) {
           seals.push({ type: 'warning', text: '已撤回' })

@@ -115,8 +115,18 @@ export default {
       titleWidth: "300rpx",
     };
   },
+  watch: {
+    uid: function (val) {
+      if (val !== 0) {
+        this.uid = val
+        this.getOrderRecond();
+      }
+    }
+  },
   mounted() {
-    this.getOrderRecond();
+    if (this.uid !== 0) {
+      this.getOrderRecond();
+    }
   },
   methods: {
     getImgs(str) {

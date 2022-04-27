@@ -4,7 +4,7 @@
     <view>
       <van-cell
         is-link 
-        :title="userInfo.staff_name || ''"
+        :title="dataRangeTitle"
         title-class="cell-title"
         :value="activeSheet[activeSheetIndex - 1].name"
         value-class="cell-value"
@@ -19,7 +19,7 @@
         v-model="briefingType"
         @sheet-change="getBriefing"
       >
-        <SalesData :data="briefingData" />
+        <SalesData :data="briefingData" :orgData="briefingDataOrg"/>
       </Panel>
       <Panel
         title="业绩指标"
@@ -94,16 +94,17 @@
 
 <script>
 //图表是定制过的： https://echarts.apache.org/zh/builder.html      version: 4.8.0
-import Panel from "./components/Panel.vue";
-import SalesData from "./components/SalesData.vue";
-import GaugeChart from "./components/GaugeChart.vue";
-import TrendBar from "./components/TrendBar.vue";
-import RankBar from "./components/RankBar.vue";
-import InputRankBar from "./components/InputRankBar.vue";
-import Pie from "./components/Pie.vue";
-import NavBar from "@/components/navBar/index.vue";
+import Panel from "./components/Panel";
+import SalesData from "./components/SalesData";
+import GaugeChart from "./components/GaugeChart";
+import TrendBar from "./components/TrendBar";
+import RankBar from "./components/RankBar";
+import InputRankBar from "./components/InputRankBar";
+import Pie from "./components/Pie";
+import NavBar from "@/components/navBar/index";
 import {
   getBriefing,
+  getBriefingOrg,
   performanceIndicators,
   getTrendData,
   getSalesRankData,
@@ -128,6 +129,7 @@ export default {
       // 销售简报
       briefingType: 6,
       briefingData: {},
+      briefingDataOrg: {},
       briefingActionSheet: [
         {
           name: "今天",
@@ -214,10 +216,20 @@ export default {
       customerRankMonth: new Date().getTime(),
       pageIsShow: true,
       customerActive: 1,
+
+      staffName: '',
+      staffNameLength: 0,
     };
   },
   computed: {
-    ...mapGetters(["checkedStaffIds", 'userInfo']),
+    ...mapGetters(['checkedStaffData', "checkedStaffIds", 'userInfo']),
+    dataRangeTitle() {
+      const len = this.checkedStaffData.length 
+      return ( len
+        ? `${this.checkedStaffData[0].title} 等${len}个范围`
+        : ''
+      ) 
+    },
   },
   watch: {
     checkedStaffIds() {
@@ -260,10 +272,27 @@ export default {
         type: this.briefingType,
         arr_uid: this.checkedStaffIds,
         returned_type: this.activeSheetIndex,
+        select_type: 1,
       };
-      const res = await getBriefing(data);
-      if (res.code === 0) {
-        this.briefingData = res.data;
+
+      const dataOrg = {
+        type: this.briefingType,
+        arr_uid: this.checkedStaffIds,
+        returned_type: this.activeSheetIndex,
+        select_type: 2,
+      };
+
+      const keys = ['briefingData', 'briefingDataOrg']
+      
+      const res = await Promise.all([ getBriefing(data), getBriefingOrg(dataOrg) ])
+
+      if (res && res.length >= 0) {
+        for (let i = 0, ii = res.length; i < ii; i++) {
+          const item = res[i], key = keys[i]
+          if (item.code == 0) {
+            this[key] = item.data
+          }
+        }
       }
     },
     // 业绩指标
@@ -364,6 +393,20 @@ export default {
   background-color: #f2f6fc;
   /deep/.panel {
     margin-bottom: 20rpx;
+  }
+  
+  /deep/.cell-title {
+    width: 400rpx;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: @font-size-sm;
+    color: @text-color;
+  }
+
+  /deep/.cell-value {
+    width: 200rpx;
+    font-size: @font-size-sm;
+    color: @text-color-grey;
   }
 
   &-content {

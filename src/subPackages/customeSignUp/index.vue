@@ -164,7 +164,6 @@
             :label="`${item.major_name}-实收学费金额`"
             @change="({ detail }) => handleInput(detail, index, item)"
           />
-          <!-- @input="({ detail }) => (formData.projectData[index].pay_money = detail)" -->
         </view>
       </template>
 

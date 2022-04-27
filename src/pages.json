@@ -22,6 +22,14 @@
 			}
 		},
 		{
+			"path": "pages/institutional/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "机构看板",
+				"usingComponents": {}
+			}
+		},
+		{
 			"path": "pages/login/index",
 			"style": {
 				"navigationBarTitleText": "登录",
@@ -238,7 +246,7 @@
 				{
 					"path": "classLive/index",
 					"style": {
-						"navigationBarTitleText": "直播场次",
+						"navigationBarTitleText": "课程场次",
 						"usingComponents": {}
 					}
 				},
@@ -292,6 +300,12 @@
 				"iconPath": "static/tabbar/data.png",
 				"selectedIconPath": "static/tabbar/data-active.png",
 				"text": "数据看板"
+			},
+			{
+				"pagePath": "pages/institutional/index",
+				"iconPath": "static/tabbar/institutional.png",
+				"selectedIconPath": "static/tabbar/institutional-active.png",
+				"text": "机构看板"
 			}
 		]
 	},

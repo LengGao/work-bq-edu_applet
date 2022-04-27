@@ -1,14 +1,5 @@
 <template>
   <view class="customer-details">
-    <view class="flex-row" style="width: 100%;">
-        <view style="justify-items: center;">
-          <text style="font-size: 36rpx">曾是1</text>
-        </view>
-        <view style="justify-items: center;">
-          <text style="font-size: 32rpx">测试2</text>
-        </view>
-    </view>
-
     <view class="header">
       <view class="header-info">
         <view class="header-info-avator">

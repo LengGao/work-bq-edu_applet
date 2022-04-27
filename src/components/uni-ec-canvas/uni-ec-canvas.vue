@@ -115,7 +115,7 @@ export default {
       }
       this.isUseNewCanvas = canUseNewCanvas && !this.forceUseOldCanvas;
       if (this.isUseNewCanvas) {
-        console.log('微信基础库版本大于2.9.0，开始使用<canvas type="2d"/>');
+        // console.log('微信基础库版本大于2.9.0，开始使用<canvas type="2d"/>');
         // 2.9.0 可以使用 <canvas type="2d"></canvas>
         this.initByNewWay(callback);
       } else {

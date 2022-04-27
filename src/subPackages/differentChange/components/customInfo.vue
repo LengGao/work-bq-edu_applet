@@ -42,7 +42,7 @@
         is-link
         title="共享业绩"
         title-width="200rpx"
-        :value="staffName || '请选择'"
+        :value="data.staff_name || '请选择'"
         @click="handlerOpenSelect('staff')"
       />
       <van-cell title="开通网课" title-class="label" required>
@@ -170,12 +170,12 @@
         type="textarea"
         label-class="label"
         input-class="input"
-        :value="from.tips"
+        :value="data.tips"
         placeholder="请输入备注"
         @blur="
           ({ detail }) =>
             detail.value !== data.tips &&
-            $emit('input-blur', { tips: detail.value })
+            handlerFormInput(detail.value, 'tips')
         "
       >
       </van-field>
@@ -221,19 +221,18 @@ export default {
         // console.log('projectData', newVal);
     }
   },
-  mounted() {
-    // console.log("1", this.data, this.projectData);
-  },
   methods: {
     // 动态输入
     handlerFormInput(detail, key, indes) {
+      // console.log("handlerFormInput", detail, key, indes);
       let val = Object.create(null)
       if (key === 'projectData') {
         val.must_money = detail
+        this.$emit('dynamic-input', key, val ,indes)
       } else {
         val[key] = detail
+        this.$emit('dynamic-input', 'formData', val ,indes)
       }
-      this.$emit('dynamic-input', key, val ,indes)
     },
     // 打开选择器
     handlerOpenSelect(detail) {

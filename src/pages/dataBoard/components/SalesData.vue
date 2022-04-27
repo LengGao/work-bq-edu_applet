@@ -67,48 +67,48 @@
 
     <view class="sales-data">
       <view class="sales-data-item">
-        <view class="sales-data-item-value sales-data-item-value-1">{{ data.orgStudentNum || 0 }}</view>
+        <view class="sales-data-item-value sales-data-item-value-1">{{ orgData.orgStudentNum || 0 }}</view>
         <view class="sales-data-item-title">机构学生</view>
       </view>
       <view class="sales-data-item">
         <view class="sales-data-item-value sales-data-item-value-2">
-          {{ priceFormat(data.orgOrderMoney) }}
-          <text class="unit">{{ unitFormat(data.orgOrderMoney) }}</text>
+          {{ priceFormat(orgData.orgOrderMoney) }}
+          <text class="unit">{{ unitFormat(orgData.orgOrderMoney) }}</text>
         </view>
         <view class="sales-data-item-title">机构订单</view>
       </view>
       <view class="sales-data-item">
         <view class="sales-data-item-value sales-data-item-value-3">
-          {{ priceFormat(data.orgTuitionMoney)}}
+          {{ priceFormat(orgData.orgTuitionMoney)}}
           <text class="unit">{{ unitFormat(data.orgTuitionMoney) }}</text>
         </view>
         <view class="sales-data-item-title">机构学费</view>
       </view>
       <view class="sales-data-item">
         <view class="sales-data-item-value sales-data-item-value-4"
-          >{{ priceFormat(data.orgOtherMoney) }}
+          >{{ priceFormat(orgData.orgOtherMoney) }}
           <text class="unit">{{ unitFormat(data.orgOtherMoney) }}</text>
         </view>
         <view class="sales-data-item-title">其他回款</view>
       </view>
       <view class="sales-data-item">
         <view class="sales-data-item-value sales-data-item-value-1">
-          {{ priceFormat(data.orgPayMoney)}}
-          <text class="unit">{{ unitFormat(data.orgPayMoney) }}</text>
+          {{ priceFormat(orgData.orgPayMoney)}}
+          <text class="unit">{{ unitFormat(orgData.orgPayMoney) }}</text>
         </view>
         <view class="sales-data-item-title">机构回款</view>
       </view>
       <view class="sales-data-item">
         <view class="sales-data-item-value sales-data-item-value-2"
-          >{{ priceFormat(data.orgEntryMoney) }}
-          <text class="unit">{{ unitFormat(data.orgEntryMoney) }}</text>
+          >{{ priceFormat(orgData.orgEntryMoney) }}
+          <text class="unit">{{ unitFormat(orgData.orgEntryMoney) }}</text>
         </view>
         <view class="sales-data-item-title">机构入账</view>
       </view>
       <view class="sales-data-item">
         <view class="sales-data-item-value sales-data-item-value-3">
-          {{ priceFormat(data.orgRefundMoney) }}
-          <text class="unit">{{ unitFormat(data.orgRefundMoney) }}</text>
+          {{ priceFormat(orgData.orgRefundMoney) }}
+          <text class="unit">{{ unitFormat(orgData.orgRefundMoney) }}</text>
         </view>
         <view class="sales-data-item-title">退款作废</view>
       </view>
@@ -121,8 +121,8 @@
       </view> -->
       <view class="sales-data-item">
         <view class="sales-data-item-value sales-data-item-value-1">
-          {{ priceFormat(data.orgWebsitePayMoney) }}
-          <text class="unit">{{ unitFormat(data.orgWebsitePayMoney) }}</text>
+          {{ priceFormat(orgData.orgWebsitePayMoney) }}
+          <text class="unit">{{ unitFormat(orgData.orgWebsitePayMoney) }}</text>
         </view>
         <view class="sales-data-item-title">官网回款</view>
       </view>
@@ -138,6 +138,10 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    orgData: {
+      type: Object,
+      default: () => ({}),
+    }
   },
   methods: {
     unitFormat(val) {
@@ -177,7 +181,7 @@ export default {
     }
     &-value {
       color: @primary;
-      font-size: @font-size-lg;
+      font-size: @font-size-md;
       .unit {
         font-size: @font-size-xs;
       }

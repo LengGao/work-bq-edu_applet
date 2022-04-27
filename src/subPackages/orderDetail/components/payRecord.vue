@@ -47,7 +47,7 @@
         <template #title>
           <text class="title">回款计划</text>
         </template>
-          <text class="value" style="width: 100%;" decode>{{ item.relation_plan.replaceAll(',', ',  ') || "无" }}</text>
+          <text class="value" style="width: 100%;" decode>{{ item.relation_plan ? item.relation_plan.replaceAll(',', ',  ') : "无" }}</text>
       </van-cell>
       <van-cell :border="false"  custom-class="cell-item">
         <template #title>
@@ -98,7 +98,7 @@
           <template #title>
             <text class="title">所属项目</text>
           </template>
-          <text class="value" style="width: 100%;" decode>{{ item.project_name.replaceAll(',', ',  ') || "无" }}</text>
+          <text class="value" style="width: 100%;" decode>{{ item.project_name ? item.project_name.replaceAll(',', ',  ') :  "无" }}</text>
         </van-cell>
       </van-cell-group>
     </template>

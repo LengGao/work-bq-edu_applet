@@ -27,10 +27,7 @@ const user = {
             });
         },
         async getUserId({ commit }, { arr_uid, arr_group, checkedData }) {
-            const data = {
-                arr_uid,
-                arr_group,
-            };
+            const data = { arr_uid, arr_group};
             const res = await getUserId(data);
             commit('SET_CHECKED_STAFF_ID', res.data)
             commit('SET_CHECKED_STAFF_DATA', checkedData)

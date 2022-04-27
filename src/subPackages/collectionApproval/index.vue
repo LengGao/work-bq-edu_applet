@@ -25,30 +25,27 @@
         @click="() => toDetail(item, index)"
       >
         <view class="item-info">
-          <view class="item-info-user"
-            >{{ listType === 1 ? item.surname : item.org_name }}-回款{{
-              listType === 1 ? item.pay_money : item.receivable_money
-            }}元</view
-          >
-          <view class="item-info-staff"
-            >{{ item.staff_name || "--" }} | {{ item.create_time }}
+          <view class="item-info-user">
+            <text>
+              {{ listType === 1 ? item.surname : item.org_name }}-回款
+            </text>
+            <text style="margin-left: 8rpx;">
+              {{listType === 1 ? item.pay_money : item.receivable_money }}元
+            </text>
+          </view>
+          <view class="item-info-staff" style="margin-top: 20rpx;">
+            {{ item.staff_name || "--" }} | {{ item.create_time }}
           </view>
         </view>
         <view
           v-if="listType === 1"
-          :class="[
-            'item-status',
-            `item-status--${statusMap[item.verify_status || 0].type}`,
-          ]"
+          :class="['item-status', `item-status--${statusMap[item.verify_status || 0].type}` ]"
         >
           {{ statusMap[item.verify_status || 0].text }}
         </view>
         <view
           v-else
-          :class="[
-            'item-status',
-            `item-status--${channelStatusMap[item.check_state || 0].type}`,
-          ]"
+          :class="[ 'item-status', `item-status--${channelStatusMap[item.check_state || 0].type}` ]"
         >
           {{ channelStatusMap[item.check_state || 0].text }}
         </view>

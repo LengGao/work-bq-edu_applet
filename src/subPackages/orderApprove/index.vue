@@ -19,7 +19,7 @@
         class="item" @click="toDetail(item.order_id, item.id, index)"
       >
         <view class="item-submit">
-          <view class="item-submit-name finish" v-if="item.finish_staff_id || item.status === 8">
+          <view class="item-submit-name finish" v-if="item.finish_staff_id || item.status == 8">
             <text>{{ item.submit_name || "--" }}</text>
             提交了{{ verifyTypeMap[item.verify_type] }}审批
           </view>
@@ -40,9 +40,9 @@
 
           <view class="item-tag" style="margin-top: 4rpx;">
             <template v-if="[3, 8, 9].includes(item.status)">
-              <van-tag type="success" plain v-if="item.status === 3">已通过</van-tag>
-              <van-tag color="#999" plain v-if="item.status === 8">已撤销</van-tag>
-              <van-tag type="warning" plain v-if="item.status === 9">已驳回</van-tag>
+              <van-tag type="success" plain v-if="item.status == 3">已通过</van-tag>
+              <van-tag color="#999" plain v-if="item.status == 8">已撤销</van-tag>
+              <van-tag type="warning" plain v-if="item.status == 9">已驳回</van-tag>
             </template>
           </view>
         </view>
@@ -50,13 +50,13 @@
         <view class="item-desc">
           <view class="">
             <!-- <van-icon name="after-sale" size="28rpx" /> -->
-            <text style="margin: 0rpx 10rpx 0rpx 4rpx;">订单总金额{{ item.order_money | moneyFormat }}</text>
+            <text style="margin: 0rpx 10rpx 0rpx 4rpx;">订单总金额{{ item.total_money | moneyFormat }}</text>
             <!-- <van-icon name="after-sale" size="28rpx" /> -->
-            <text style="margin-left: 4rpx;">实收金额{{ accAdd(item.pay_money, item.other_money) | moneyFormat }}</text>
+            <text style="margin-left: 4rpx;">实收金额{{ item.pay_money | moneyFormat }}</text>
           </view>
           <view class="item-tag">
             <van-tag :type="verifyTypeMaps[item.verify_type].type" plain>
-              {{ verifyTypeMaps[item.verify_type].text }}额额
+              {{ verifyTypeMaps[item.verify_type].text }}
             </van-tag>
           </view>
         </view>
@@ -130,10 +130,15 @@ export default {
     accAdd: accAdd,
     // 更新查看详情的那条数据（用于详情发生变化）
     updateItem(data) {
+      // console.log("updateItem(", data, this.checkedIndex);
       if (data && this.checkedIndex !== null) {
-        this.listData[this.checkedIndex].verify_status = data.verify_status;
-        this.listData[this.checkedIndex].order_money = data.order_money;
-        this.listData[this.checkedIndex].pay_money = data.pay_money;
+        let item = this.listData[this.checkedIndex] 
+        item.finish_staff_id = data.verify_uid;
+        item.status = data.final_status;
+        item.verify_status = data.verify_status;
+        item.order_money = data.order_money;
+        item.pay_money = data.pay_money;
+        this.listData[this.checkedIndex] = item
       }
     },
     toDetail(orderId, verifyId, index) {

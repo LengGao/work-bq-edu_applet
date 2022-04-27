@@ -269,7 +269,7 @@ export default {
       let flag = true
       switch (key) {
         case 'gradeOptions': // 届别
-          if (!this.projectShow.length) {
+          if (!this.projectData.length) {
              uni.showToast({ icon: "none", title: "请先选择项目" });
              flag = false
           } else if (this.formData.type == 0) {
@@ -446,8 +446,7 @@ export default {
         Object.keys(val).forEach(k => formData[k] = val[k])
 
       } else if (key === "planRecond") {
-
-        payLog[index] = { ...payPlan[index], ...val }
+        payLog[index] = { ...payLog[index], ...val }
       } else if (key === "projectData") {
 
         projectData[index] = { ...projectData[index], ...val }
@@ -468,7 +467,7 @@ export default {
       }
       
       // console.log(
-      //   "dynamicInput：", formData,
+      //   "dynamicInput:", formData,
       //   "\n projectData:", projectData,
       //   "\n pay_plan:", payPlan,
       //   "\n pay_log:", payLog
@@ -697,6 +696,7 @@ export default {
       });
       // 回款记录信息处理
       data.pay_log = payLog.map((item) => {
+        delete item.pay_plan_name;
         item.receipt_file =  (item.receipt_file || []).map(file => file.url || file);
         return item;
       });

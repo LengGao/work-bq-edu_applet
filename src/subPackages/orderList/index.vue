@@ -121,9 +121,11 @@ export default {
     // 更新查看详情的那条数据（用于详情发生变化）
     updateItem(data) {
       if (data && this.checkedIndex !== null) {
-        this.listData[this.checkedIndex].verify_status = data.verify_status;
-        this.listData[this.checkedIndex].order_money = data.order_money;
-        this.listData[this.checkedIndex].pay_money = data.pay_money;
+        let item = this.listData[this.checkedIndex] 
+        item.verify_status = data.verify_status;
+        item.order_money = data.order_money;
+        item.pay_money = data.pay_money;
+        this.listData[this.checkedIndex] = item
       }
     },
     toDetail(orderId, index, change) {

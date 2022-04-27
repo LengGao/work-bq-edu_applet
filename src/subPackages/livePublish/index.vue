@@ -79,7 +79,7 @@ export default {
     };
   },
   onLoad(query) {    
-    console.log(query);
+    // console.log(query);
     let info = JSON.parse(decodeURIComponent(query.info)) || {},
         _liveInfo = this.liveInfo,
         channelId = info.channel_id

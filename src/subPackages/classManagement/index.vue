@@ -85,10 +85,10 @@
           </view>
           <view class="item-actions">
             <van-tag v-if="item.live_status" plain size="large" type="warning">
-              <text @click="handleCloseLive(item.live_class_id)">关闭直播</text>
+              <text @click="handleCloseLive(item.live_class_id)">关闭</text>
             </van-tag>
             <van-tag v-else plain size="large" type="primary">
-              <text @click="handleStartLive(item.live_class_id)">开始直播 </text>
+              <text @click="handleStartLive(item.live_class_id)">开始</text>
             </van-tag>
           </view>
         </view>
@@ -135,14 +135,14 @@ export default {
       listType: 1,
       listTypes: [
         { name: "班级管理", value: 1 },
-        { name: "班级直播", value: 2 },
+        { name: "多媒体班级", value: 2 },
       ],
       checkedState: [false, true, false],
       statusText: { 1: "启用", 2: "禁用" },
-      live_statusText: { 0: "无直播", 1: "直播中" },
+      live_statusText: { 0: "未开课", 1: "开课中" },
       onlySearch: false,
       defaultAvator: "../../static/avator.png",
-      placeholderOption: [ '', '请输入班级名或班主任', '请输入直播名称' ],
+      placeholderOption: [ '', '请输入班级名或班主任', '请输入课程名称' ],
     };
   },
   onLoad() {
@@ -154,8 +154,8 @@ export default {
   async handleStartLive(id) {
     let params = { live_class_id: id },
         modalOption = {
-          title: "直播提示",
-          content: "你确定要开启直播吗？",
+          title: "提示",
+          content: "你确定要开启课程吗？",
           showCancel: true,
           cancelColor: "#199fff",
           confirmColor: "#199fff",
@@ -176,8 +176,8 @@ export default {
     async handleCloseLive(id) {
       let params = { live_class_id: id },
           modalOption = {
-            title: "直播提示",
-            content: "你确定要关闭直播吗？",
+            title: "提示",
+            content: "你确定要关闭课程吗？",
             showCancel: true,
             cancelColor: "#199fff",
             confirmColor: "#199fff",
@@ -247,9 +247,9 @@ export default {
         api = classLiveList;
       }
 
+      const res = await api(data).catch(() => {});
       this.listLoading = false;
       this.listRefreshLoading = false;
-      const res = await api(data).catch(() => {});
       this.skeletonLoading = false;
 
       if (res.code == 0) {
@@ -355,9 +355,8 @@ export default {
       .livestate-state {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
         align-items: center;
-        width: 120rpx;
+        width: 160rpx;
         margin-left: 20rpx;
         white-space: nowrap;
       }

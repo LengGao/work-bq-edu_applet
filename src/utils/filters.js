@@ -61,7 +61,7 @@ const filters = {
             return applyStatusMap[status].text || '--'
         }
         return applyStatusMap[status].color || ''
-    }
+    },
 }
 
 Object.keys(filters).forEach(key => {
